@@ -27,13 +27,48 @@ void Enemy::release()
 }
 void Enemy::update() 
 {
-	move();
-	jump();
-	attack();
+	if (_isFindPlayer)
+	{
+		_isFindPlayer = true;
+		move();
+		jump();
+		attack();
+
+		_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
+
+		if (getDistance(_pointx, _pointy, _playerPoint.x, _playerPoint.y) > 150)
+		_isFindPlayer = false;
+	}
+	else
+	{
+		if (getDistance(_pointx, _pointy, _playerPoint.x, _playerPoint.y) < 50)
+		{
+			if (_pointx < _playerPoint.x && _pointy < _playerPoint.y)
+			{
+				//몬스터가 플레이어보다 왼쪽에 있고 위쪽에 있다
+			}
+			else if (_pointx < _playerPoint.x && _pointy > _playerPoint.y)
+			{
+				//몬스터가 플레이어보다 왼쪽에 있고 아래쪽에 있다
+			}
+			else if (_pointx > _playerPoint.x && _pointy < _playerPoint.y)
+			{
+				//몬스터가 플레이어보다 오른쪽에 있고 위쪽에 있다
+			}
+			else if (_pointx > _playerPoint.x && _pointy > _playerPoint.y)
+			{
+				//몬스터가 플레이어보다 오른쪽에 있고 아래쪽에 있다
+			}
+			else
+			{
+
+			}
+		}
+	}
 }
 void Enemy::render()
 {
-
+	_image->frameRender(getMemDC(), _rc.left, _rc.top);
 }
 
 //그릴 때	x좌표에 (WINSIZEX/2 - camera.x) 만큼

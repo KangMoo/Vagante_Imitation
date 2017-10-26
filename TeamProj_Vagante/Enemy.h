@@ -49,6 +49,7 @@ protected:
 	POINT _playerPoint;													//플레이어의 위치
 	int _money;															//몬스터 죽으면 나올 동전 갯수
 	mapInfo _upL, _upM, _upR, _midL, _midM, _midR, _botL, _botM, _botR;	//현재좌표기준 9개 타일
+	bool _isFindPlayer;													//플레이어를 발견한 상태인지
 
 public:
 	HRESULT init();
@@ -59,9 +60,9 @@ public:
 	void render(POINT camera);
 	void draw(POINT camera);
 
-	void move();			// 이동관련함수
-	void jump();			// 점프
-	void attack();			// 공격
+	virtual void move();			// 이동관련함수
+	virtual void jump();			// 점프
+	virtual void attack();			// 공격
 
 
 	//공격 받았을 시 (데미지만)
