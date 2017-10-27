@@ -1,6 +1,7 @@
 #pragma once
 #include "gameNode.h"
 #include "Enemy.h"
+#include "Boss.h"
 #include "vaganteStructEnum.h"
 
 class Player;
@@ -12,9 +13,12 @@ private:
 	vector<Enemy*> _vEnemy;
 	vector<Enemy*>::iterator _viEnemy;
 
+
 	Player* _player;
+	Boss* _boss;
 	Map* _map;
 	UI* _ui;
+
 public:
 	HRESULT init();
 	void release();
@@ -25,10 +29,10 @@ public:
 
 	void deadEnemyCheck();
 
+
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setMapAddressLink(Map* map) { _map = map; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
-
 
 	EnemyManager();
 	~EnemyManager();
