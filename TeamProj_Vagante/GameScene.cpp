@@ -85,6 +85,8 @@ void GameScene::addImage()
 {
 	//이미지 추가는 여기서!!
 	IMAGEMANAGER->addImage("bg", "Img\\etc\\temp_bg.bmp", TILESIZE * 58, TILESIZE * 40, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("폭발", "Img\\etc\\explosion_1.bmp", 448, 64, 7, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("test", "Img\\etc\\tes.bmp", 40, 224, 1, 7, true, RGB(255, 0, 255));
 }
 void GameScene::keyInput()
 {

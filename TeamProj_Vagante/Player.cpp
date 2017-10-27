@@ -197,15 +197,15 @@ void Player::setmaptileInfo()
 	*/
 	//캐릭터 기준으로 9개의 타일 정보 받아오기
 	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;
-	upL = _map->getMapInfo(int(_player.pointy) % TILESIZE - 1, int(_player.pointx) % TILESIZE - 1);
-	upM = _map->getMapInfo(int(_player.pointy) % TILESIZE - 1, int(_player.pointx) % TILESIZE);
-	upR = _map->getMapInfo(int(_player.pointy) % TILESIZE - 1, int(_player.pointx) % TILESIZE + 1);
-	midL = _map->getMapInfo(int(_player.pointy) % TILESIZE, int(_player.pointx) % TILESIZE - 1);
-	midM = _map->getMapInfo(int(_player.pointy) % TILESIZE, int(_player.pointx) % TILESIZE);
-	midR = _map->getMapInfo(int(_player.pointy) % TILESIZE, int(_player.pointx) % TILESIZE + 1);
-	botL = _map->getMapInfo(int(_player.pointy) % TILESIZE + 1, int(_player.pointx) % TILESIZE - 1);
-	botM = _map->getMapInfo(int(_player.pointy) % TILESIZE + 1, int(_player.pointx) % TILESIZE);
-	botR = _map->getMapInfo(int(_player.pointy) % TILESIZE + 1, int(_player.pointx) % TILESIZE + 1);
+	upL = _map->getMapInfo(int(_player.pointy) / TILESIZE - 1, int(_player.pointx) / TILESIZE - 1);
+	upM = _map->getMapInfo(int(_player.pointy) / TILESIZE - 1, int(_player.pointx) / TILESIZE);
+	upR = _map->getMapInfo(int(_player.pointy) / TILESIZE - 1, int(_player.pointx) / TILESIZE + 1);
+	midL = _map->getMapInfo(int(_player.pointy) / TILESIZE, int(_player.pointx) / TILESIZE - 1);
+	midM = _map->getMapInfo(int(_player.pointy) / TILESIZE, int(_player.pointx) / TILESIZE);
+	midR = _map->getMapInfo(int(_player.pointy) / TILESIZE, int(_player.pointx) / TILESIZE + 1);
+	botL = _map->getMapInfo(int(_player.pointy) / TILESIZE + 1, int(_player.pointx) / TILESIZE - 1);
+	botM = _map->getMapInfo(int(_player.pointy) / TILESIZE + 1, int(_player.pointx) / TILESIZE);
+	botR = _map->getMapInfo(int(_player.pointy) / TILESIZE + 1, int(_player.pointx) / TILESIZE + 1);
 
 
 	//타일 활용 예시
