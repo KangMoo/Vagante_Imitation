@@ -69,6 +69,9 @@ public:
 	//맵에 돈 출현~ (위치정보만 가집니다~)
 	void addCoinOnMap(POINT coinPoint); 
 
+	//숫자 표시
+	void showNumber(int num, COLORREF color);
+
 	//설정자 접근자
 	bool getActive() { return _active; }
 	void setActive(bool active) { _active = active; }

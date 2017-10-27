@@ -18,7 +18,7 @@ HRESULT Player::init(POINT point)
 	_player.pointx = point.x;
 	_player.pointy = point.y;
 	_player.rc = RectMakeCenter(_player.pointx, _player.pointy, 15, 20);
-	
+
 	_player.jumppower = 0;
 	_player.lookingLeft = true;
 	_player.lookingRight = false;
@@ -53,22 +53,22 @@ void Player::release()
 void Player::update()
 {
 	//test~
-	_player.rc = RectMakeCenter(_player.pointx, _player.pointy, TILESIZE/2, TILESIZE * 3/4);
+	_player.rc = RectMakeCenter(_player.pointx, _player.pointy, TILESIZE / 2, TILESIZE * 3 / 4);
 	//~test
 
 	//움직임
 	move();
 	//타일값 읽기
 	setmaptileInfo();
-	//조작 가능하면 키 입력 받기
-	if(_canCtrl) keyintput();
+	//조작 가능하면 키 입력 받기 (ui에게 조작이 넘어갈 경우 _canCtrl값 false)
+	if (_canCtrl) keyintput();
 }
 void Player::render()
 {
 
 }
-//그릴 때	x좌표에 (WINSIZEX/2 - camera.x) 만큼
-//			y좌표에 (WINSIZEY/2 - camera.y) 만큼 더해주기!!!!
+//그릴 때	x좌표에 camera.x 만큼
+//			y좌표에 camera.y 만큼 더해주기!!!!
 void Player::render(POINT camera)
 {
 	draw(camera);
@@ -76,7 +76,7 @@ void Player::render(POINT camera)
 void Player::draw(POINT camera)
 {
 	//test
-	Rectangle(getMemDC(), _player.rc.left + (WINSIZEX / 2 - camera.x), _player.rc.top + (WINSIZEY / 2 - camera.y), _player.rc.right + (WINSIZEX / 2 - camera.x), _player.rc.bottom + (WINSIZEY / 2 - camera.y));
+	Rectangle(getMemDC(), _player.rc.left + camera.x, _player.rc.top + camera.y, _player.rc.right + camera.x, _player.rc.bottom + camera.y);
 
 }
 void Player::move()
@@ -206,8 +206,8 @@ void Player::setmaptileInfo()
 	botL = _map->getMapInfo(int(_player.pointy) % TILESIZE + 1, int(_player.pointx) % TILESIZE - 1);
 	botM = _map->getMapInfo(int(_player.pointy) % TILESIZE + 1, int(_player.pointx) % TILESIZE);
 	botR = _map->getMapInfo(int(_player.pointy) % TILESIZE + 1, int(_player.pointx) % TILESIZE + 1);
-	
-	
+
+
 	//타일 활용 예시
 
 	//플레이어 아래 타일 체크
@@ -225,7 +225,7 @@ void Player::setmaptileInfo()
 			if (IntersectRect(&temp, &_player.rc, &botM.rc))
 			{
 				//추가
-				
+
 			}
 		}
 		break;

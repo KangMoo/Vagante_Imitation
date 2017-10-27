@@ -57,6 +57,10 @@ void animation::release(void)
 
 void animation::setDefPlayFrame(BOOL reverse, BOOL loop)				 
 {
+	_obj = NULL;
+	_callbackFunction = NULL;
+	_callbackFunctionParameter = NULL;
+
 	_loop = loop;
 
 	_playList.clear();
@@ -108,13 +112,135 @@ void animation::setDefPlayFrame(BOOL reverse, BOOL loop)
 			}
 		}
 	}
-
-
 }
+
+void animation::setDefPlayFrame(BOOL reverse, BOOL loop, CALLBACK_FUNCTION cbFunction)
+{
+	_obj = NULL;
+	_callbackFunction = cbFunction;
+	_callbackFunctionParameter = NULL;
+
+	_loop = loop;
+
+	_playList.clear();
+
+	if (reverse)
+	{
+		if (_loop)
+		{
+			//0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0 1, 
+			for (int i = 0; i < _frameNum; i++)
+			{
+				_playList.push_back(i);
+			}
+
+			for (int i = _frameNum - 1; i >= 0; i--)
+			{
+				_playList.push_back(i);
+			}
+
+		}
+		else
+		{
+			//0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0 1, 
+			for (int i = 0; i < _frameNum; i++)
+			{
+				_playList.push_back(i);
+			}
+
+			for (int i = _frameNum - 1; i >= 0; i--)
+			{
+				_playList.push_back(i);
+			}
+		}
+	}
+	else
+	{
+		if (_loop)
+		{
+			for (int i = 0; i < _frameNum; i++)
+			{
+				_playList.push_back(i);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < _frameNum; i++)
+			{
+				_playList.push_back(i);
+			}
+		}
+	}
+}
+
+
+void animation::setDefPlayFrame(BOOL reverse, BOOL loop, CALLBACK_FUNCTION_PARAMETER cbFunction, void* obj)
+{
+	_obj = obj;
+	_callbackFunction = NULL;
+	_callbackFunctionParameter = cbFunction;
+
+	_loop = loop;
+
+	_playList.clear();
+
+	if (reverse)
+	{
+		if (_loop)
+		{
+			//0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0 1, 
+			for (int i = 0; i < _frameNum; i++)
+			{
+				_playList.push_back(i);
+			}
+
+			for (int i = _frameNum - 1; i >= 0; i--)
+			{
+				_playList.push_back(i);
+			}
+
+		}
+		else
+		{
+			//0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0 1, 
+			for (int i = 0; i < _frameNum; i++)
+			{
+				_playList.push_back(i);
+			}
+
+			for (int i = _frameNum - 1; i >= 0; i--)
+			{
+				_playList.push_back(i);
+			}
+		}
+	}
+	else
+	{
+		if (_loop)
+		{
+			for (int i = 0; i < _frameNum; i++)
+			{
+				_playList.push_back(i);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < _frameNum; i++)
+			{
+				_playList.push_back(i);
+			}
+		}
+	}
+}
+
 
 //배열에 담아서 애니메이션 재생
 void animation::setPlayFrame(int* playArr, int arrLen, BOOL loop)		 
 {
+	_obj = NULL;
+	_callbackFunction = NULL;
+	_callbackFunctionParameter = NULL;
+
 	_loop = loop;
 
 	_playList.clear();
@@ -125,9 +251,46 @@ void animation::setPlayFrame(int* playArr, int arrLen, BOOL loop)
 	}
 }
 
+void animation::setPlayFrame(int* playArr, int arrLen, BOOL loop, CALLBACK_FUNCTION cbFunction)
+{
+	_obj = NULL;
+	_callbackFunction = cbFunction;
+	_callbackFunctionParameter = NULL;
+
+	_loop = loop;
+
+	_playList.clear();
+
+	for (int i = 0; i < arrLen; i++)
+	{
+		_playList.push_back(playArr[i]);
+	}
+}
+
+void animation::setPlayFrame(int* playArr, int arrLen, BOOL loop, CALLBACK_FUNCTION_PARAMETER cbFunction, void* obj)
+{
+	_obj = obj;
+	_callbackFunction = NULL;
+	_callbackFunctionParameter = cbFunction;
+
+	_loop = loop;
+
+	_playList.clear();
+
+	for (int i = 0; i < arrLen; i++)
+	{
+		_playList.push_back(playArr[i]);
+	}
+}
+
+
 //시작과 끝 구간이 있는 애니메이션
 void animation::setPlayFrame(int start, int end, BOOL reverse, BOOL loop)
 {
+	_obj = NULL;
+	_callbackFunction = NULL;
+	_callbackFunctionParameter = NULL;
+
 	_loop = loop;
 
 	_playList.clear();
@@ -238,6 +401,239 @@ void animation::setPlayFrame(int start, int end, BOOL reverse, BOOL loop)
 
 }
 
+void animation::setPlayFrame(int start, int end, BOOL reverse, BOOL loop, CALLBACK_FUNCTION cbFunction)						
+{
+	_obj = NULL;
+	_callbackFunction = cbFunction;
+	_callbackFunctionParameter = NULL;
+
+	_loop = loop;
+
+	_playList.clear();
+	//만약 시작과 끝 번호가 같다면
+	if (start == end)
+	{
+		_playList.clear();
+		stop();
+		return;
+	}
+
+	if (start > end)
+	{
+		if (reverse)
+		{
+			if (_loop)
+			{
+				// 5 4 3 2 1 0 1 2 3 4 
+
+				for (int i = start; i >= end; i--)
+				{
+					_playList.push_back(i);
+				}
+
+				for (int i = end + 1; i < start; i++)
+				{
+					_playList.push_back(i);
+				}
+			}
+			else
+			{
+				for (int i = start; i >= end; i--)
+				{
+					_playList.push_back(i);
+				}
+
+				for (int i = end + 1; i < start; i++)
+				{
+					_playList.push_back(i);
+				}
+			}
+		}
+		else
+		{
+			if (_loop)
+			{
+				for (int i = start; i >= end; i--)
+				{
+					_playList.push_back(i);
+				}
+			}
+			else
+			{
+				for (int i = start; i >= end; i--)
+				{
+					_playList.push_back(i);
+				}
+			}
+		}
+	}
+	else
+	{
+		if (reverse)
+		{
+			if (_loop)
+			{
+				for (int i = start; i <= end; i++)
+				{
+					_playList.push_back(i);
+				}
+
+				for (int i = end - 1; i > start; i--)
+				{
+					_playList.push_back(i);
+				}
+			}
+			else
+			{
+				for (int i = start; i <= end; i++)
+				{
+					_playList.push_back(i);
+				}
+
+				for (int i = end - 1; i > start; i--)
+				{
+					_playList.push_back(i);
+				}
+			}
+		}
+		else
+		{
+			if (_loop)
+			{
+				for (int i = start; i < end; i++)
+				{
+					_playList.push_back(i);
+				}
+			}
+			else
+			{
+				for (int i = start; i < end; i++)
+				{
+					_playList.push_back(i);
+				}
+			}
+		}
+	}
+}
+
+
+void animation::setPlayFrame(int start, int end, BOOL reverse, BOOL loop, CALLBACK_FUNCTION_PARAMETER cbFunction, void* obj)
+{
+	_obj = obj;
+	_callbackFunction = NULL;
+	_callbackFunctionParameter = cbFunction;
+
+	_loop = loop;
+
+	_playList.clear();
+	//만약 시작과 끝 번호가 같다면
+	if (start == end)
+	{
+		_playList.clear();
+		stop();
+		return;
+	}
+
+	if (start > end)
+	{
+		if (reverse)
+		{
+			if (_loop)
+			{
+				// 5 4 3 2 1 0 1 2 3 4 
+
+				for (int i = start; i >= end; i--)
+				{
+					_playList.push_back(i);
+				}
+
+				for (int i = end + 1; i < start; i++)
+				{
+					_playList.push_back(i);
+				}
+			}
+			else
+			{
+				for (int i = start; i >= end; i--)
+				{
+					_playList.push_back(i);
+				}
+
+				for (int i = end + 1; i < start; i++)
+				{
+					_playList.push_back(i);
+				}
+			}
+		}
+		else
+		{
+			if (_loop)
+			{
+				for (int i = start; i >= end; i--)
+				{
+					_playList.push_back(i);
+				}
+			}
+			else
+			{
+				for (int i = start; i >= end; i--)
+				{
+					_playList.push_back(i);
+				}
+			}
+		}
+	}
+	else
+	{
+		if (reverse)
+		{
+			if (_loop)
+			{
+				for (int i = start; i <= end; i++)
+				{
+					_playList.push_back(i);
+				}
+
+				for (int i = end - 1; i > start; i--)
+				{
+					_playList.push_back(i);
+				}
+			}
+			else
+			{
+				for (int i = start; i <= end; i++)
+				{
+					_playList.push_back(i);
+				}
+
+				for (int i = end - 1; i > start; i--)
+				{
+					_playList.push_back(i);
+				}
+			}
+		}
+		else
+		{
+			if (_loop)
+			{
+				for (int i = start; i < end; i++)
+				{
+					_playList.push_back(i);
+				}
+			}
+			else
+			{
+				for (int i = start; i < end; i++)
+				{
+					_playList.push_back(i);
+				}
+			}
+		}
+	}
+}
+
+
+
 
 void animation::setFPS(int framePerSec)
 {
@@ -261,6 +657,15 @@ void animation::frameUpdate(float elapsedTime)
 				if (_loop) _nowPlayIndex = 0;
 				else
 				{
+					if (_obj == NULL)
+					{
+						if (_callbackFunction != NULL) _callbackFunction();
+					}
+					else
+					{
+						_callbackFunctionParameter(_obj);
+					}
+
 					_nowPlayIndex--;
 					_play = FALSE;
 				}

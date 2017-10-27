@@ -67,6 +67,9 @@
     <Filter Include="MainGame\Database">
       <UniqueIdentifier>{e11f9484-8cf7-4b52-9a8f-05a85857e32f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MainGame\UI">
+      <UniqueIdentifier>{85e7430f-ea28-4e8f-bcfe-457721d71ca6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -159,9 +162,6 @@
     <ClInclude Include="Map.h">
       <Filter>MainGame\Map</Filter>
     </ClInclude>
-    <ClInclude Include="UI.h">
-      <Filter>MainGame\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="database.h">
       <Filter>MainGame\Database</Filter>
     </ClInclude>
@@ -170,6 +170,12 @@
     </ClInclude>
     <ClInclude Include="vaganteStructEnum.h">
       <Filter>MainGame\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="keyAniManager.h">
+      <Filter>2DGameFramework\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>MainGame\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -251,11 +257,14 @@
     <ClCompile Include="Map.cpp">
       <Filter>MainGame\Map</Filter>
     </ClCompile>
-    <ClCompile Include="UI.cpp">
-      <Filter>MainGame\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="database.cpp">
       <Filter>MainGame\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="keyAniManager.cpp">
+      <Filter>2DGameFramework\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>MainGame\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

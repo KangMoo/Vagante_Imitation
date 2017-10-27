@@ -60,26 +60,49 @@ void Map::update()
 	//만든 아이템 정보 map에 넘겨주기!
 	_ui->addItemOnMap(item);
 	*/
-	
+
 }
 void Map::render()
 {
 
 }
 
-//그릴 때	x좌표에 (WINSIZEX/2 - camera.x) 만큼
-//			y좌표에 (WINSIZEY/2 - camera.y) 만큼 더해주기!!!!
+//그릴 때	x좌표에 camera.x 만큼
+//			y좌표에 camera.y 만큼 더해주기!!!!
 void Map::render(POINT camera)
 {
 	draw(camera);
 }
 void Map::draw(POINT camera)
 {
-	IMAGEMANAGER->render("bg", getMemDC(), WINSIZEX / 2 - camera.x, WINSIZEY / 2 - camera.y);
+	//test~
+	IMAGEMANAGER->render("bg", getMemDC(), camera.x, camera.y);
+
+	for (int i = 0; i < 40; i++)
+	{
+		for (int j = 0; j < 58; j++)
+		{
+			if (_mapInfo[i][j].type == MAPTILE_WALL || _mapInfo[i][j].type == MAPTILE_WALL2) {
+				Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
+					_mapInfo[i][j].rc.top + camera.y,
+					_mapInfo[i][j].rc.right + camera.x,
+					_mapInfo[i][j].rc.bottom + camera.y);
+			}
+			else if (_mapInfo[i][j].type == MAPTILE_LADDER)
+			{
+
+			}
+			else if (_mapInfo[i][j].type == MAPTILE_GROUND_CAN_GO_DOWN_1 || _mapInfo[i][j].type == MAPTILE_GROUND_CAN_GO_DOWN_2)
+			{
+
+			}
+		}
+	}
+	//~test
 }
 void Map::setTile()
 {
-	
+
 	/* 	0 : MAPTILE_NULL
 		1 : MAPTILE_WALL,
 		2 : MAPTILE_WALL2,
@@ -158,7 +181,7 @@ void Map::setTile()
 		for (int j = 0; j < 58; j++)
 		{
 			_mapInfo[i][j].type = temp[i][j];
-			_mapInfo[i][j].point = PointMake(i*TILESIZE, j*TILESIZE);
+			_mapInfo[i][j].point = PointMake(j*TILESIZE, i*TILESIZE);
 			_mapInfo[i][j].rc = RectMake(_mapInfo[i][j].point.x, _mapInfo[i][j].point.y, TILESIZE, TILESIZE);
 		}
 	}

@@ -25,7 +25,7 @@ HRESULT UI::init()
 
 	}
 	tagItemInfo _item[5];
-	tagCoinInfo _coin[100];
+	tagCoinInfo _coin[255];
 	return S_OK;
 }
 void UI::release()
@@ -53,4 +53,9 @@ void UI::addItemOnMap(tagItemInfo item)
 void UI::addCoinOnMap(POINT coinPoint)
 {
 	//해당 POINT에 동전 스폰
+}
+
+void UI::showNumber(int num, COLORREF color)
+{
+
 }

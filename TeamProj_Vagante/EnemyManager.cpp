@@ -35,7 +35,8 @@ void EnemyManager::update()
 	for (_viEnemy = _vEnemy.begin(); _viEnemy != _vEnemy.end(); ++_viEnemy)
 	{
 		//enemy에게 플레이어 좌표 넘겨주기
-		(*_viEnemy)->setPlayerPoint(_player->getPoint());
+		//(*_viEnemy)->setPlayerAddressLink(_player);
+		//(*_viEnemy)->setUiAddressLink(_ui);
 		//enemy에게 상,하,좌,우 타일정보 넘겨주기
 		(*_viEnemy)->setTileInfo(
 		_map->getMapInfo(int((*_viEnemy)->getPoint().y) % TILESIZE - 1, int((*_viEnemy)->getPoint().x) % TILESIZE - 1),
@@ -60,8 +61,8 @@ void EnemyManager::render()
 
 }
 
-//그릴 때	x좌표에 (WINSIZEX/2 - camera.x) 만큼
-//			y좌표에 (WINSIZEY/2 - camera.y) 만큼 더해주기!!!!
+//그릴 때	x좌표에 camera.x 만큼
+//			y좌표에 camera.y 만큼 더해주기!!!!
 void EnemyManager::render(POINT camera)
 {
 	for (_viEnemy = _vEnemy.begin(); _viEnemy != _vEnemy.end(); ++_viEnemy)

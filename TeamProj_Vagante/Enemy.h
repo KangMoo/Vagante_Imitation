@@ -1,7 +1,6 @@
 #pragma once
 #include "gameNode.h"
 #include "Map.h"
-#include "Player.h"
 #include "vaganteStructEnum.h"
 /*
 !vaganteStructEnum.h에서 선언했으니 참조만 할 것!
@@ -35,18 +34,21 @@ int spd;	//이속
 };
 */
 
+class Player;
+class UI;
 class Enemy : public gameNode
 {
 protected:
 	image* _image;														//이미지
 	ENEMYSTATE _state;													//상태
+	Player* _player;													//플레이어 정보
+	UI* _ui;															//ui
 	tagStatusEffect _statusEffect[5];									//상태이상
 	tagStat _statistics;												//스탯
 	int _currentFrameX, _currentFrameY;									//프레임
 	RECT _rc;															//피격범위
 	float _pointx, _pointy;												//좌표
 	float _xspeed, _yspeed;												//x,y축 이동 속도
-	POINT _playerPoint;													//플레이어의 위치
 	int _money;															//몬스터 죽으면 나올 동전 갯수
 	mapInfo _upL, _upM, _upR, _midL, _midM, _midR, _botL, _botM, _botR;	//현재좌표기준 9개 타일
 	bool _isFindPlayer;													//플레이어를 발견한 상태인지
@@ -80,7 +82,6 @@ public:
 	RECT getRect() { return _rc; }
 	POINT getPoint() { return PointMake(_pointx, _pointy); }
 	void setPoint(POINT point) { _pointx = point.x; _pointy = point.y; }
-	void setPlayerPoint(POINT playerpoint) { _playerPoint = playerpoint; }
 	int getMoney() { return _money; }
 	float getXSpeed() { return _xspeed; }
 	void setXSpeed(float xspeed) { _xspeed = xspeed; }
@@ -88,6 +89,8 @@ public:
 	void setYSpeed(float yspeed) { _yspeed = yspeed; }
 	void setTileInfo(mapInfo ul, mapInfo um, mapInfo ur, mapInfo ml, mapInfo mm, mapInfo mr, mapInfo bl, mapInfo bm, mapInfo br) { _upL = ul; _upM = um; _upR = ur; _midL = ml; _midM = mm; _midR = mr; _botL = bl; _botM = bm; _botR = br; }
 	
+	void setPlayerAddressLink(Player* player) { _player = player; }
+	void setUiAddressLink(UI* ui) { _ui = ui; }
 
 	Enemy();
 	~Enemy();

@@ -23,6 +23,7 @@
 #include "effectManager.h"
 #include "iniDataManager.h"
 #include "sceneManager.h"
+#include "keyAniManager.h"
 #include "txtData.h"
 #include "collision.h"
 #include "database.h"
@@ -49,6 +50,7 @@ using namespace IOTA_UTIL;
 #define SOUNDMANAGER soundManager::getSingleton()
 #define EFFECTMANAGER effectManager::getSingleton()
 #define SCENEMANAGER sceneManager::getSingleton()
+#define KEYANIMANAGER keyAniManager::getSingleton()
 #define INIDATA iniDataManager::getSingleton()
 #define DATABASE database::getSingleton()
 

@@ -18,7 +18,7 @@ HRESULT GameScene::init()
 	_em = new EnemyManager;
 	_em->init();
 	_player = new Player;
-	_player->init(PointMake(TILESIZE*(36+5), TILESIZE*(5+5)));
+	_player->init(PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
 	_map = new Map;
 	_map->init();
 	_ui = new UI;
@@ -39,14 +39,14 @@ HRESULT GameScene::init()
 	_ui->setEnemyManagerAddressLink(_em);
 	_UsingStatusWindow = false;
 	_camera = PointMake(WINSIZEX, WINSIZEY);
-	
+
 	return S_OK;
 }
 void GameScene::release()
 {
 
 }
-void GameScene::update() 
+void GameScene::update()
 {
 	_camera = _player->getPoint();
 	_em->update();
@@ -71,20 +71,20 @@ void GameScene::update()
 	{
 		_camera.y = IMAGEMANAGER->findImage("bg")->getHeight() - WINSIZEY / 2;
 	}
-	
+
 }
-void GameScene::render() 
+void GameScene::render()
 {
-	_map->render(_camera);
-	_em->render(_camera);
-	_player->render(_camera);
+	_map->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+	_em->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+	_player->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_ui->render();
 }
 
 void GameScene::addImage()
 {
 	//이미지 추가는 여기서!!
-	IMAGEMANAGER->addImage("bg","Img\\etc\\temp_bg.bmp",TILESIZE * 58, TILESIZE * 40,true,RGB(255,0,255));
+	IMAGEMANAGER->addImage("bg", "Img\\etc\\temp_bg.bmp", TILESIZE * 58, TILESIZE * 40, true, RGB(255, 0, 255));
 }
 void GameScene::keyInput()
 {
