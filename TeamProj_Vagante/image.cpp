@@ -30,6 +30,8 @@ HRESULT image::init(int width, int height, BOOL trans, COLORREF transColor)
 	_imageInfo->hMemDC = CreateCompatibleDC(hdc);	//빈 DC영역을 생성
 	_imageInfo->hBit = (HBITMAP)CreateCompatibleBitmap(hdc, width, height);
 	_imageInfo->hOBit = (HBITMAP)SelectObject(_imageInfo->hMemDC, _imageInfo->hBit);
+	_imageInfo->frameWidth = width;
+	_imageInfo->frameHeight = height;
 	_imageInfo->width = width;
 	_imageInfo->height = height;
 
@@ -82,6 +84,8 @@ HRESULT image::init(const char* fileName, int width, int height,
 	_imageInfo->hMemDC = CreateCompatibleDC(hdc);	//빈 DC영역을 생성
 	_imageInfo->hBit = (HBITMAP)LoadImage(_hInstance, fileName, IMAGE_BITMAP, width, height, LR_LOADFROMFILE);
 	_imageInfo->hOBit = (HBITMAP)SelectObject(_imageInfo->hMemDC, _imageInfo->hBit);
+	_imageInfo->frameWidth = width;
+	_imageInfo->frameHeight = height;
 	_imageInfo->width = width;
 	_imageInfo->height = height;
 
@@ -136,6 +140,8 @@ HRESULT image::init(const char* fileName, float x, float y, int width, int heigh
 	_imageInfo->hMemDC = CreateCompatibleDC(hdc);	//빈 DC영역을 생성
 	_imageInfo->hBit = (HBITMAP)LoadImage(_hInstance, fileName, IMAGE_BITMAP, width, height, LR_LOADFROMFILE);
 	_imageInfo->hOBit = (HBITMAP)SelectObject(_imageInfo->hMemDC, _imageInfo->hBit);
+	_imageInfo->frameWidth = width;
+	_imageInfo->frameHeight = height;
 	_imageInfo->x = x;
 	_imageInfo->y = y;
 	_imageInfo->width = width;
@@ -378,7 +384,7 @@ void image::render(HDC hdc, int destX, int destY)
 			_imageInfo->hMemDC, 0, 0, SRCCOPY);
 	}
 }
-							//뿌릴 곳X, Y           뿌려올 곳 X, Y(left, top)  가로,        세로
+//뿌릴 곳X, Y           뿌려올 곳 X, Y(left, top)  가로,        세로
 void image::render(HDC hdc, int destX, int destY, int sourX, int sourY, int sourWidth, int sourHeight)
 {
 	if (_trans)

@@ -112,6 +112,9 @@ void GameScene::addImage()
 	IMAGEMANAGER->addFrameImage("slime_Jump",		"image/enemy/slime/Slime_jump.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
 
 	//=======================================================================================================================================================
+	
+	IMAGEMANAGER->addFrameImage("Æø¹ß", "Img\\etc\\explosion_1.bmp", 448, 64, 7, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("test", "Img\\etc\\tes.bmp", 40, 224, 1, 7, true, RGB(255, 0, 255));
 }
 void GameScene::keyInput()
 {

@@ -2,16 +2,17 @@
 #include "gameNode.h"
 #include "Map.h"
 #include "vaganteStructEnum.h"
+#include "FireBall.h"
 /*
 !vaganteStructEnum.h에서 선언했으니 참조만 할 것!
-enum ENEMYSTATE {
-	ENEMYSTATE_IDLE,
-	ENEMYSTATE_MOVING,
-	ENEMYSTATE_ATTACKING,
-	ENEMYSTATE_HIT,
-	ENEMYSTATE_JUMPING,
-	ENEMYSTATE_FALLING,
-	ENEMYSTATE_DEAD
+enum BossSTATE {
+BossSTATE_IDLE,
+BossSTATE_MOVING,
+BossSTATE_ATTACKING,
+BossSTATE_HIT,
+BossSTATE_JUMPING,
+BossSTATE_FALLING,
+BossSTATE_DEAD
 };
 
 struct tagStat {
@@ -36,24 +37,26 @@ int spd;	//이속
 
 class Player;
 class UI;
-class Enemy : public gameNode
+class Boss : public gameNode
 {
-protected:
+private:
 	image* _image;														//이미지
 	ENEMYSTATE _state;													//상태
 	Player* _player;													//플레이어 정보
 	UI* _ui;															//ui
-	Map* _map;															//적 인식용 맵정보
 	tagStatusEffect _statusEffect[5];									//상태이상
 	tagStat _statistics;												//스탯
 	int _currentFrameX, _currentFrameY;									//프레임
 	RECT _rc;															//피격범위
 	float _pointx, _pointy;												//좌표
-	float _xspeed, _yspeed, _angle, _gravity;							//넉백용 x,y축 이동 속도, 각도, 중력
+	float _xspeed, _yspeed;												//x,y축 이동 속도
 	int _money;															//몬스터 죽으면 나올 동전 갯수
-	mapInfo _upL, _upM, _upR, _midL, _midM, _midR, _botL, _botM, _botR;	//현재좌표기준 9개 타일
+	Map* _map;															//맵 정보
 	bool _isFindPlayer;													//플레이어를 발견한 상태인지
+	FireBall* _fireball;
 
+	int test1;
+	int test2;
 public:
 	HRESULT init();
 	virtual HRESULT init(POINT point);
@@ -68,12 +71,13 @@ public:
 	virtual void attack();			// 공격
 
 
-	//공격 받았을 시 (데미지만)
+									//공격 받았을 시 (데미지만)
 	void getDamaged(int damage) { _statistics.hp -= damage; }
 	//공격 받았을 시 (데미지&넉백)
-	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _angle = angle; _gravity = 0; }
+	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; }
 	//상태이상
 	void addStatusEffect(tagStatusEffect statuseffect);
+
 
 	//설정자&접근자
 	int getHP() { return _statistics.hp; }
@@ -88,13 +92,12 @@ public:
 	void setXSpeed(float xspeed) { _xspeed = xspeed; }
 	float getYSpeed() { return _yspeed; }
 	void setYSpeed(float yspeed) { _yspeed = yspeed; }
-	void setTileInfo(mapInfo ul, mapInfo um, mapInfo ur, mapInfo ml, mapInfo mm, mapInfo mr, mapInfo bl, mapInfo bm, mapInfo br) { _upL = ul; _upM = um; _upR = ur; _midL = ml; _midM = mm; _midR = mr; _botL = bl; _botM = bm; _botR = br; }
-	void setMap(Map* map) { _map = map; }
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
+	void setMapAddressLink(Map* map) { _map = map; }
 
-	Enemy();
-	~Enemy();
+	Boss();
+	~Boss();
 };
 

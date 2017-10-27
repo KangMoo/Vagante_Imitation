@@ -70,6 +70,15 @@
     <Filter Include="MainGame\UI">
       <UniqueIdentifier>{85e7430f-ea28-4e8f-bcfe-457721d71ca6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MainGame\Enemy\Boss">
+      <UniqueIdentifier>{3fca5b01-4eb4-4773-880d-ac13e8164e69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MainGame\Enemy\Boss\FireBall">
+      <UniqueIdentifier>{d4fdb1c1-95a0-4799-852f-49ceff83ad25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MainGame\Enemy\Enemy">
+      <UniqueIdentifier>{4ac6a8ac-298c-4da9-ae4f-a9d44fbfe3de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -150,9 +159,6 @@
     <ClInclude Include="action.h">
       <Filter>2DGameFramework\action</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>MainGame\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="EnemyManager.h">
       <Filter>MainGame\Enemy</Filter>
     </ClInclude>
@@ -177,8 +183,19 @@
     <ClInclude Include="UI.h">
       <Filter>MainGame\UI</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="maneater.h">
       <Filter>MainGame\Enemy</Filter>
+=======
+    <ClInclude Include="FireBall.h">
+      <Filter>MainGame\Enemy\Boss\FireBall</Filter>
+    </ClInclude>
+    <ClInclude Include="Boss.h">
+      <Filter>MainGame\Enemy\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+>>>>>>> origin/enemy
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -248,9 +265,6 @@
     <ClCompile Include="Player.cpp">
       <Filter>MainGame\Player</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>MainGame\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="EnemyManager.cpp">
       <Filter>MainGame\Enemy</Filter>
     </ClCompile>
@@ -269,8 +283,19 @@
     <ClCompile Include="UI.cpp">
       <Filter>MainGame\UI</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="maneater.cpp">
       <Filter>MainGame\Enemy</Filter>
+=======
+    <ClCompile Include="FireBall.cpp">
+      <Filter>MainGame\Enemy\Boss\FireBall</Filter>
+    </ClCompile>
+    <ClCompile Include="Boss.cpp">
+      <Filter>MainGame\Enemy\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+>>>>>>> origin/enemy
     </ClCompile>
   </ItemGroup>
 </Project>
