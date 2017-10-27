@@ -177,6 +177,9 @@
     <ClInclude Include="UI.h">
       <Filter>MainGame\UI</Filter>
     </ClInclude>
+    <ClInclude Include="maneater.h">
+      <Filter>MainGame\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -265,6 +268,9 @@
     </ClCompile>
     <ClCompile Include="UI.cpp">
       <Filter>MainGame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="maneater.cpp">
+      <Filter>MainGame\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
