@@ -50,13 +50,14 @@ protected:
 	RECT _rc;															//피격범위
 	float _pointx, _pointy;												//좌표
 	float _xspeed, _yspeed, _angle, _gravity;							//넉백용 x,y축 이동 속도, 각도, 중력
+	float _minCog, _maxCog;												//몬스터 최초 인식범위, 한계 인식범위
 	int _money;															//몬스터 죽으면 나올 동전 갯수
 	mapInfo _upL, _upM, _upR, _midL, _midM, _midR, _botL, _botM, _botR;	//현재좌표기준 9개 타일
 	bool _isFindPlayer;													//플레이어를 발견한 상태인지
 
 public:
 	HRESULT init();
-	virtual HRESULT init(POINT point);
+	virtual HRESULT init(POINT point, float minCog, float maxCog);
 	void release();
 	void update();
 	void render();
@@ -66,7 +67,7 @@ public:
 	virtual void move();			// 이동관련함수
 	virtual void jump();			// 점프
 	virtual void attack();			// 공격
-
+	virtual void frameUpdate() {}	// 프레임 업데이트
 
 	//공격 받았을 시 (데미지만)
 	void getDamaged(int damage) { _statistics.hp -= damage; }
