@@ -15,7 +15,7 @@ mainGame::~mainGame()
 HRESULT mainGame::init(void)
 {
 	gameNode::init(true);
-
+	
 	SCENEMANAGER->addScene("∞‘¿”æ¿", new GameScene);
 	SCENEMANAGER->changeScene("∞‘¿”æ¿");
 	return S_OK;
