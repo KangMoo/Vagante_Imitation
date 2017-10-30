@@ -192,6 +192,9 @@
     <ClInclude Include="Enemy.h">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="manEater.h">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -285,6 +288,9 @@
       <Filter>MainGame\Enemy\Boss</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="manEater.cpp">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
