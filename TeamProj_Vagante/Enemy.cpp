@@ -26,6 +26,30 @@ HRESULT Enemy::init(POINT point, float minCog, float maxCog)
 	_pointx = point.x;
 	_pointy = point.y;
 
+	_frameFPS = 0;
+	_frameTime = 0;
+	_currentFrameX = _currentFrameY = 0;
+
+	_xspeed = _yspeed = _angle = _gravity = 0;
+
+	_money = 0;
+
+	_isFindPlayer = false;
+	//_statusEffect[5]
+	for (int i = 0; i < 5; i++)
+	{
+		_statusEffect[i].damage = 0;
+		_statusEffect[i].leftTime = 0;
+		_statusEffect[i].type = STATUSEFFECT_NULL;
+	}
+
+	memset(&_statistics, 0, sizeof(tagStat));
+
+	_state = ENEMYSTATE_IDLE;
+	
+	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
+	_attackRect = RectMakeCenter(_pointx, _pointy, 1, 1);
+
 	return S_OK;
 }
 void Enemy::release()
@@ -34,6 +58,8 @@ void Enemy::release()
 }
 void Enemy::update() 
 {
+	attRectClear();
+	statusEffect();
 
 	//넉백처리, x값은 0이 아닐것이라 가정하고 연산
 	if (_xspeed != 0)
@@ -103,7 +129,7 @@ void Enemy::update()
 		attack();
 
 
-		//만약 둘 사이의 거리가 250 이상으로 벌어지면 쫓는걸 포기한다
+		//만약 둘 사이의 거리가 한계 인식범위 이상으로 벌어지면 쫓는걸 포기한다
 		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) > _maxCog)
 			_isFindPlayer = false;
 	}
@@ -113,7 +139,7 @@ void Enemy::update()
 		//프레임워크 수정에 의하여 _PlayerPoint를 _Player->getPoint()로 변경했습니다~~//
 		///////////////////////////////////////////////////////////////////////////////////////
 
-		//최초 인식상태의 몬스터와 플레이어의 거리가 150 사이일 때 연산 시작
+		//최초 인식상태의 몬스터와 플레이어의 거리가 기본 인식범위 사이일 때 연산 시작
 		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < _minCog)
 		{
 			if (static_cast<int>(_pointx / TILESIZE) == static_cast<int>(_player->getPoint().x / TILESIZE) &&
@@ -125,11 +151,21 @@ void Enemy::update()
 			else
 			{
 				int count = 0;
+				float x = 0;
+				float y = 0;
 				float dist = getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
 				float angle = getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
 				for (int i = 0; i < dist; i++)
 				{
-					if (static_cast<int>(_map->getMapInfo(_pointx + i*cosf(angle), _pointy + i*(-sinf(angle))).type == 1))
+					float ox = (_pointx + i*cosf(angle)) / TILESIZE;
+					float oy = (_pointy + i*-sinf(angle)) / TILESIZE;
+					
+					if (ox == x && oy == y) continue;
+
+					x = ox;
+					y = oy;
+						
+					if (static_cast<int>(_map->getMapInfo(y, x).type == 1))
 						count++;
 				}
 				if (count >= 1) _isFindPlayer = false;
@@ -180,6 +216,27 @@ void Enemy::addStatusEffect(tagStatusEffect statuseffect)
 		if (_statusEffect[i].type == NULL)
 		{
 			_statusEffect[i] = statuseffect;
+			break;
+		}
+	}
+}
+
+
+void Enemy::statusEffect()
+{
+	for (int i = 0; i < 5; i++)
+	{
+		if (_statusEffect[i].type == NULL) continue;
+
+		switch (_statusEffect[i].type)
+		{
+		case STATUSEFFECT_POISON:
+			break;
+		case STATUSEFFECT_FIRE:
+			break;
+		case STATUSEFFECT_STUN:
+			break;
+		case STATUSEFFECT_HEAL:
 			break;
 		}
 	}
