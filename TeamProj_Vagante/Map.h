@@ -32,7 +32,9 @@ struct mapInfo {
 class Map : public gameNode
 {
 private:
+	image* _trapImg;
 	image* _mapImg;
+	image* _BgImg;
 	mapInfo _mapInfo[40][58];
 	EnemyManager* _em;
 	Player* _player;
