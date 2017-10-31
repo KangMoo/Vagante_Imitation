@@ -114,6 +114,7 @@
     <ClInclude Include="UI.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vaganteStructEnum.h" />
+    <ClInclude Include="worm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="action.cpp" />
@@ -150,6 +151,7 @@
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="winMain.cpp" />
+    <ClCompile Include="worm.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
