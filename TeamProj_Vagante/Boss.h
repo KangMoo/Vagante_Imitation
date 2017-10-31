@@ -74,7 +74,7 @@ public:
 	virtual void move();			// 이동관련함수
 	virtual void jump();			// 점프
 	virtual void attack();			// 공격
-	virtual void frameUpdate() {}	// 프레임 업데이트
+	virtual void frameUpdate();		// 프레임 업데이트
 
 
 									//공격 받았을 시 (데미지만)

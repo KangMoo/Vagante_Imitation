@@ -16,14 +16,10 @@ HRESULT GameScene::init()
 
 	addImage();
 	_em = new EnemyManager;
-	_em->init();
 	_player = new Player;
-	_player->init(PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
 	_map = new Map;
-	_map->init();
 	_ui = new UI;
-	_ui->init();
-
+	
 	//상호참조 연결
 	_map->setEnemyManagerAddressLink(_em);
 	_map->setPlayerAddressLink(_player);
@@ -37,6 +33,12 @@ HRESULT GameScene::init()
 	_ui->setPlayerAddressLink(_player);
 	_ui->setMapAddressLink(_map);
 	_ui->setEnemyManagerAddressLink(_em);
+
+	_ui->init();
+	_map->init();
+	_player->init(PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	_em->init();
+
 	_UsingStatusWindow = false;
 	_camera = PointMake(WINSIZEX, WINSIZEY);
 
