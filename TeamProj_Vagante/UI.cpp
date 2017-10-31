@@ -1242,29 +1242,29 @@ void UI::setCoin(int coin)
 void UI::addImg()
 {
 	//============================ U I ========================================
-	IMAGEMANAGER->addImage("bag", "img/ui/bag.bmp", 228, 192, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("stat", "img/ui/stat.bmp", 228, 192, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("lvl", "img/ui/lvl.bmp", 228, 192, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("selectOn", "img/ui/selectOn.bmp", 224, 18, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("selectOff", "img/ui/selectOff.bmp", 224, 18, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("hpBarBottom", "img/ui/hpBarBottom.bmp", 224, 26, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("money_icon", "img/ui/money_icon.bmp", 32, 32, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("money_background", "img/ui/money_background.bmp", 128, 32, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("equip_slot", "img/ui/equip_slot.bmp", 176, 44, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("player_icon", "img/ui/player_icon.bmp", 28, 28, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("skil", "img/ui/skill.bmp", 228, 192, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("lvl_icon", "img/ui/lvl_icon.bmp", 224, 28, 8, 1, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("cursor_idle", "img/ui/cursor_idle.bmp", 144, 36, 4, 1, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("cursor_move", "img/ui/cursor_move.bmp", 144, 36, 4, 1, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("plus", "img/ui/plus.bmp", 48, 48, 3, 3, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("bag", "Img/ui/bag.bmp", 228, 192, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("stat", "Img/ui/stat.bmp", 228, 192, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("lvl", "Img/ui/lvl.bmp", 228, 192, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("selectOn", "Img/ui/selectOn.bmp", 224, 18, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("selectOff", "Img/ui/selectOff.bmp", 224, 18, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("hpBarBottom", "Img/ui/hpBarBottom.bmp", 224, 26, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("money_icon", "Img/ui/money_icon.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("money_background", "Img/ui/money_background.bmp", 128, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("equip_slot", "Img/ui/equip_slot.bmp", 176, 44, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("player_icon", "Img/ui/player_icon.bmp", 28, 28, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("skil", "Img/ui/skill.bmp", 228, 192, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("lvl_icon", "Img/ui/lvl_icon.bmp", 224, 28, 8, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("cursor_idle", "Img/ui/cursor_idle.bmp", 144, 36, 4, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("cursor_move", "Img/ui/cursor_move.bmp", 144, 36, 4, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("plus", "Img/ui/plus.bmp", 48, 48, 3, 3, true, RGB(255, 0, 255));
 	//========================= F O N T ========================================
-	IMAGEMANAGER->addFrameImage("coin_number", "img/ui/font/number.bmp", 416, 96, 13, 3, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("letter", "img/ui/font/letter_font.bmp", 270, 180, 27, 15, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("inputImage", "img/ui/font/inputImage.bmp", 640, 640, 10, 10, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("coin_number", "Img/ui/font/number.bmp", 416, 96, 13, 3, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("letter", "Img/ui/font/letter_font.bmp", 270, 180, 27, 15, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("inputImage", "Img/ui/font/inputImage.bmp", 640, 640, 10, 10, true, RGB(255, 0, 255));
 
 	//========================= I T E M =========================================
-	IMAGEMANAGER->addImage("sword", "img/ui/item/sword.bmp", 40, 40, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("heal", "img/ui/item/heal.bmp", 40, 40, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("sword", "Img/ui/item/sword.bmp", 40, 40, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("heal", "Img/ui/item/heal.bmp", 40, 40, true, RGB(255, 0, 255));
 }
 
 

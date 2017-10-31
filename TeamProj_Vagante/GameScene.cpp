@@ -89,6 +89,8 @@ void GameScene::addImage()
 	IMAGEMANAGER->addImage("bg", "Img\\etc\\temp_bg.bmp", TILESIZE * 58, TILESIZE * 40, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("Æø¹ß", "Img\\etc\\explosion_1.bmp", 448, 64, 7, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("test", "Img\\etc\\tes.bmp", 40, 224, 1, 7, true, RGB(255, 0, 255));
+
+
 }
 void GameScene::keyInput()
 {
