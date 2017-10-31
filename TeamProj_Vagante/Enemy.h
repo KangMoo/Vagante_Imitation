@@ -71,6 +71,8 @@ public:
 	virtual void jump();			// 점프
 	virtual void attack();			// 공격
 	virtual void frameUpdate() {}	// 프레임 업데이트
+	virtual void falling();			// 낙하 처리
+	virtual void rectResize();		// 혹시 rect 사이즈 변경 필요시 여길 통해서
 
 	//공격 받았을 시 (데미지만)
 	void getDamaged(int damage) { _statistics.hp -= damage; }

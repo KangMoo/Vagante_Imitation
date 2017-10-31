@@ -58,10 +58,147 @@ void Enemy::release()
 }
 void Enemy::update() 
 {
+	//공격용 렉트 정리해주는 함수, 만약 벌레같은 애들은 그냥 공격렉트가 똑같으니 그대로 처리
+	//헤더파일에 있으니까 보고 수정 필요하면 재수정할것
 	attRectClear();
+	//상태이상효과 처리
 	statusEffect();
+	//낙하 처리
+	falling();
 
-	//넉백처리, x값은 0이 아닐것이라 가정하고 연산
+	if (_isFindPlayer)
+	{
+		//각자 움직이는 메커니즘이 다르므로 알아서 처리
+		_isFindPlayer = true;
+		move();
+		jump();
+		attack();
+
+
+		//만약 둘 사이의 거리가 한계 인식범위 이상으로 벌어지면 쫓는걸 포기한다
+		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) > _maxCog)
+			_isFindPlayer = false;
+	}
+	else
+	{
+		///////////////////////////////////////////////////////////////////////////////////////
+		//프레임워크 수정에 의하여 _PlayerPoint를 _Player->getPoint()로 변경했습니다~~//
+		///////////////////////////////////////////////////////////////////////////////////////
+
+		//최초 인식상태의 몬스터와 플레이어의 거리가 기본 인식범위 사이일 때 연산 시작
+		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < _minCog)
+		{
+			if (static_cast<int>(_pointx / TILESIZE) == static_cast<int>(_player->getPoint().x / TILESIZE) &&
+				static_cast<int>(_pointy / TILESIZE) == static_cast<int>(_player->getPoint().y / TILESIZE))
+			{
+				//몬스터와 플레이어가 같은 에어리어에 있다면 벽이든 뭐든 처리
+				_isFindPlayer = true;
+			}
+			else
+			{
+				int count = 0;
+				float x = 0;
+				float y = 0;
+				float dist = getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
+				float angle = getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
+				//적과 나 사이에 벽이 있는지 판별한다
+				for (int i = 0; i < dist; i+=TILESIZE)
+				{
+					//만약 지금 검사할 타일이 이미 검사할 타일과 같다면 다음으로 넘어간다
+					float ox = (_pointx + i*cosf(angle)) / TILESIZE;
+					float oy = (_pointy + i*-sinf(angle)) / TILESIZE;
+					
+					if (ox == x && oy == y) continue;
+
+					//다르다면 x, y를 바꿔주고 그 타일을 검사한다
+					x = ox;
+					y = oy;
+						
+					if (static_cast<int>(_map->getMapInfo(y, x).type == 1))
+						count++;
+				}
+				//만약 벽이 하나라도 검출되었다면 인식 못함으로 처리
+				if (count >= 1) _isFindPlayer = false;
+				else _isFindPlayer = true;
+			}
+		}
+	}
+	//프레임 업데이트와 rect는 거리에 관계없이 처리
+	frameUpdate();
+	rectResize();
+}
+void Enemy::render()
+{
+	_image->frameRender(getMemDC(), _rc.left, _rc.top);
+}
+
+//그릴 때	x좌표에 camera.x 만큼
+//			y좌표에 camera.y 만큼 더해주기!!!!
+void Enemy::render(POINT camera)
+{
+	draw(camera);
+}
+void Enemy::draw(POINT camera)
+{
+	//적이 시야에 들어올 때만 렌더링
+	if ((_pointx > camera.x && _pointx < camera.x + WINSIZEX) &&
+		_pointy > camera.y && _pointy < camera.y + WINSIZEY)
+	{
+		_image->frameRender(getMemDC(), _rc.left - camera.x, _rc.top - camera.y);
+	}
+}
+void Enemy::move()
+{
+
+}
+void Enemy::jump()			
+{
+
+}
+void Enemy::attack()		
+{
+
+}
+void Enemy::addStatusEffect(tagStatusEffect statuseffect)
+{
+	//상태이상 추가!
+	for (int i = 0; i < 5; i++)
+	{
+		if (_statusEffect[i].type == NULL)
+		{
+			_statusEffect[i] = statuseffect;
+			break;
+		}
+	}
+}
+
+
+void Enemy::statusEffect()
+{
+	//스테이터스 이상시 효과를 주기위함
+	for (int i = 0; i < 5; i++)
+	{
+		if (_statusEffect[i].type == NULL) continue;
+
+		switch (_statusEffect[i].type)
+		{
+		case STATUSEFFECT_POISON:
+			break;
+		case STATUSEFFECT_FIRE:
+			break;
+		case STATUSEFFECT_STUN:
+			break;
+		case STATUSEFFECT_HEAL:
+			break;
+		}
+	}
+}
+
+void Enemy::falling()
+{
+
+	/*
+	각 몹마다 다른 처리가 필요할 것으로 요망
 	if (_xspeed != 0)
 	{
 		_state = ENEMYSTATE_FALLING;
@@ -120,124 +257,10 @@ void Enemy::update()
 			}
 		}
 	}
+	*/
+}
 
-	if (_isFindPlayer)
-	{
-		_isFindPlayer = true;
-		move();
-		jump();
-		attack();
-
-
-		//만약 둘 사이의 거리가 한계 인식범위 이상으로 벌어지면 쫓는걸 포기한다
-		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) > _maxCog)
-			_isFindPlayer = false;
-	}
-	else
-	{
-		///////////////////////////////////////////////////////////////////////////////////////
-		//프레임워크 수정에 의하여 _PlayerPoint를 _Player->getPoint()로 변경했습니다~~//
-		///////////////////////////////////////////////////////////////////////////////////////
-
-		//최초 인식상태의 몬스터와 플레이어의 거리가 기본 인식범위 사이일 때 연산 시작
-		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < _minCog)
-		{
-			if (static_cast<int>(_pointx / TILESIZE) == static_cast<int>(_player->getPoint().x / TILESIZE) &&
-				static_cast<int>(_pointy / TILESIZE) == static_cast<int>(_player->getPoint().y / TILESIZE))
-			{
-				//몬스터와 플레이어가 같은 에어리어에 있다
-				_isFindPlayer = true;
-			}
-			else
-			{
-				int count = 0;
-				float x = 0;
-				float y = 0;
-				float dist = getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
-				float angle = getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
-				for (int i = 0; i < dist; i++)
-				{
-					float ox = (_pointx + i*cosf(angle)) / TILESIZE;
-					float oy = (_pointy + i*-sinf(angle)) / TILESIZE;
-					
-					if (ox == x && oy == y) continue;
-
-					x = ox;
-					y = oy;
-						
-					if (static_cast<int>(_map->getMapInfo(y, x).type == 1))
-						count++;
-				}
-				if (count >= 1) _isFindPlayer = false;
-				else _isFindPlayer = true;
-			}
-		}
-	}
-
-	frameUpdate();
+void Enemy::rectResize()
+{
 	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
-}
-void Enemy::render()
-{
-	_image->frameRender(getMemDC(), _rc.left, _rc.top);
-}
-
-//그릴 때	x좌표에 camera.x 만큼
-//			y좌표에 camera.y 만큼 더해주기!!!!
-void Enemy::render(POINT camera)
-{
-	draw(camera);
-}
-void Enemy::draw(POINT camera)
-{
-	if ((_pointx > camera.x && _pointx < camera.x + WINSIZEX) &&
-		_pointy > camera.y && _pointy < camera.y + WINSIZEY)
-	{
-		_image->frameRender(getMemDC(), _rc.left - camera.x, _rc.top - camera.y);
-	}
-}
-void Enemy::move()
-{
-
-}
-void Enemy::jump()			
-{
-
-}
-void Enemy::attack()		
-{
-
-}
-void Enemy::addStatusEffect(tagStatusEffect statuseffect)
-{
-	//상태이상 추가!
-	for (int i = 0; i < 5; i++)
-	{
-		if (_statusEffect[i].type == NULL)
-		{
-			_statusEffect[i] = statuseffect;
-			break;
-		}
-	}
-}
-
-
-void Enemy::statusEffect()
-{
-	for (int i = 0; i < 5; i++)
-	{
-		if (_statusEffect[i].type == NULL) continue;
-
-		switch (_statusEffect[i].type)
-		{
-		case STATUSEFFECT_POISON:
-			break;
-		case STATUSEFFECT_FIRE:
-			break;
-		case STATUSEFFECT_STUN:
-			break;
-		case STATUSEFFECT_HEAL:
-			break;
-		}
-	}
 }
