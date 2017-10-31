@@ -32,6 +32,8 @@ HRESULT Boss::init(POINT point)
 	_fireball = new FireBall;
 	_fireball->init(100, 1000, "폭발");
 
+	_minCog = 150;
+	_maxCog = 1500;
 
 	
 	return S_OK;
@@ -42,6 +44,9 @@ void Boss::release()
 }
 void Boss::update()
 {
+	attRectClear();
+	statusEffect();
+
 	_fireball->setMapAddressLink(_map);
 	_fireball->setPlayerAddressLink(_player);
 	if (_isFindPlayer)
@@ -51,9 +56,8 @@ void Boss::update()
 		jump();
 		attack();
 
-		_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 
-		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) > 150)
+		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) > _maxCog)
 			_isFindPlayer = false;
 	}
 	else
@@ -62,27 +66,37 @@ void Boss::update()
 		//프레임워크 수정에 의하여 _PlayerPoint를 _Player->getPoint()로 변경했습니다~~//
 		///////////////////////////////////////////////////////////////////////////////////////
 
-		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 50)
+		//최초 인식상태의 몬스터와 플레이어의 거리가 기본 인식범위 사이일 때 연산 시작
+		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < _minCog)
 		{
-			if (_pointx < _player->getPoint().x && _pointy < _player->getPoint().y)
+			if (static_cast<int>(_pointx / TILESIZE) == static_cast<int>(_player->getPoint().x / TILESIZE) &&
+				static_cast<int>(_pointy / TILESIZE) == static_cast<int>(_player->getPoint().y / TILESIZE))
 			{
-				//몬스터가 플레이어보다 왼쪽에 있고 위쪽에 있다
-			}
-			else if (_pointx < _player->getPoint().x && _pointy > _player->getPoint().y)
-			{
-				//몬스터가 플레이어보다 왼쪽에 있고 아래쪽에 있다
-			}
-			else if (_pointx > _player->getPoint().x && _pointy < _player->getPoint().y)
-			{
-				//몬스터가 플레이어보다 오른쪽에 있고 위쪽에 있다
-			}
-			else if (_pointx > _player->getPoint().x && _pointy > _player->getPoint().y)
-			{
-				//몬스터가 플레이어보다 오른쪽에 있고 아래쪽에 있다
+				//몬스터와 플레이어가 같은 에어리어에 있다
+				_isFindPlayer = true;
 			}
 			else
 			{
+				int count = 0;
+				float x = 0;
+				float y = 0;
+				float dist = getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
+				float angle = getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
+				for (int i = 0; i < dist; i++)
+				{
+					float ox = (_pointx + i*cosf(angle)) / TILESIZE;
+					float oy = (_pointy + i*-sinf(angle)) / TILESIZE;
 
+					if (ox == x && oy == y) continue;
+
+					x = ox;
+					y = oy;
+
+					if (static_cast<int>(_map->getMapInfo(y, x).type == 1))
+						count++;
+				}
+				if (count >= 1) _isFindPlayer = false;
+				else _isFindPlayer = true;
 			}
 		}
 	}
@@ -93,6 +107,8 @@ void Boss::update()
 	}
 	_fireball->update();
 
+	frameUpdate();
+	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 	//~test
 }
 void Boss::render()
@@ -108,7 +124,11 @@ void Boss::render(POINT camera)
 }
 void Boss::draw(POINT camera)
 {
+	if((_pointx > camera.x && _pointx < camera.x + WINSIZEX) &&
+		(_pointy > camera.y && _pointy < camera.y + WINSIZEY))
+		_image->frameRender(getMemDC(), _rc.left - camera.x, _rc.top - camera.y);
 	_fireball->render(camera);
+	
 }
 void Boss::move()
 
@@ -137,4 +157,29 @@ void Boss::addStatusEffect(tagStatusEffect statuseffect)
 			break;
 		}
 	}
+}
+
+void Boss::statusEffect()
+{
+	for (int i = 0; i < 5; i++)
+	{
+		if (_statusEffect[i].type == NULL) continue;
+
+		switch (_statusEffect[i].type)
+		{
+		case STATUSEFFECT_POISON:
+			break;
+		case STATUSEFFECT_FIRE:
+			break;
+		case STATUSEFFECT_STUN:
+			break;
+		case STATUSEFFECT_HEAL:
+			break;
+		}
+	}
+}
+
+void Boss::frameUpdate()
+{
+
 }

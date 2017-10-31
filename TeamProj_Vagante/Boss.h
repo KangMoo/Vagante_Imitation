@@ -55,6 +55,11 @@ private:
 	bool _isFindPlayer;													//플레이어를 발견한 상태인지
 	FireBall* _fireball;
 
+	int _frameTime, _frameFPS;											//프레임 변화용
+	float _minCog, _maxCog;												//몬스터 최초 인식범위, 한계 인식범위
+
+	RECT _attackRect;
+
 	int test1;
 	int test2;
 public:
@@ -69,6 +74,7 @@ public:
 	virtual void move();			// 이동관련함수
 	virtual void jump();			// 점프
 	virtual void attack();			// 공격
+	virtual void frameUpdate() {}	// 프레임 업데이트
 
 
 									//공격 받았을 시 (데미지만)
@@ -96,6 +102,10 @@ public:
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setMapAddressLink(Map* map) { _map = map; }
+
+
+	virtual void attRectClear() { _attackRect = RectMake(_pointx, _pointy, 1, 1); }
+	virtual void statusEffect();
 
 	Boss();
 	~Boss();

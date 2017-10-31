@@ -43,6 +43,7 @@ void EnemyManager::update()
 		(*_viEnemy)->setPlayerAddressLink(_player);
 		(*_viEnemy)->setUiAddressLink(_ui);
 		//enemy에게 상,하,좌,우 타일정보 넘겨주기
+		(*_viEnemy)->setMap(_map);
 		(*_viEnemy)->setTileInfo(
 		_map->getMapInfo(int((*_viEnemy)->getPoint().y) / TILESIZE - 1, int((*_viEnemy)->getPoint().x) / TILESIZE - 1),
 		_map->getMapInfo(int((*_viEnemy)->getPoint().y) / TILESIZE - 1, int((*_viEnemy)->getPoint().x) / TILESIZE),

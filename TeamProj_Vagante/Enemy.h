@@ -43,19 +43,24 @@ protected:
 	ENEMYSTATE _state;													//상태
 	Player* _player;													//플레이어 정보
 	UI* _ui;															//ui
+	Map* _map;															//적 인식용 맵정보
 	tagStatusEffect _statusEffect[5];									//상태이상
 	tagStat _statistics;												//스탯
 	int _currentFrameX, _currentFrameY;									//프레임
 	RECT _rc;															//피격범위
 	float _pointx, _pointy;												//좌표
-	float _xspeed, _yspeed;												//x,y축 이동 속도
+	float _xspeed, _yspeed, _angle, _gravity;							//넉백용 x,y축 이동 속도, 각도, 중력
+	float _minCog, _maxCog;												//몬스터 최초 인식범위, 한계 인식범위
 	int _money;															//몬스터 죽으면 나올 동전 갯수
 	mapInfo _upL, _upM, _upR, _midL, _midM, _midR, _botL, _botM, _botR;	//현재좌표기준 9개 타일
 	bool _isFindPlayer;													//플레이어를 발견한 상태인지
+	int _frameTime, _frameFPS;											//프레임 변화용
+
+	RECT _attackRect;													//플레이어 공격용 렉트
 
 public:
 	HRESULT init();
-	virtual HRESULT init(POINT point);
+	virtual HRESULT init(POINT point, float minCog, float maxCog);
 	void release();
 	void update();
 	void render();
@@ -65,12 +70,14 @@ public:
 	virtual void move();			// 이동관련함수
 	virtual void jump();			// 점프
 	virtual void attack();			// 공격
-
+	virtual void frameUpdate() {}	// 프레임 업데이트
+	virtual void falling();			// 낙하 처리
+	virtual void rectResize();		// 혹시 rect 사이즈 변경 필요시 여길 통해서
 
 	//공격 받았을 시 (데미지만)
 	void getDamaged(int damage) { _statistics.hp -= damage; }
 	//공격 받았을 시 (데미지&넉백)
-	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; }
+	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _angle = angle; _gravity = 0; }
 	//상태이상
 	void addStatusEffect(tagStatusEffect statuseffect);
 
@@ -88,7 +95,11 @@ public:
 	float getYSpeed() { return _yspeed; }
 	void setYSpeed(float yspeed) { _yspeed = yspeed; }
 	void setTileInfo(mapInfo ul, mapInfo um, mapInfo ur, mapInfo ml, mapInfo mm, mapInfo mr, mapInfo bl, mapInfo bm, mapInfo br) { _upL = ul; _upM = um; _upR = ur; _midL = ml; _midM = mm; _midR = mr; _botL = bl; _botM = bm; _botR = br; }
+	void setMap(Map* map) { _map = map; }
 	
+	virtual void attRectClear() { _attackRect = RectMake(_pointx, _pointy, 1, 1); }
+	virtual void statusEffect();
+
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 
