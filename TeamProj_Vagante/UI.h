@@ -24,7 +24,7 @@ enum LETTERFONT
 
 enum ITEMTYPE
 {
-	TYPE_GEAR,
+	TYPE_WEAPON,
 	TYPE_POTION,
 	TYPE_END
 };
@@ -89,7 +89,7 @@ private:
 private:
 	int _count;
 	int _currentHp;
-	int _MaxHp;
+	int _maxHp;
 	int _menuNum;
 	int _currentMoney;
 	int _income;
@@ -99,10 +99,11 @@ private:
 	int _skilNum;
 	int _rankNum;
 	int _lvlPoint;
-	char* _tmp;
-	bool _move;
 	int _inputAlphaSource;
 	int _plusAlphaSource;
+	int _inputGuide;
+	char* _tmp;
+	bool _move;
 
 
 private:
@@ -121,7 +122,6 @@ public:
 	void draw();
 	void explanation();
 	void setItemToBag(ITEMNAME name);
-	void positionChange(int sour, int dest);
 
 	void addImg();
 	void keyControl();
@@ -129,9 +129,11 @@ public:
 	void setCoin(int coin);
 	void repeatIndex(string keyName, int delay);
 	void coinNumberMacro(NUMBERFONT font, float x, float y, int num);
+	void hpTopNumberMacro(float x, float y, int num);
+	void hpBottomNumberMacro(float x, float y, int num);
 	void letterMacro(LETTERFONT font, float x, float y, char *str);
 	void letterMacro(LETTERFONT font, float x, float y, char *str, int alpha);
-
+	void setInputGuide();
 
 	//맵에 아이템 출현~
 	void addItemOnMap(tagItemInfo item);
