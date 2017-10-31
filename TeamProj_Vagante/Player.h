@@ -5,6 +5,16 @@
 class EnemyManager;
 class Map;
 class UI;
+
+#define JUMPPOWERSTART 7
+#define JUMPPOWERMAX 10
+#define FALLPOWERMAX 10
+#define RUNPOWERSTART 1
+#define RUNPOWERMAX 3
+#define DASHPOWER 8
+#define DASHTIME 2.5
+#define HANGSPEED 2
+
 /*
 !vaganteStructEnum.h 선언했으니 참조만 할 것!
 enum PLAYERSTATE {
