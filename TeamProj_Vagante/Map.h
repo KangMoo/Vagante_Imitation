@@ -8,7 +8,8 @@ class UI;
 
 /*
 !vaganteStructEnum.h에서 선언했으니 참조만 할 것!
-enum MAPTILETYPE {
+enum MAPTILETYPE 
+{
 	MAPTILE_NULL,
 	MAPTILE_WALL,
 	MAPTILE_WALL2,
@@ -20,7 +21,8 @@ enum MAPTILETYPE {
 	MAPTILE_TRAP_ROCK
 };
 
-struct mapInfo {
+struct mapInfo 
+{
 	//타일 종류
 	int type;
 	//타일 위치
@@ -29,12 +31,25 @@ struct mapInfo {
 	RECT rc;
 };
 */
+
+struct tagObj
+{
+	image* Image;
+	int FrameX, FrameY;
+	bool _openBox;
+	bool _closeDoor;
+};
+
+
 class Map : public gameNode
 {
 private:
 	image* _trapImg;
 	image* _mapImg;
 	image* _BgImg;
+	tagObj itemBox[2];
+	tagObj Door;
+	
 	mapInfo _mapInfo[40][58];
 	EnemyManager* _em;
 	Player* _player;

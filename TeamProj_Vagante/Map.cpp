@@ -16,7 +16,9 @@ HRESULT Map::init()
 {
 	setTile();
 
-	// ¸Ê ÀÌ¹ÌÁöÀÓ.
+	// ¸Ê ÀÌ¹ÌÁöÀÓ
+	_BgImg = new image;
+	_BgImg->init("Img\\etc\\BackGround.bmp", 1980, 1280, true, RGB(255, 0, 255));
 	_mapImg = new image;
 	_mapImg->init("Img\\etc\\VaganteMap.bmp", 1856, 1280, true, RGB(255, 0, 255));
 	_trapImg = new image;
@@ -82,7 +84,7 @@ void Map::draw(POINT camera)
 {
 	//test~
 //	IMAGEMANAGER->render("bg", getMemDC(), camera.x, camera.y);
-
+	_BgImg->render(getMemDC(), camera.x, camera.y);
 	for (int i = 0; i < 40; i++)
 	{
 		for (int j = 0; j < 58; j++)
@@ -108,6 +110,10 @@ void Map::draw(POINT camera)
 					_mapInfo[i][j].rc.right + camera.x,
 					_mapInfo[i][j].rc.bottom + camera.y);
 			}
+			else if (_mapInfo[i][j].type == 6)
+			{
+				_trapImg->render(getMemDC(), _mapInfo[i][j].rc.left +camera.x, _mapInfo[i][j].rc.top + camera.y);
+			}
 		}
 	}
 	_mapImg->render(getMemDC(), camera.x, camera.y);
@@ -122,6 +128,9 @@ void Map::setTile()
 		3 : MAPTILE_LADDER,
 		4 : MAPTILE_GROUND_CAN_GO_DOWN_1,
 		5 : MAPTILE_GROUND_CAN_GO_DOWN_2
+		6 : TRAP
+		7 : DOOR
+		9 : ITEM BOX
 	*/
 
 	//¸Ê ±¸¼º
@@ -139,7 +148,7 @@ void Map::setTile()
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 0,3,1,1,1, 1,0,0,0,0, 1,0,0,0,0, 0,0,1,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,1,1, 0,0,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 0,3,0,0,1, 1,0,0,0,4, 0,0,0,0,0, 0,0,0,4,0, 1,0,0,0,0, 0,0,1,0,1, 1,0,0,0,0, 0,0,1, 1,1,1,1,1 },
 											 
-		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,3,0,1,1, 1,1,1,0,0, 0,6,6,0,0, 6,0,6,0,1, 1,0,6,0,0, 0,0,1,1,1, 1,0,0,0,0, 0,0,1, 1,1,1,1,1 },
+		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,3,0,1,1, 1,1,1,0,0, 0,6,6,0,0, 6,0,6,0,1, 1,0,6,0,0, 0,7,1,1,1, 1,0,0,0,0, 0,0,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,3,0,1,1, 1,1,1,1,1, 1,1,1,4,4, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,0,0,0, 0,1,1,1,1, 1,1,1,5,5, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 0,0,4,4,4, 4,0,0,1,1, 1,1,1,3,0, 1,1,1,1,0, 0,0,0,0,0, 0,0,1,1,1, 1,1,1,1,1, 1,1,1, 1,1,1,1,1 },
