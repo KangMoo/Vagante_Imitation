@@ -48,8 +48,13 @@ private:
 	image* _mapImg;
 	image* _BgImg;
 	tagObj itemBox[2];
+	tagObj coinBox[10];
 	tagObj Door;
 	
+
+
+
+
 	mapInfo _mapInfo[40][58];
 	EnemyManager* _em;
 	Player* _player;
@@ -64,7 +69,7 @@ public:
 	void draw(POINT camera);
 	
 	void setTile();
-
+	void setObject();
 	mapInfo getMapInfo(int i, int j) { return _mapInfo[i][j]; }
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
