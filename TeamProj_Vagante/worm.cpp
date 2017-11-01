@@ -69,7 +69,7 @@ HRESULT worm::init(POINT point, float minCog, float maxCog)
 	
 	_reverseFrame = false;
 	
-	_moveSpeed = 1;
+	_moveSpeed = 0.5;
 	
 	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 	_attackRect = RectMakeCenter(_pointx, _pointy, 1, 1);
@@ -108,15 +108,15 @@ void worm::move()
 		case 0:
 			if (_isLeft)
 			{
-				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type != 1 &&
-					_map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx - _moveSpeed) / TILESIZE).type != 1)
+				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL)
 				{
 					//벽이 바로 앞과 앞에 아래에도 없을때
 					_whereIsWorm = 1;
 					_image = IMAGEMANAGER->findImage("wormMoveLeft");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.left - _image->getFrameWidth() / 2;
 				}
-				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type == 1)
+				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type == MAPTILE_WALL)
 				{
 					//바닥에서 왼쪽으로 갈 때, 벽이 바로 앞에 있는 경우
 					_whereIsWorm = 3;
@@ -130,15 +130,15 @@ void worm::move()
 			}
 			else
 			{
-				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type != 1 &&
-					_map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx + _moveSpeed) / TILESIZE).type != 1)
+				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx + _moveSpeed) / TILESIZE).type != MAPTILE_WALL)
 				{
 					//벽이 바로 앞과 앞의 아래에도 없을때
 					_whereIsWorm = 3;
 					_image = IMAGEMANAGER->findImage("wormMoveRight");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.right - _image->getFrameWidth() / 2;
 				}
-				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type == 1)
+				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type == MAPTILE_WALL)
 				{
 					//벽이 바로 앞에 없는 경우
 					_whereIsWorm = 1;
@@ -154,15 +154,15 @@ void worm::move()
 		case 1:
 			if (_isLeft)
 			{
-				if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != 1 &&
-					_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE + 1).type != 1)
+				if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE + 1).type != MAPTILE_WALL)
 				{
 					//바로 앞쪽 위에 벽이 없고 그 아래도 없는 경우
 					_whereIsWorm = 2;
 					_image = IMAGEMANAGER->findImage("wormMoveUp");
 					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.top - _image->getFrameHeight() / 2;
 				}
-				else if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == 1)
+				else if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
 				{
 					//바로 앞에 벽이 있을때
 					_whereIsWorm = 0;
@@ -176,15 +176,15 @@ void worm::move()
 			}
 			else
 			{
-				if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != 1 &&
-					_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE - 1).type != 1)
+				if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE - 1).type != MAPTILE_WALL)
 				{
 					//앞에 벽 없고 아래도 벽 없음
 					_whereIsWorm = 0;
 					_image = IMAGEMANAGER->findImage("wormMoveDown");
 					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.bottom + _image->getFrameHeight() / 2;
 				}
-				else if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == 1)
+				else if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
 				{
 					//앞에 벽 있음
 					_whereIsWorm = 2;

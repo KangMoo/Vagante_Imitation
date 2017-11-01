@@ -146,7 +146,7 @@ void Enemy::render(POINT camera)
 void Enemy::draw(POINT camera)
 {
 	//Rectangle(getMemDC(), _pointx - _minCog / 2 + camera.x, _pointy - _minCog / 2 + camera.y, _pointx + _minCog / 2 + camera.x, _pointy + _minCog / 2 + camera.y);
-	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
+	Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
 	_image->frameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y);
 
 	char string[128];
@@ -162,6 +162,7 @@ void Enemy::draw(POINT camera)
 		sprintf(string, "¤¤¤¤");
 		TextOut(getMemDC(), 300, 300, string, strlen(string));
 	}
+
 }
 void Enemy::move()
 {
