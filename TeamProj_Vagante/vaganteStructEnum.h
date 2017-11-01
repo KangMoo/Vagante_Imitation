@@ -77,7 +77,7 @@ struct mapInfo {
 	RECT rc;
 };
 enum PLAYERSTATE {
-	PLAYERSTATE_ILDE,				//일반상태
+	PLAYERSTATE_IDLE,				//일반상태
 	PLAYERSTATE_LOOKING_UP,			//위를 올려다보는 상태
 	PLAYERSTATE_LOOKING_DOWN,		//아래를 내려다보는 상태
 	PLAYERSTATE_MOVING,				//이동

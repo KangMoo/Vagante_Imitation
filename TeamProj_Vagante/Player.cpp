@@ -156,7 +156,7 @@ void Player::keyintput()
 		}
 				
 		switch (_player.state) {
-		case PLAYERSTATE_ILDE:
+		case PLAYERSTATE_IDLE:
 			//올려다보는 모션
 			if (KEYMANAGER->isStayKeyDown(VK_UP))
 				_player.currentFrameX = 1;
@@ -198,12 +198,12 @@ void Player::keyintput()
 			if (KEYMANAGER->isOnceKeyUp(VK_LEFT) && !_player.lookingRight) {
 				_player.currentFrameX = 0;
 				_player.xspeed = 0;
-				_player.state = PLAYERSTATE_ILDE;
+				_player.state = PLAYERSTATE_IDLE;
 			}
 			if (KEYMANAGER->isOnceKeyUp(VK_RIGHT) && _player.lookingRight) {
 				_player.currentFrameX = 0;
 				_player.xspeed = 0;
-				_player.state = PLAYERSTATE_ILDE;
+				_player.state = PLAYERSTATE_IDLE;
 			}
 
 
@@ -458,7 +458,7 @@ void Player::ladder()
 
 void Player::canDown()
 {
-	if ((botM.type == MAPTILE_GROUND_CAN_GO_DOWN_1 || botM.type == MAPTILE_GROUND_CAN_GO_DOWN_2)
+	if ((botM.type == MAPTILE_GROUND_CAN_GO_DOWN_1)
 		&& KEYMANAGER->isStayKeyDown(VK_DOWN) && KEYMANAGER->isStayKeyDown('X')) {
 		_player.state = PLAYERSTATE_FALLING;
 		_player.yspeed = 0;
@@ -533,7 +533,7 @@ void Player::setmaptileInfo()
 			_player.currentFrameX = 8;
 			_player.xspeed = 0;
 			_player.yspeed = 0;
-			_player.state = PLAYERSTATE_ILDE;
+			_player.state = PLAYERSTATE_IDLE;
 		}
 
 		//jump라면 위로 부딪힌 상황일테니 밑으로 튕겨낸다
@@ -546,7 +546,7 @@ void Player::setmaptileInfo()
 
 	//내려갈 수 있는 발판의 경우 밑으로 튕겨낼 필요는 없다
 	
-	case MAPTILE_GROUND_CAN_GO_DOWN_1: case MAPTILE_GROUND_CAN_GO_DOWN_2:
+	case MAPTILE_GROUND_CAN_GO_DOWN_1:
 		//falling일 경우 아래로 부딪힌 상황이라면 위로 보내고 idle로 만든다
 		//하지만 아래에서 접근하면서도 falling 상태일 수도 있다. 이건 플레이어 위치와 속도로 예외처리
 		if (_player.state == PLAYERSTATE_FALLING 
@@ -555,7 +555,7 @@ void Player::setmaptileInfo()
 			_player.currentFrameX = 8;
 			_player.xspeed = 0;
 			_player.yspeed = 0;
-			_player.state = PLAYERSTATE_ILDE;
+			_player.state = PLAYERSTATE_IDLE;
 		}
 	break;
 	}
@@ -564,13 +564,13 @@ void Player::setmaptileInfo()
 	{
 		//아무것도 없을경우
 	case MAPTILE_NULL:	case MAPTILE_LADDER:
-		if (_player.state == PLAYERSTATE_ILDE || _player.state == PLAYERSTATE_MOVING) {
+		if (_player.state == PLAYERSTATE_IDLE || _player.state == PLAYERSTATE_MOVING) {
 			_player.state = PLAYERSTATE_FALLING;
 			_player.yspeed = -3;
 		}
 	break;
 		//벽&땅일경우
-	case MAPTILE_WALL: case MAPTILE_WALL2:  case MAPTILE_GROUND_CAN_GO_DOWN_1: case MAPTILE_GROUND_CAN_GO_DOWN_2:
+	case MAPTILE_WALL: case MAPTILE_WALL2:  case MAPTILE_GROUND_CAN_GO_DOWN_1:
 		//바닥에 착지 할 경우
 		if (isCollision(_player.rc, botM.rc))
 		{
@@ -579,7 +579,7 @@ void Player::setmaptileInfo()
 				_player.currentFrameX = 8;
 				_player.xspeed = 0;
 				_player.yspeed = 0;
-				_player.state = PLAYERSTATE_ILDE;
+				_player.state = PLAYERSTATE_IDLE;
 			}
 			//추가			
 		}
@@ -594,12 +594,12 @@ void Player::setmaptileInfo()
 
 	//버벅거려서 주석 처리함
 
-	if (_player.state != PLAYERSTATE_ILDE && _player.state != PLAYERSTATE_MOVING) {
+	if (_player.state != PLAYERSTATE_IDLE && _player.state != PLAYERSTATE_MOVING) {
 		switch (botR.type)
 		{
 			//아무것도 없을경우
 		case MAPTILE_NULL:	case MAPTILE_LADDER:
-			if (_player.state == PLAYERSTATE_ILDE || _player.state == PLAYERSTATE_MOVING) {
+			if (_player.state == PLAYERSTATE_IDLE || _player.state == PLAYERSTATE_MOVING) {
 				_player.state = PLAYERSTATE_FALLING;
 				_player.yspeed = -3;
 			}
@@ -614,7 +614,7 @@ void Player::setmaptileInfo()
 					_player.currentFrameX = 8;
 					_player.xspeed = 0;
 					_player.yspeed = 0;
-					_player.state = PLAYERSTATE_ILDE;
+					_player.state = PLAYERSTATE_IDLE;
 				}
 				//추가			
 			}
@@ -626,7 +626,7 @@ void Player::setmaptileInfo()
 		{
 			//아무것도 없을경우
 		case MAPTILE_NULL:	case MAPTILE_LADDER:
-			if (_player.state == PLAYERSTATE_ILDE || _player.state == PLAYERSTATE_MOVING) {
+			if (_player.state == PLAYERSTATE_IDLE || _player.state == PLAYERSTATE_MOVING) {
 				_player.state = PLAYERSTATE_FALLING;
 				_player.yspeed = -3;
 			}
@@ -641,7 +641,7 @@ void Player::setmaptileInfo()
 					_player.currentFrameX = 8;
 					_player.xspeed = 0;
 					_player.yspeed = 0;
-					_player.state = PLAYERSTATE_ILDE;
+					_player.state = PLAYERSTATE_IDLE;
 				}
 				//추가			
 			}

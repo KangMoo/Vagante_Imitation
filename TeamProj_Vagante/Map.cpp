@@ -112,6 +112,10 @@ void Map::draw(POINT camera)
 			}
 			else if (_mapInfo[i][j].type == MAPTILE_SPIKE_TRAP)
 			{
+				Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
+					_mapInfo[i][j].rc.top + camera.y,
+					_mapInfo[i][j].rc.right + camera.x,
+					_mapInfo[i][j].rc.bottom + camera.y);
 				_trapImg->render(getMemDC(), _mapInfo[i][j].rc.left +camera.x, _mapInfo[i][j].rc.top + camera.y);
 			}
 		}
