@@ -126,7 +126,7 @@ void UI::update()
 void UI::render()
 {
 	draw();
-	explanation();
+	if(_active) explanation();
 
 }
 void UI::draw()
@@ -1450,7 +1450,7 @@ void UI::keyControl()
 
 	//if (KEYMANAGER->isOnceKeyDown('T'))
 	//{
-	//	setItemToBag(NAME_SWORD);
+	//	setItemToBag(NAME_HEAL);
 	//}
 
 	//if (KEYMANAGER->isOnceKeyDown('Y'))

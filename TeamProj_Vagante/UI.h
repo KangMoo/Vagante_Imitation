@@ -146,7 +146,7 @@ public:
 
 	//설정자 접근자
 	bool getActive() { return _active; }
-	void setActive(bool active) { _active = active; }
+	void setActive(bool active) { _active = active; setInputGuide(); }
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
