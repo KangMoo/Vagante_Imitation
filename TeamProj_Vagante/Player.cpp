@@ -374,9 +374,9 @@ void Player::keyintput()
 		case PLAYERSTATE_HOLDING_LADDER:
 			if (KEYMANAGER->isStayKeyDown(VK_UP) || KEYMANAGER->isStayKeyDown(VK_DOWN))
 			{
-				if (KEYMANAGER->isStayKeyDown(VK_UP))
+				if (KEYMANAGER->isStayKeyDown(VK_UP) && upM.type == MAPTILE_LADDER)
 					_player.yspeed = 5;
-				if (KEYMANAGER->isStayKeyDown(VK_DOWN))
+				if (KEYMANAGER->isStayKeyDown(VK_DOWN) && botM.type == MAPTILE_LADDER)
 					_player.yspeed = -5;
 			}
 			else
@@ -447,7 +447,7 @@ void Player::ladder()
 {
 	if (midM.type == MAPTILE_LADDER && KEYMANAGER->isOnceKeyDown(VK_UP))
 	{
-		_player.pointx = midM.point.x;
+		_player.pointx = midM.rc.left + (midM.rc.right - midM.rc.left) * 0.5;
 		_player.state = PLAYERSTATE_HOLDING_LADDER;
 		_player.xspeed = 0;
 		_player.yspeed = 0;
@@ -509,6 +509,10 @@ void Player::setmaptileInfo()
 		botL = _map->getMapInfo(_curTileY + 1, _curTileX - 1);
 		botM = _map->getMapInfo(_curTileY + 1, _curTileX);
 		botR = _map->getMapInfo(_curTileY + 1, _curTileX + 1);
+
+		_prevTileX = _curTileX;
+		_prevTileY = _curTileY;
+
 	}
 
 	//타일 활용 예시

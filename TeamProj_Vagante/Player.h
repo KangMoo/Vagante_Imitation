@@ -79,8 +79,8 @@ private:
 
 
 	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;// 위치 정보
-	int _curTileX, _curTileY;
-	int _prevTileX, _prevTileY;
+	int _curTileX, _curTileY; // 현재 타일 위치
+	int _prevTileX, _prevTileY; // 이전 타일 위치
 
 
 
