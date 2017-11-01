@@ -4,12 +4,7 @@
 #include "Map.h"
 #include "UI.h"
 
-//그건인정
-
-//흠..
-
-//이야 머단해!!
-
+// Created by YOOJOOWON 17.11
 
 Player::Player()
 {
@@ -35,6 +30,19 @@ HRESULT Player::init(POINT point)
 	_player.gravity = 0.3;
 
 	_player.state = PLAYERSTATE_FALLING;
+
+	_curTileX = _prevTileX = int(_player.pointx) / TILESIZE;
+	_curTileY = _prevTileY = int(_player.pointy) / TILESIZE;
+
+	upL = _map->getMapInfo(_curTileY - 1, _curTileX - 1);
+	upM = _map->getMapInfo(_curTileY - 1, _curTileX);
+	upR = _map->getMapInfo(_curTileY - 1, _curTileX + 1);
+	midL = _map->getMapInfo(_curTileY, _curTileX - 1);
+	midM = _map->getMapInfo(_curTileY, _curTileX);
+	midR = _map->getMapInfo(_curTileY, _curTileX + 1);
+	botL = _map->getMapInfo(_curTileY + 1, _curTileX - 1);
+	botM = _map->getMapInfo(_curTileY + 1, _curTileX);
+	botR = _map->getMapInfo(_curTileY + 1, _curTileX + 1);
 
 	for (int i = 0; i < 5; i++)_player.statusEffect[i].type = STATUSEFFECT_NULL;
 
@@ -90,14 +98,19 @@ void Player::draw(POINT camera)
 	//test
 	Rectangle(getMemDC(), _player.rc.left + camera.x, _player.rc.top + camera.y, _player.rc.right + camera.x, _player.rc.bottom + camera.y);
 
+	Rectangle(getMemDC(), 100, 100, 200, 200);
+	char str[256];
+	sprintf(str, "%f", _player.yspeed);
+	TextOut(getMemDC(), 100, 100, str, strlen(str));
+	
+
+	
 }
 void Player::move()
 {
 	//이동
 	_player.pointx += _player.xspeed;
 	_player.pointy -= _player.yspeed;
-
-
 }
 
 void Player::keyintput()
@@ -170,6 +183,9 @@ void Player::keyintput()
 				_player.state = PLAYERSTATE_JUMPING;
 			}
 
+			ladder();
+			canDown();
+
 			break;
 		case PLAYERSTATE_LOOKING_UP:
 			break;
@@ -212,12 +228,15 @@ void Player::keyintput()
 			}
 
 
+			ladder();
+			canDown();
+			
 			break;
 		case PLAYERSTATE_JUMPING:
 			// 중력
 			_player.yspeed -= 0.5;
 
-
+			// 꾹 누르면 더 높이 올라감
 			if (KEYMANAGER->isStayKeyDown('X')) {
 				_player.yspeed += 0.2;
 			}
@@ -228,7 +247,6 @@ void Player::keyintput()
 				if (_player.xspeed > RUNPOWERMAX)
 					_player.xspeed = RUNPOWERMAX;
 			}
-
 			if (KEYMANAGER->isStayKeyDown(VK_LEFT)) {
 				_player.xspeed -= 0.5;
 				if (_player.xspeed < -RUNPOWERMAX)
@@ -242,8 +260,13 @@ void Player::keyintput()
 				_player.xspeed += 0.2;
 
 
+			//FALLING 상태로 변경
 			if (_player.yspeed < 0)
 				_player.state = PLAYERSTATE_FALLING;
+			
+
+			ladder();
+			
 			break;
 
 		case PLAYERSTATE_FALLING:
@@ -272,10 +295,11 @@ void Player::keyintput()
 				_player.xspeed -= 0.2;
 			else if (_player.xspeed < 0)
 				_player.xspeed += 0.2;
+
+
+			ladder();
 			break;
-
-
-
+			
 
 		case PLAYERSTATE_ATTACKING_1:
 
@@ -348,6 +372,15 @@ void Player::keyintput()
 			break;
 
 		case PLAYERSTATE_HOLDING_LADDER:
+			if (KEYMANAGER->isStayKeyDown(VK_UP) || KEYMANAGER->isStayKeyDown(VK_DOWN))
+			{
+				if (KEYMANAGER->isStayKeyDown(VK_UP))
+					_player.yspeed = 5;
+				if (KEYMANAGER->isStayKeyDown(VK_DOWN))
+					_player.yspeed = -5;
+			}
+			else
+				_player.yspeed = 0;
 
 			break;
 		case PLAYERSTATE_CHEKINGINVENTORY:
@@ -409,6 +442,32 @@ void Player::attack()
 {
 	//추가
 }
+
+void Player::ladder()
+{
+	if (midM.type == MAPTILE_LADDER && KEYMANAGER->isOnceKeyDown(VK_UP))
+	{
+		_player.pointx = midM.point.x;
+		_player.state = PLAYERSTATE_HOLDING_LADDER;
+		_player.xspeed = 0;
+		_player.yspeed = 0;
+		_player.currentFrameX = 0;
+	}
+
+}
+
+void Player::canDown()
+{
+	if ((botM.type == MAPTILE_GROUND_CAN_GO_DOWN_1 || botM.type == MAPTILE_GROUND_CAN_GO_DOWN_2)
+		&& KEYMANAGER->isStayKeyDown(VK_DOWN) && KEYMANAGER->isStayKeyDown('X')) {
+		_player.state = PLAYERSTATE_FALLING;
+		_player.yspeed = 0;
+		_player.pointy = botM.rc.top + (_player.rc.bottom - _player.rc.top) * 0.25;
+	}
+
+
+}
+
 void Player::addStatusEffect(tagStatusEffect statuseffect)
 {
 	//상태이상 추가!
@@ -437,29 +496,65 @@ void Player::setmaptileInfo()
 	MAPTILE_TRAP_ROCK
 	*/
 	//캐릭터 기준으로 9개의 타일 정보 받아오기
-	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;
-	upL = _map->getMapInfo(int(_player.pointy) / TILESIZE - 1, int(_player.pointx) / TILESIZE - 1);
-	upM = _map->getMapInfo(int(_player.pointy) / TILESIZE - 1, int(_player.pointx) / TILESIZE);
-	upR = _map->getMapInfo(int(_player.pointy) / TILESIZE - 1, int(_player.pointx) / TILESIZE + 1);
-	midL = _map->getMapInfo(int(_player.pointy) / TILESIZE, int(_player.pointx) / TILESIZE - 1);
-	midM = _map->getMapInfo(int(_player.pointy) / TILESIZE, int(_player.pointx) / TILESIZE);
-	midR = _map->getMapInfo(int(_player.pointy) / TILESIZE, int(_player.pointx) / TILESIZE + 1);
-	//botL = _map->getMapInfo(int(_player.pointy) / TILESIZE + 1, int(_player.pointx) / TILESIZE - 1);
-	botM = _map->getMapInfo(int(_player.pointy) / TILESIZE + 1, int(_player.pointx) / TILESIZE);
-	botR = _map->getMapInfo(int(_player.pointy) / TILESIZE + 1, int(_player.pointx) / TILESIZE + 1);
+	_curTileX = int(_player.pointx) / TILESIZE;
+	_curTileY = int(_player.pointy) / TILESIZE;
 
+	if (_curTileX != _prevTileX || _curTileY != _prevTileY) {
+		upL = _map->getMapInfo(_curTileY - 1, _curTileX - 1);
+		upM = _map->getMapInfo(_curTileY - 1, _curTileX);
+		upR = _map->getMapInfo(_curTileY - 1, _curTileX + 1);
+		midL = _map->getMapInfo(_curTileY, _curTileX - 1);
+		midM = _map->getMapInfo(_curTileY, _curTileX);
+		midR = _map->getMapInfo(_curTileY, _curTileX + 1);
+		botL = _map->getMapInfo(_curTileY + 1, _curTileX - 1);
+		botM = _map->getMapInfo(_curTileY + 1, _curTileX);
+		botR = _map->getMapInfo(_curTileY + 1, _curTileX + 1);
+	}
 
 	//타일 활용 예시
 
 	//플레이어 아래 타일 체크
 
+	//midM
+	//1. (속도 문제 등으로) 벽에 끼일 경우 쫓아내야 한다
 
 	switch (midM.type) {
 
-	case MAPTILE_WALL: case MAPTILE_WALL2:
-		break;
-	}
+	//벽일 경우, 별 조건 없이 쫓아내도 된다
+	case MAPTILE_WALL: case MAPTILE_WALL2: 
 
+		//falling이라면 아래로 부딪힌 상황일테니 위로 보내고 idle로 만든다
+		if (_player.state == PLAYERSTATE_FALLING) {
+			_player.pointy = midM.rc.top - ((_player.rc.bottom - _player.rc.top) * 0.5);
+			_player.currentFrameX = 8;
+			_player.xspeed = 0;
+			_player.yspeed = 0;
+			_player.state = PLAYERSTATE_ILDE;
+		}
+
+		//jump라면 위로 부딪힌 상황일테니 밑으로 튕겨낸다
+		if (_player.state == PLAYERSTATE_JUMPING) {
+			_player.state = PLAYERSTATE_FALLING;
+			_player.yspeed = -3;	
+			_player.pointy = midM.rc.bottom + (_player.rc.bottom - _player.rc.top) * 0.5 + 1;
+		}
+	break;
+
+	//내려갈 수 있는 발판의 경우 밑으로 튕겨낼 필요는 없다
+	
+	case MAPTILE_GROUND_CAN_GO_DOWN_1: case MAPTILE_GROUND_CAN_GO_DOWN_2:
+		//falling일 경우 아래로 부딪힌 상황이라면 위로 보내고 idle로 만든다
+		//하지만 아래에서 접근하면서도 falling 상태일 수도 있다. 이건 플레이어 위치와 속도로 예외처리
+		if (_player.state == PLAYERSTATE_FALLING 
+			&& _player.yspeed < -FALLPOWERMAX * 0.5) {
+			_player.pointy = midM.rc.top - ((_player.rc.bottom - _player.rc.top) * 0.5f);
+			_player.currentFrameX = 8;
+			_player.xspeed = 0;
+			_player.yspeed = 0;
+			_player.state = PLAYERSTATE_ILDE;
+		}
+	break;
+	}
 
 	switch (botM.type)
 	{
@@ -469,7 +564,7 @@ void Player::setmaptileInfo()
 			_player.state = PLAYERSTATE_FALLING;
 			_player.yspeed = -3;
 		}
-		break;
+	break;
 		//벽&땅일경우
 	case MAPTILE_WALL: case MAPTILE_WALL2:  case MAPTILE_GROUND_CAN_GO_DOWN_1: case MAPTILE_GROUND_CAN_GO_DOWN_2:
 		//바닥에 착지 할 경우
@@ -484,13 +579,74 @@ void Player::setmaptileInfo()
 			}
 			//추가			
 		}
-		break;
+	break;
 		//사다리일경우
-
 	}
 
 
+	/*
+	//botR, botL
+	//대각선 밑에 걸치는 상황 고려
 
+	//버벅거려서 주석 처리함
+
+	if (_player.state != PLAYERSTATE_ILDE && _player.state != PLAYERSTATE_MOVING) {
+		switch (botR.type)
+		{
+			//아무것도 없을경우
+		case MAPTILE_NULL:	case MAPTILE_LADDER:
+			if (_player.state == PLAYERSTATE_ILDE || _player.state == PLAYERSTATE_MOVING) {
+				_player.state = PLAYERSTATE_FALLING;
+				_player.yspeed = -3;
+			}
+			break;
+			//벽&땅일경우
+		case MAPTILE_WALL: case MAPTILE_WALL2:  case MAPTILE_GROUND_CAN_GO_DOWN_1: case MAPTILE_GROUND_CAN_GO_DOWN_2:
+			//바닥에 착지 할 경우
+			if (isCollision(_player.rc, botR.rc))
+			{
+				if (_player.state == PLAYERSTATE_FALLING) {
+					_player.pointy = botR.rc.top - ((_player.rc.bottom - _player.rc.top) * 0.5);
+					_player.currentFrameX = 8;
+					_player.xspeed = 0;
+					_player.yspeed = 0;
+					_player.state = PLAYERSTATE_ILDE;
+				}
+				//추가			
+			}
+			break;
+			//사다리일경우
+		}
+
+		switch (botL.type)
+		{
+			//아무것도 없을경우
+		case MAPTILE_NULL:	case MAPTILE_LADDER:
+			if (_player.state == PLAYERSTATE_ILDE || _player.state == PLAYERSTATE_MOVING) {
+				_player.state = PLAYERSTATE_FALLING;
+				_player.yspeed = -3;
+			}
+			break;
+			//벽&땅일경우
+		case MAPTILE_WALL: case MAPTILE_WALL2:  case MAPTILE_GROUND_CAN_GO_DOWN_1: case MAPTILE_GROUND_CAN_GO_DOWN_2:
+			//바닥에 착지 할 경우
+			if (isCollision(_player.rc, botL.rc))
+			{
+				if (_player.state == PLAYERSTATE_FALLING) {
+					_player.pointy = botL.rc.top - ((_player.rc.bottom - _player.rc.top) * 0.5);
+					_player.currentFrameX = 8;
+					_player.xspeed = 0;
+					_player.yspeed = 0;
+					_player.state = PLAYERSTATE_ILDE;
+				}
+				//추가			
+			}
+			break;
+			//사다리일경우
+		}
+	}
+
+	*/
 	switch (midR.type) {
 
 	case MAPTILE_WALL: case MAPTILE_WALL2:
@@ -510,6 +666,8 @@ void Player::setmaptileInfo()
 		}
 		break;
 	}
+
+
 	switch (midL.type) {
 	
 

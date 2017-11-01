@@ -77,6 +77,13 @@ private:
 	UI* _ui;
 	bool _canCtrl;		//조작 가능 여부 판단
 
+
+	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;// 위치 정보
+	int _curTileX, _curTileY;
+	int _prevTileX, _prevTileY;
+
+
+
 public:
 	HRESULT init(POINT point);
 	void release();
@@ -88,8 +95,11 @@ public:
 	void move();			// 이동관련함수
 	void keyintput();		// 키 입력 함수
 	void setmaptileInfo();	// 타일값 얻어오기
+
 	void jump();			// 점프
 	void attack();			// 공격
+	void ladder();			// 사다리 매달리기
+	void canDown();			// 사다리 매달리기
 
 	//공격 받았을 시 (데미지만)
 	void getDamaged(int damage) { _player.stat.hp -= damage; }
