@@ -66,6 +66,7 @@ HRESULT worm::init(POINT point, float minCog, float maxCog)
 
 	if (a == 0) _isLeft = true;
 	else _isLeft = false;
+	_isLeft = false;
 	
 	_reverseFrame = false;
 	
@@ -103,6 +104,7 @@ void worm::move()
 	{
 		_state = ENEMYSTATE_MOVING;
 		//0->바닥, 1->왼벽, 2->위벽, 3->오른벽
+		/*
 		switch (_whereIsWorm)
 		{
 		case 0:
@@ -112,14 +114,16 @@ void worm::move()
 					_map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL)
 				{
 					//벽이 바로 앞과 앞에 아래에도 없을때
-					_whereIsWorm = 1;
-					_image = IMAGEMANAGER->findImage("wormMoveLeft");
+					_whereIsWorm = 3;
+					_image = IMAGEMANAGER->findImage("wormMoveLeftt");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.left - _image->getFrameWidth() / 2;
+					_pointx -= 1;
+					
 				}
 				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type == MAPTILE_WALL)
 				{
 					//바닥에서 왼쪽으로 갈 때, 벽이 바로 앞에 있는 경우
-					_whereIsWorm = 3;
+					_whereIsWorm = 1;
 					_image = IMAGEMANAGER->findImage("wormMoveRight");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).rc.right + _image->getFrameWidth() / 2;
 				}
@@ -134,14 +138,14 @@ void worm::move()
 					_map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx + _moveSpeed) / TILESIZE).type != MAPTILE_WALL)
 				{
 					//벽이 바로 앞과 앞의 아래에도 없을때
-					_whereIsWorm = 3;
+					_whereIsWorm = 1;
 					_image = IMAGEMANAGER->findImage("wormMoveRight");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.right - _image->getFrameWidth() / 2;
 				}
 				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type == MAPTILE_WALL)
 				{
 					//벽이 바로 앞에 없는 경우
-					_whereIsWorm = 1;
+					_whereIsWorm = 3;
 					_image = IMAGEMANAGER->findImage("wormMoveLeft");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).rc.left - _image->getFrameWidth() / 2;
 				}
@@ -180,14 +184,14 @@ void worm::move()
 					_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE - 1).type != MAPTILE_WALL)
 				{
 					//앞에 벽 없고 아래도 벽 없음
-					_whereIsWorm = 0;
+					_whereIsWorm = 2;
 					_image = IMAGEMANAGER->findImage("wormMoveDown");
-					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.bottom + _image->getFrameHeight() / 2;
+					_pointy = _map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE + 1).rc.top + _image->getFrameHeight() / 2;
 				}
 				else if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
 				{
 					//앞에 벽 있음
-					_whereIsWorm = 2;
+					_whereIsWorm = 0;
 					_image = IMAGEMANAGER->findImage("wormMoveUp");
 					_pointy = _map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).rc.top - _image->getFrameHeight() / 2;
 				}
@@ -200,17 +204,17 @@ void worm::move()
 		case 2:
 			if (_isLeft)
 			{
-				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type != 1 &&
-					_map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx + _moveSpeed) / TILESIZE).type != 1)
+				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx + _moveSpeed) / TILESIZE).type != MAPTILE_WALL)
 				{
 					_whereIsWorm = 1;
-					_image = IMAGEMANAGER->findImage("wormMoveLeft");
+					_image = IMAGEMANAGER->findImage("wormMoveRight");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).rc.right + _image->getFrameWidth() / 2;
 				}
-				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type == 1)
+				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type == MAPTILE_WALL)
 				{
 					_whereIsWorm = 3;
-					_image = IMAGEMANAGER->findImage("wormMoveRight");
+					_image = IMAGEMANAGER->findImage("wormMoveLeft");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).rc.left - _image->getFrameWidth() / 2;
 				}
 				else
@@ -220,17 +224,17 @@ void worm::move()
 			}
 			else
 			{
-				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type != 1 &&
-					_map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx - _moveSpeed) / TILESIZE).type != 1)
+				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL)
 				{
 					_whereIsWorm = 3;
-					_image = IMAGEMANAGER->findImage("wormMoveRight");
+					_image = IMAGEMANAGER->findImage("wormMoveLeft");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE+1, (_pointx) / TILESIZE).rc.left - _image->getFrameWidth() / 2;
 				}
-				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type == 1)
+				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type == MAPTILE_WALL)
 				{
 					_whereIsWorm = 1;
-					_image = IMAGEMANAGER->findImage("wormMoveLeft");
+					_image = IMAGEMANAGER->findImage("wormMoveRight");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).rc.right + _image->getFrameWidth() / 2;
 				}
 				else
@@ -242,17 +246,17 @@ void worm::move()
 		case 3:
 			if (_isLeft)
 			{
-				if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != 1 &&
-					_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE + 1).type != 1)
+				if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE + 1).type != MAPTILE_WALL)
 				{
 					_whereIsWorm = 0;
-					_image = IMAGEMANAGER->findImage("wormMoveDown");
+					_image = IMAGEMANAGER->findImage("wormMoveUp");
 					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx ) / TILESIZE + 1).rc.bottom + _image->getFrameHeight() / 2;
 				}
-				else if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == 1)
+				else if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
 				{
 					_whereIsWorm = 2;
-					_image = IMAGEMANAGER->findImage("wormMoveUp");
+					_image = IMAGEMANAGER->findImage("wormMoveDown");
 					_pointy = _map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).rc.top - _image->getFrameHeight() / 2;
 				}
 				else
@@ -262,17 +266,17 @@ void worm::move()
 			}
 			else
 			{
-				if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != 1 &&
-					_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE + 1).type != 1)
+				if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE + 1).type != MAPTILE_WALL)
 				{
 					_whereIsWorm = 2;
-					_image = IMAGEMANAGER->findImage("wormMoveUp");
+					_image = IMAGEMANAGER->findImage("wormMoveDown");
 					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE + 1).rc.top - _image->getFrameHeight() / 2;
 				}
-				else if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == 1)
+				else if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
 				{
 					_whereIsWorm = 0;
-					_image = IMAGEMANAGER->findImage("wormMoveDown");
+					_image = IMAGEMANAGER->findImage("wormMoveUp");
 					_pointy = _map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).rc.bottom + _image->getFrameHeight() / 2;
 				}
 				else
@@ -280,6 +284,37 @@ void worm::move()
 					_pointy -= _moveSpeed;
 				}
 			}
+			break;
+		}
+		*/
+		//_whereIsWorm은 벽이 어디 붙어있는지 판단하는 변수입니다
+		//0은 바닥(이미지 wormMoveUp), 1은 왼쪽벽(이미지 wormMoveRight), 2는 윗쪽벽(이미지 wormMoveDown), 3은 오른쪽벽(이미지 wormMoveLeft)
+		isThereWall();
+		switch (_whereIsWorm)
+		{
+		case 0:
+			if (_isLeft)
+				_pointx -= _moveSpeed;
+			else
+				_pointx += _moveSpeed;
+			break;
+		case 1:
+			if (_isLeft)
+				_pointy -= _moveSpeed;
+			else
+				_pointy += _moveSpeed;
+			break;
+		case 2:
+			if (_isLeft)
+				_pointx += _moveSpeed;
+			else
+				_pointx -= _moveSpeed;
+			break;
+		case 3:
+			if (_isLeft)
+				_pointy += _moveSpeed;
+			else
+				_pointy -= _moveSpeed;
 			break;
 		}
 	}
@@ -338,21 +373,25 @@ void worm::frameUpdate()
 		switch (_whereIsWorm)
 		{
 		case 0:
+			_image = IMAGEMANAGER->findImage("wormMoveUp");
 			if (_isLeft)
 				_image->setFrameY(0);
 			else _image->setFrameY(1);
 			break;
 		case 1:
+			_image = IMAGEMANAGER->findImage("wormMoveRight");
 			if (_isLeft)
 				_image->setFrameY(0);
 			else _image->setFrameY(1);
 			break;
 		case 2:
+			_image = IMAGEMANAGER->findImage("wormMoveDown");
 			if (_isLeft)
 				_image->setFrameY(1);
 			else _image->setFrameY(0);
 			break;
 		case 3:
+			_image = IMAGEMANAGER->findImage("wormMoveLeft");
 			if (_isLeft)
 				_image->setFrameY(1);
 			else _image->setFrameY(0);
@@ -414,4 +453,58 @@ void worm::falling()
 void worm::rectResize()	
 {
 	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
+}
+
+void worm::isThereWall()
+{
+	//_whereIsWorm은 벽이 어디 붙어있는지 판단하는 변수입니다
+	//0은 바닥(이미지 wormMoveUp), 1은 왼쪽벽(이미지 wormMoveRight), 2는 윗쪽벽(이미지 wormMoveDown), 3은 오른쪽벽(이미지 wormMoveLeft)
+	//현재 진행방향 앞에 벽이 있는지, 앞에 벽이 없는데 그 아래도 벽이 없는지 판별합니다
+	//현재 있는 타일 rect의 끝에 도달했는지 먼저 검사합시다
+	switch (_whereIsWorm)
+	{
+	case 0:
+		if (_isLeft)
+		{
+			if (_pointx - _image->getFrameWidth() / 2 < _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).rc.left)
+			{
+
+			}
+		}
+		else
+		{
+
+		}
+		break;
+	case 1:
+		if (_isLeft)
+		{
+
+		}
+		else
+		{
+
+		}
+		break;
+	case 2:
+		if (_isLeft)
+		{
+
+		}
+		else
+		{
+
+		}
+		break;
+	case 3:
+		if (_isLeft)
+		{
+
+		}
+		else
+		{
+
+		}
+		break;
+	}
 }
