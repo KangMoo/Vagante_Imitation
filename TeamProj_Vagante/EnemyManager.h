@@ -2,6 +2,7 @@
 #include "gameNode.h"
 #include "Enemy.h"
 #include "Boss.h"
+#include "worm.h"
 #include "vaganteStructEnum.h"
 
 class Player;

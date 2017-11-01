@@ -55,6 +55,7 @@ protected:
 	mapInfo _upL, _upM, _upR, _midL, _midM, _midR, _botL, _botM, _botR;	//현재좌표기준 9개 타일
 	bool _isFindPlayer;													//플레이어를 발견한 상태인지
 	int _frameTime, _frameFPS;											//프레임 변화용
+	POINT _lastPlayerPoint;
 
 	RECT _attackRect;													//플레이어 공격용 렉트
 

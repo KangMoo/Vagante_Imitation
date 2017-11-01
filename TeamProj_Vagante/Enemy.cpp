@@ -49,6 +49,7 @@ HRESULT Enemy::init(POINT point, float minCog, float maxCog)
 	
 	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 	_attackRect = RectMakeCenter(_pointx, _pointy, 1, 1);
+	_lastPlayerPoint = _player->getPoint();
 
 	return S_OK;
 }
@@ -74,10 +75,10 @@ void Enemy::update()
 		jump();
 		attack();
 
-
 		//만약 둘 사이의 거리가 한계 인식범위 이상으로 벌어지면 쫓는걸 포기한다
 		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) > _maxCog)
 			_isFindPlayer = false;
+
 	}
 	else
 	{
@@ -96,30 +97,34 @@ void Enemy::update()
 			}
 			else
 			{
-				int count = 0;
-				float x = 0;
-				float y = 0;
-				float dist = getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
-				float angle = getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
-				//적과 나 사이에 벽이 있는지 판별한다
-				for (int i = 0; i < dist; i+=TILESIZE)
+				if (_lastPlayerPoint.x != _player->getPoint().x && _lastPlayerPoint.y != _player->getPoint().y)
 				{
-					//만약 지금 검사할 타일이 이미 검사할 타일과 같다면 다음으로 넘어간다
-					float ox = (_pointx + i*cosf(angle)) / TILESIZE;
-					float oy = (_pointy + i*-sinf(angle)) / TILESIZE;
-					
-					if (ox == x && oy == y) continue;
+					_lastPlayerPoint = _player->getPoint();
+					int count = 0;
+					float x = 0;
+					float y = 0;
+					float dist = getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
+					float angle = getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
+					//적과 나 사이에 벽이 있는지 판별한다
+					for (int i = 0; i < dist; i += TILESIZE)
+					{
+						//만약 지금 검사할 타일이 이미 검사할 타일과 같다면 다음으로 넘어간다
+						float ox = (_pointx + i*cosf(angle)) / TILESIZE;
+						float oy = (_pointy + i*-sinf(angle)) / TILESIZE;
 
-					//다르다면 x, y를 바꿔주고 그 타일을 검사한다
-					x = ox;
-					y = oy;
-						
-					if (static_cast<int>(_map->getMapInfo(y, x).type == 1))
-						count++;
+						if (ox == x && oy == y) continue;
+
+						//다르다면 x, y를 바꿔주고 그 타일을 검사한다
+						x = ox;
+						y = oy;
+
+						if (static_cast<int>(_map->getMapInfo(y, x).type == 1))
+							count++;
+					}
+					//만약 벽이 하나라도 검출되었다면 인식 못함으로 처리
+					if (count >= 1) _isFindPlayer = false;
+					else _isFindPlayer = true;
 				}
-				//만약 벽이 하나라도 검출되었다면 인식 못함으로 처리
-				if (count >= 1) _isFindPlayer = false;
-				else _isFindPlayer = true;
 			}
 		}
 	}
@@ -140,11 +145,22 @@ void Enemy::render(POINT camera)
 }
 void Enemy::draw(POINT camera)
 {
-	//적이 시야에 들어올 때만 렌더링
-	if ((_pointx > camera.x && _pointx < camera.x + WINSIZEX) &&
-		_pointy > camera.y && _pointy < camera.y + WINSIZEY)
+	//Rectangle(getMemDC(), _pointx - _minCog / 2 + camera.x, _pointy - _minCog / 2 + camera.y, _pointx + _minCog / 2 + camera.x, _pointy + _minCog / 2 + camera.y);
+	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
+	_image->frameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y);
+
+	char string[128];
+	sprintf(string, "x : %d, y : %d", _rc.left / TILESIZE, _rc.top / TILESIZE);
+	TextOut(getMemDC(), WINSIZEX / 2, WINSIZEY / 2, string, strlen(string));
+	if (_isFindPlayer)
 	{
-		_image->frameRender(getMemDC(), _rc.left - camera.x, _rc.top - camera.y);
+		sprintf(string, "ㅇㅇ");
+		TextOut(getMemDC(), 300, 300, string, strlen(string));
+	}
+	else
+	{
+		sprintf(string, "ㄴㄴ");
+		TextOut(getMemDC(), 300, 300, string, strlen(string));
 	}
 }
 void Enemy::move()

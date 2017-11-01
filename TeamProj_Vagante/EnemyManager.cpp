@@ -25,14 +25,23 @@ HRESULT EnemyManager::init()
 	temp->setUiAddressLink(_ui);
 	_vEnemy.push_back(temp);
 	*/
-
+	
+	POINT pt = PointMake(TILESIZE*14, TILESIZE*18-1);
+	Enemy* temp = new worm;
+	temp->init(pt, 9999, 9999);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	_vEnemy.push_back(temp);
+	
+	/*
 	_boss = new Boss();
 	//상호참조를 위한 address링크
 	_boss->setPlayerAddressLink(_player);
 	_boss->setUiAddressLink(_ui);
 	_boss->setMapAddressLink(_map);
 	_boss->init(PointMake(TILESIZE*35,TILESIZE*6));
-
+	*/
 	return S_OK;
 }
 
@@ -53,7 +62,7 @@ void EnemyManager::update()
 	//보스 체크
 
 	//업데이트
-	_boss->update();
+	//_boss->update();
 
 	//enemy가 죽었는지 체크
 	deadEnemyCheck();
@@ -71,7 +80,7 @@ void EnemyManager::render(POINT camera)
 	{
 		(*_viEnemy)->render(camera);
 	}
-	_boss->render(camera);
+	//_boss->render(camera);
 
 	draw(camera);
 }

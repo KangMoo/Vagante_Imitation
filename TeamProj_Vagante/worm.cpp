@@ -115,7 +115,6 @@ void worm::move()
 					_whereIsWorm = 1;
 					_image = IMAGEMANAGER->findImage("wormMoveLeft");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.left - _image->getFrameWidth() / 2;
-					_pointy = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.top;
 				}
 				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type == 1)
 				{
@@ -123,7 +122,6 @@ void worm::move()
 					_whereIsWorm = 3;
 					_image = IMAGEMANAGER->findImage("wormMoveRight");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).rc.right + _image->getFrameWidth() / 2;
-					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).rc.bottom;
 				}
 				else
 				{
@@ -139,7 +137,6 @@ void worm::move()
 					_whereIsWorm = 3;
 					_image = IMAGEMANAGER->findImage("wormMoveRight");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.right - _image->getFrameWidth() / 2;
-					_pointy = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.top;
 				}
 				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type == 1)
 				{
@@ -147,7 +144,6 @@ void worm::move()
 					_whereIsWorm = 1;
 					_image = IMAGEMANAGER->findImage("wormMoveLeft");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).rc.left - _image->getFrameWidth() / 2;
-					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).rc.bottom;
 				}
 				else
 				{
@@ -165,7 +161,6 @@ void worm::move()
 					_whereIsWorm = 2;
 					_image = IMAGEMANAGER->findImage("wormMoveUp");
 					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.top - _image->getFrameHeight() / 2;
-					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.right;
 				}
 				else if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == 1)
 				{
@@ -173,7 +168,6 @@ void worm::move()
 					_whereIsWorm = 0;
 					_image = IMAGEMANAGER->findImage("wormMoveDown");
 					_pointy = _map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).rc.bottom + _image->getFrameHeight() / 2;
-					_pointx = _map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).rc.left;
 				}
 				else
 				{
@@ -189,7 +183,6 @@ void worm::move()
 					_whereIsWorm = 0;
 					_image = IMAGEMANAGER->findImage("wormMoveDown");
 					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.bottom + _image->getFrameHeight() / 2;
-					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.left;
 				}
 				else if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == 1)
 				{
@@ -197,7 +190,6 @@ void worm::move()
 					_whereIsWorm = 2;
 					_image = IMAGEMANAGER->findImage("wormMoveUp");
 					_pointy = _map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).rc.top - _image->getFrameHeight() / 2;
-					_pointx = _map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).rc.right;
 				}
 				else
 				{
@@ -214,14 +206,12 @@ void worm::move()
 					_whereIsWorm = 1;
 					_image = IMAGEMANAGER->findImage("wormMoveLeft");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).rc.right + _image->getFrameWidth() / 2;
-					_pointy = _map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).rc.bottom;
 				}
 				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type == 1)
 				{
 					_whereIsWorm = 3;
 					_image = IMAGEMANAGER->findImage("wormMoveRight");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).rc.left - _image->getFrameWidth() / 2;
-					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).rc.top;
 				}
 				else
 				{
@@ -236,14 +226,12 @@ void worm::move()
 					_whereIsWorm = 3;
 					_image = IMAGEMANAGER->findImage("wormMoveRight");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE+1, (_pointx) / TILESIZE).rc.left - _image->getFrameWidth() / 2;
-					_pointy = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.top;
 				}
 				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type == 1)
 				{
 					_whereIsWorm = 1;
 					_image = IMAGEMANAGER->findImage("wormMoveLeft");
 					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).rc.right + _image->getFrameWidth() / 2;
-					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).rc.bottom;
 				}
 				else
 				{
@@ -260,14 +248,12 @@ void worm::move()
 					_whereIsWorm = 0;
 					_image = IMAGEMANAGER->findImage("wormMoveDown");
 					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx ) / TILESIZE + 1).rc.bottom + _image->getFrameHeight() / 2;
-					_pointx= _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE + 1).rc.left;
 				}
 				else if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == 1)
 				{
 					_whereIsWorm = 2;
 					_image = IMAGEMANAGER->findImage("wormMoveUp");
 					_pointy = _map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).rc.top - _image->getFrameHeight() / 2;
-					_pointx = _map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).rc.right;
 				}
 				else
 				{
@@ -282,14 +268,12 @@ void worm::move()
 					_whereIsWorm = 2;
 					_image = IMAGEMANAGER->findImage("wormMoveUp");
 					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE + 1).rc.top - _image->getFrameHeight() / 2;
-					_pointx= _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE + 1).rc.right;
 				}
 				else if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == 1)
 				{
 					_whereIsWorm = 0;
 					_image = IMAGEMANAGER->findImage("wormMoveDown");
 					_pointy = _map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).rc.bottom + _image->getFrameHeight() / 2;
-					_pointx = _map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).rc.left;
 				}
 				else
 				{
