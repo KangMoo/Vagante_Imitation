@@ -90,7 +90,10 @@ void GameScene::addImage()
 	IMAGEMANAGER->addFrameImage("Æø¹ß", "Img\\etc\\explosion_1.bmp", 448, 64, 7, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("test", "Img\\etc\\tes.bmp", 40, 224, 1, 7, true, RGB(255, 0, 255));
 
-
+	IMAGEMANAGER->addFrameImage("wormMoveUp", "Img\\enemy\\crawler_move_up.bmp", 0, 0, 64*2, 20*2, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("wormMoveDown", "Img\\enemy\\crawler_move_down.bmp", 0, 0, 64*2, 20*2, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("wormMoveLeft", "Img\\enemy\\crawler_move_left.bmp", 0, 0, 40*2, 32*2, 4, 2, true, RGB(255 ,0 ,255));
+	IMAGEMANAGER->addFrameImage("wormMoveRight", "Img\\enemy\\crawler_move_right.bmp", 0, 0, 40*2, 32*2, 4, 2, true, RGB(255, 0, 255));
 }
 void GameScene::keyInput()
 {
