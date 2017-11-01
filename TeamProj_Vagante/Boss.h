@@ -35,13 +35,22 @@ int spd;	//이속
 };
 */
 
+enum BOSSSTATE {
+	BOSSSTATE_SLEEP,
+	BOSSSTATE_ACTIVATE,
+	BOSSSTATE_FLYING,
+	BOSSSTATE_FIREING,
+	BOSSSTATE_STAMPING,
+	BOSSSTATE_DEAD
+};
+
 class Player;
 class UI;
 class Boss : public gameNode
 {
 private:
 	image* _image;														//이미지
-	ENEMYSTATE _state;													//상태
+	BOSSSTATE _state;													//상태
 	Player* _player;													//플레이어 정보
 	UI* _ui;															//ui
 	tagStatusEffect _statusEffect[5];									//상태이상
@@ -55,13 +64,15 @@ private:
 	bool _isFindPlayer;													//플레이어를 발견한 상태인지
 	FireBall* _fireball;
 
+	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;// 위치 정보
+
+	bool _canfire;
+	bool _lookleft;
+	float _actTimer;													//행동시간
 	int _frameTime, _frameFPS;											//프레임 변화용
 	float _minCog, _maxCog;												//몬스터 최초 인식범위, 한계 인식범위
+	float _timerForFrameUpdate;
 
-	RECT _attackRect;
-
-	int test1;
-	int test2;
 public:
 	HRESULT init();
 	virtual HRESULT init(POINT point);
@@ -71,9 +82,13 @@ public:
 	void render(POINT camera);
 	void draw(POINT camera);
 
+	void stateHandle();
+	void speedAdjust();
+	void fireFireBall();
+	void imageChange();
+
 	virtual void move();			// 이동관련함수
-	virtual void jump();			// 점프
-	virtual void attack();			// 공격
+	void mapCollisionHandle();
 	virtual void frameUpdate();		// 프레임 업데이트
 
 
@@ -104,8 +119,7 @@ public:
 	void setMapAddressLink(Map* map) { _map = map; }
 
 
-	virtual void attRectClear() { _attackRect = RectMake(_pointx, _pointy, 1, 1); }
-	virtual void statusEffect();
+	void statusEffect();
 
 	Boss();
 	~Boss();

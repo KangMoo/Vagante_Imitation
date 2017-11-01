@@ -98,11 +98,6 @@ void Player::draw(POINT camera)
 	//test
 	Rectangle(getMemDC(), _player.rc.left + camera.x, _player.rc.top + camera.y, _player.rc.right + camera.x, _player.rc.bottom + camera.y);
 
-	Rectangle(getMemDC(), 100, 100, 200, 200);
-	char str[256];
-	sprintf(str, "%f", _player.yspeed);
-	TextOut(getMemDC(), 100, 100, str, strlen(str));
-	
 
 	
 }

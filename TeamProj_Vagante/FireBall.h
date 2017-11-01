@@ -32,6 +32,7 @@ private:
 	const char* _imageName;
 	float _range;
 	int _FireBallMax;
+	float _timerForFrameUpdate;
 	Player* _player;
 	Map* _map;
 
@@ -41,6 +42,7 @@ public:
 	void release(void);
 	void update(void);
 	void render(POINT camera);
+	void frameHandle();
 
 	void fire(float x, float y, float angle, float speed);
 

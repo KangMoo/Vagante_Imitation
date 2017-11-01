@@ -1,5 +1,6 @@
 #pragma once
 #define TILESIZE 32
+#define STATUSEFFECTMAX 5
 struct tagStat {
 	int hp;		//Ã¼·Â
 	int str;	//Èû
