@@ -16,14 +16,7 @@ UI::~UI()
 HRESULT UI::init()
 {
 	_active = false;
-	for (int i = 0; i < 10; i++)
-	{
-
-	}
-	for (int i = 0; i < 5; i++)
-	{
-
-	}
+	
 	tagItemInfo _item[5];
 	tagCoinInfo _coin[255];
 
@@ -47,15 +40,25 @@ HRESULT UI::init()
 	_move = false;
 	_delay.coin = 0;
 	_delay.menu = 0;
-	_inputAlphaSource = 0;
+	_inputAlphaSource = 255;
 	_save.position0 = 0;
 	_save.position1 = 0;
 	_lvlPoint = 1;
 	_plusAlphaSource = 0;
-
+	_inputGuide = 0;
+	_maxHp = 50 + _player->getStat().vit * 10;
+	_currentHp = _player->getStat().hp;
 	//================================================================
 
-	//setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
 	setItemToBag(NAME_SWORD);
 
 
@@ -73,32 +76,34 @@ void UI::update()
 	if (_delay.menu) _delay.menu--;
 
 	//=================== P L A Y E R   U P D A T E ===================
-	//_currentMoney = _player->getMoney();
-	//_currentHp = _player->getHP();
+	_currentHp = _player->getHP();
+	_maxHp = 50 + _player->getStat().vit * 10;
 
 
 	//=================== M E N U   R E C T ===========================
 	_lvlRect = RectMake(_menuRect.left + 18, _menuRect.top + 157, 192, 224);
 
 	//================= F R A M E   C O N T R O L =====================
-	repeatIndex("cursor_idle", 8);
-	repeatIndex("cursor_move", 8);
+	repeatIndex("cursor_idle", 6);
+	repeatIndex("cursor_move", 6);
 	//================= I N C O M E   U P D A T E =====================
 	if (!_delay.coin && _income > 0)
 	{
 		_income--;
 		_currentMoney++;
 	}
+
 	//================== A L P H A   S O U R C E ======================
 	if (!_delay.menu)
 	{
-		_inputAlphaSource += 10;
-		if (_inputAlphaSource >= 255) _inputAlphaSource = 255;
+		_inputAlphaSource -= 5;
+		if (_inputAlphaSource < 0) _inputAlphaSource = 0;
 	}
 	else
 	{
-		_inputAlphaSource = 0;
+		_inputAlphaSource = 255;
 	}
+
 	if (_lvlPoint)
 	{
 		if (_count % 180 < 90 && _count % 6 == 0) 
@@ -127,7 +132,22 @@ void UI::render()
 void UI::draw()
 {
 	IMAGEMANAGER->findImage("equip_slot")->render(getMemDC(), _menuRect.left + 52, _menuRect.top);
+	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+	{
+		if (_viBag->equip)
+		{
+			if (_viBag->type == TYPE_WEAPON) _viBag->img->render(getMemDC(), _menuRect.left + 52, _menuRect.top);
+			break;
+		}
+		if (_viBag == --_vBag.end() && !_viBag->equip) IMAGEMANAGER->findImage("hand")->frameRender(getMemDC(),
+			_menuRect.left + 52, _menuRect.top, 0, 0);
+		
+	}
 	IMAGEMANAGER->findImage("hpBarBottom")->render(getMemDC(), _menuRect.left + 2, _menuRect.top + 44);
+	hpBottomNumberMacro(_menuRect.left + 90, _menuRect.top + 50,_currentHp);
+	IMAGEMANAGER->findImage("hpBarTop")->render(getMemDC(), _menuRect.left +38, _menuRect.top + 50, 0,0,184* _currentHp / _maxHp, 14);
+	hpTopNumberMacro(_menuRect.left + 90, _menuRect.top + 50, _currentHp);
+
 	if (!_active)
 		IMAGEMANAGER->findImage("selectOff")->render(getMemDC(), _menuRect.left + 2, _menuRect.top + 70);
 	else
@@ -138,8 +158,11 @@ void UI::draw()
 		IMAGEMANAGER->findImage("bag")->render(getMemDC(), _menuRect.left, _menuRect.top + 88);
 		for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 		{
-			_viBag->img->render(getMemDC(), _menuRect.left + (_viBag->position % 6) * 36,
+			_viBag->img->render(getMemDC(), _menuRect.left + 5 + (_viBag->position % 6) * 36,
 				_menuRect.top + 90 + (_viBag->position / 6) * 36);
+			if(_viBag->equip == true)
+				IMAGEMANAGER->findImage("equip_icon")->frameRender(getMemDC(), _menuRect.left + 32 + (_viBag->position % 6) * 36,
+					_menuRect.top + 115 + (_viBag->position / 6) * 36,1,0);
 		}
 
 		if (!_move)IMAGEMANAGER->findImage("cursor_idle")->frameRender(getMemDC(),
@@ -158,18 +181,97 @@ void UI::draw()
 				_menuRect.left - 13 + (_bagNum % 6) * 36, _menuRect.top + 113 + (_bagNum / 6) * 36);
 		}
 
+		if (!_delay.menu)
+		{
+			if (!_move)
+			{
+				switch (_inputGuide)
+				{
+				case 0:
+					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+						_menuRect.right + 10, _menuRect.top + 100,8,3,_inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Next Tab",_inputAlphaSource);
+					break;
+				case 1:
+					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+						_menuRect.right + 10, _menuRect.top + 100, 3, 2, _inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "UnEquip", _inputAlphaSource);
+					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+						_menuRect.right + 10, _menuRect.top + 140, 5, 2, _inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 150, "Move", _inputAlphaSource);
+					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+						_menuRect.right + 10, _menuRect.top + 180, 8, 3, _inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 190, "Next Tap", _inputAlphaSource);
+					break;
+				case 2:
+					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+						_menuRect.right + 10, _menuRect.top + 100, 3, 2, _inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Equip", _inputAlphaSource);
+					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+						_menuRect.right + 10, _menuRect.top + 140, 5, 2, _inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 150, "Move", _inputAlphaSource);
+					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+						_menuRect.right + 10, _menuRect.top + 180, 8, 3, _inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 190, "Next Tap", _inputAlphaSource);
+					break;
+				case 3:
+					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+						_menuRect.right + 10, _menuRect.top + 100, 3, 2, _inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "quaff", _inputAlphaSource);
+					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+						_menuRect.right + 10, _menuRect.top + 140, 5, 2, _inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 150, "Move", _inputAlphaSource);
+					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+						_menuRect.right + 10, _menuRect.top + 180, 8, 3, _inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 190, "Next Tap", _inputAlphaSource);
+					break;
+				}
+			}
+			else
+			{
+				IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+					_menuRect.right + 10, _menuRect.top + 100, 5, 2, _inputAlphaSource);
+				letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Place", _inputAlphaSource);
+				IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+					_menuRect.right + 10, _menuRect.top + 140, 8, 3, _inputAlphaSource);
+				letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 150, "Next Tap", _inputAlphaSource);
+
+			}
+
+		}
+		
+
 		break;
 	case 1:
 		IMAGEMANAGER->findImage("skil")->render(getMemDC(), _menuRect.left, _menuRect.top + 88);
-		if (!_move)IMAGEMANAGER->findImage("cursor_idle")->frameRender(getMemDC(),
+		IMAGEMANAGER->findImage("cursor_idle")->frameRender(getMemDC(),
 			_menuRect.left - 13 + (_skilNum % 6) * 36, _menuRect.top + 113 + (_skilNum / 6) * 36);
-		else IMAGEMANAGER->findImage("cursor_move")->frameRender(getMemDC(),
-			_menuRect.left - 13 + (_skilNum % 6) * 36, _menuRect.top + 113 + (_skilNum / 6) * 36);
+		if (!_delay.menu)
+		{
+			IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+				_menuRect.right + 10, _menuRect.top + 100, 0, 0, _inputAlphaSource);
+			letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Prev Tab", _inputAlphaSource);
+			IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+				_menuRect.right + 10, _menuRect.top + 140, 8, 3, _inputAlphaSource);
+			letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 150, "Next Tab", _inputAlphaSource);
+
+		}
+
 		break;
 	case 2:
 		IMAGEMANAGER->findImage("stat")->render(getMemDC(), _menuRect.left, _menuRect.top + 88);
-		if (_statNum < 16) IMAGEMANAGER->findImage("cursor_idle")->frameRender(getMemDC(),
+		IMAGEMANAGER->findImage("cursor_idle")->frameRender(getMemDC(),
 			_menuRect.left - 15 + (_statNum % 3) * 78, _menuRect.top + 96 + (_statNum / 3) * 18);
+		if (!_delay.menu)
+		{
+			IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+				_menuRect.right + 10, _menuRect.top + 100, 0, 0, _inputAlphaSource);
+			letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Prev Tab", _inputAlphaSource);
+			IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+				_menuRect.right + 10, _menuRect.top + 140, 8, 3, _inputAlphaSource);
+			letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 150, "Next Tab", _inputAlphaSource);
+		}
+
 		break;
 	case 3:
 		IMAGEMANAGER->findImage("lvl")->render(getMemDC(), _menuRect.left, _menuRect.top + 88);
@@ -227,6 +329,18 @@ void UI::draw()
 			letterMacro(LETTER_WHITE, _menuRect.left + 40, _menuRect.bottom - 26, tmp,_plusAlphaSource);
 			letterMacro(LETTER_WHITE, _menuRect.left + 50, _menuRect.bottom - 26, " point available", _plusAlphaSource);
 		}
+		IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+			_menuRect.right + 10, _menuRect.top + 100, 3, 2, _inputAlphaSource);
+		letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Level Up", _inputAlphaSource);
+		IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+			_menuRect.right + 10, _menuRect.top + 140, 1, 7, _inputAlphaSource);
+		letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 150, "Prev Rank", _inputAlphaSource);
+		IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+			_menuRect.right + 10, _menuRect.top + 180, 2, 7, _inputAlphaSource);
+		letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 190, "Next Rank", _inputAlphaSource);
+		IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
+			_menuRect.right + 10, _menuRect.top + 220, 0, 0, _inputAlphaSource);
+		letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 230, "Prev Tap", _inputAlphaSource);
 
 		break;
 	}
@@ -256,7 +370,7 @@ void UI::setItemToBag(ITEMNAME name)
 	{
 	case NAME_SWORD:
 		item.img = IMAGEMANAGER->findImage("sword");
-		item.type = TYPE_GEAR;
+		item.type = TYPE_WEAPON;
 		break;
 	case NAME_HEAL:
 		item.img = IMAGEMANAGER->findImage("heal");
@@ -306,6 +420,173 @@ void UI::explanation()
 	case 1:
 		break;
 	case 2:
+		switch (_statNum)
+		{
+		case 0:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 5,
+				"Strength");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+				"Strength increases");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				" your damage,");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+				" especially with melee");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE ,
+				" weapons.");
+			break;
+		case 1:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+				"Defense");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				"Defense is how");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+				" resistant you are to");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 1,
+				" physical damage.");
+			break;
+		case 2:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				"Melee Damage");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+				"Increased damage of");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 1,
+				" melee weapons.");
+			break;
+		case 3:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 5,
+				"Dexterity");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+				"Dexterity increases");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				" your attack speed");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+				" especially with");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE,
+				" ranged weapons.");
+			break;
+		case 4:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 5,
+				"Fire Resist");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+				"Each point of fire");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				" resistance increases");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+				" your resistance to");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE,
+				" fire damage by 25%");
+			break;
+		case 5:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+				"Ranged Damage");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				"Increased damage of");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+				" thrown or ranged");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 1,
+				" weapons.");
+			break;
+		case 6:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				"Vitality");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+				"Vitality increases");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 1,
+				" your maximum health.");
+			break;
+		case 7:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 5,
+				"Cold Resist");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+				"Each point of cold");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				" resistance increases");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+				" your resistance to");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE,
+				" cold damage by 25%");
+			break;
+		case 8:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				"Critical");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+				"% chance of a critical");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 1,
+				" hit");
+			break;
+		case 9:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 6,
+				"Intelligence");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 5,
+				"Intelligence affects");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+				" spell power as well");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				" as the number of");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE * 2,
+				" spell charge each");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE,
+				" spell has.");
+			break;
+		case 10:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 6,
+				"Lightning Resist");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 5,
+				"Each point of lightning");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+				" resistance increases");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				" your resistance to");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE * 2,
+				" lightning damage by");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE,
+				" 25%");
+			break;
+		case 11:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				"Attack Speed");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+				"% Increased attack");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 1,
+				" speed.");
+			break;
+		case 12:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 6,
+				"Luck");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 5,
+				"Luck affects your");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+				" critical strike rate");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				" and evasion, as well");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE * 2,
+				" as chance based");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE,
+				" effects.");
+			break;
+		case 13:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 6,
+				"Poison Resist");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 5,
+				"Each point of poison");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+				" resistance increases");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				" your resistance to");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE * 2,
+				" poison damage by");
+			letterMacro(LETTER_WHITE, _menuRect.left + 14, _menuRect.top - SPACE,
+				" 25%");
+			break;
+		case 14:
+			letterMacro(LETTER_RED, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+				"Move Speed");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+				"Increased Movement");
+			letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 1,
+				" speed amount.");
+			break;
+		}
 		break;
 	case 3:
 		switch (_lvlNum)
@@ -984,6 +1265,7 @@ void UI::keyControl()
 			if (_rankNum < 0) _rankNum = 0;
 			break;
 		}
+		setInputGuide();
 
 	}
 	if (KEYMANAGER->isOnceKeyDown(VK_RIGHT) && _active)
@@ -1008,6 +1290,7 @@ void UI::keyControl()
 			else if (_rankNum > 4 && _lvlNum > 1) _rankNum = 4;
 			break;
 		}
+		setInputGuide();
 
 	}
 
@@ -1033,6 +1316,7 @@ void UI::keyControl()
 			if (_lvlNum < 0) _lvlNum = 0;
 			break;
 		}
+		setInputGuide();
 	}
 	if (KEYMANAGER->isOnceKeyDown(VK_DOWN) && _active)
 	{
@@ -1041,6 +1325,7 @@ void UI::keyControl()
 		case 0:
 			if (_bagNum / 6 != 4)_bagNum += 6;
 			if (_bagNum > 29) _bagNum = 29;
+			
 			break;
 		case 1:
 			if (_skilNum / 6 != 4)_skilNum += 6;
@@ -1059,16 +1344,19 @@ void UI::keyControl()
 			if (_lvlNum > 7) _lvlNum = 7;
 			break;
 		}
+		setInputGuide();
 	}
 	if (KEYMANAGER->isOnceKeyDown(VK_LSHIFT))
 	{
 		_menuNum++;
 		if (_menuNum > 3) _menuNum = 0;
+		setInputGuide();
 	}
 	if (KEYMANAGER->isOnceKeyDown('A'))
 	{
 		_menuNum--;
 		if (_menuNum < 0) _menuNum = 3;
+		setInputGuide();
 	}
 	if (KEYMANAGER->isOnceKeyDown('Z'))
 	{
@@ -1116,7 +1404,50 @@ void UI::keyControl()
 		default:
 			break;
 		}
+		setInputGuide();
 	}
+	if (KEYMANAGER->isOnceKeyDown('X'))
+	{
+		switch (_menuNum)
+		{
+		case 0:
+			for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); )
+			{
+				if (_viBag->position == _bagNum)
+				{
+					if (_viBag->type == TYPE_WEAPON)
+					{
+						if (_viBag->equip) _viBag->equip = false;
+						else
+						{
+							for (int i = 0; i < _vBag.size(); i++)
+							{
+								if (_vBag[i].type == TYPE_WEAPON) _vBag[i].equip = false;
+							}
+							_viBag->equip = true;
+						}
+						break;
+					}
+					if (_viBag->type == TYPE_POTION)
+					{
+						_vBag.erase(_viBag);
+						_player->setHP(_player->getHP() + 10);
+						break;
+					}
+				}
+				else ++_viBag;
+			}
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		}
+		setInputGuide();
+	}
+
 	//if (KEYMANAGER->isOnceKeyDown('T'))
 	//{
 	//	setItemToBag(NAME_SWORD);
@@ -1124,14 +1455,43 @@ void UI::keyControl()
 
 	//if (KEYMANAGER->isOnceKeyDown('Y'))
 	//{
-	//	setCoin(10);
+	//	setCoin(1);
 	//}
 }
 
-void UI::positionChange(int sour, int dest)
+void UI::setInputGuide()
 {
+	_delay.menu = 30;
+	if(_menuNum == 0 && !_move)
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+	{
+		if (_viBag->position == _bagNum)
+		{
+			switch (_viBag->type)
+			{
+			case TYPE_WEAPON:
+				switch (_viBag->equip)
+				{
+				case TRUE:
+					_inputGuide = 1;
+					break;
+				case FALSE:
+					_inputGuide = 2;
+					break;
+				}
+				break;
+			case TYPE_POTION:
+				_inputGuide = 3;
+				break;
+			}
+			break;
+		}
+		_inputGuide = 0;
+	}
+
 
 }
+
 
 void UI::coinNumberMacro(NUMBERFONT font, float x, float y, int num)
 {
@@ -1163,6 +1523,52 @@ void UI::coinNumberMacro(NUMBERFONT font, float x, float y, int num)
 	}
 }
 
+void UI::hpTopNumberMacro(float x, float y, int num)
+{
+	int a, b, c, d, e, f;
+	a = num / 100;
+	b = (num % 100) / 10;
+	c = num % 10;
+
+	d = _maxHp / 100;
+	e = (_maxHp % 100) / 10;
+	f = _maxHp % 10;
+
+
+	
+	if (a != 0)IMAGEMANAGER->findImage("hpBarTopNumber")->frameRender(getMemDC(), x, y, a, 0);
+	if (a != 0 || b != 0) IMAGEMANAGER->findImage("hpBarTopNumber")->frameRender(getMemDC(), x + 11, y, b, 0);
+	IMAGEMANAGER->findImage("hpBarTopNumber")->frameRender(getMemDC(), x + 22, y, c, 0);
+	IMAGEMANAGER->findImage("hpBarTopNumber")->frameRender(getMemDC(), x + 33, y, 10, 0);
+	IMAGEMANAGER->findImage("hpBarTopNumber")->frameRender(getMemDC(), x + 44, y, d, 0);
+	IMAGEMANAGER->findImage("hpBarTopNumber")->frameRender(getMemDC(), x + 55, y, e, 0);
+	IMAGEMANAGER->findImage("hpBarTopNumber")->frameRender(getMemDC(), x + 66, y, f, 0);
+
+}
+
+void UI::hpBottomNumberMacro(float x, float y, int num)
+{
+	int a, b, c, d, e, f;
+	a = num / 100;
+	b = (num % 100) / 10;
+	c = num % 10;
+
+	d = _maxHp / 100;
+	e = (_maxHp % 100) / 10;
+	f = _maxHp % 10;
+
+
+
+	if (a != 0)IMAGEMANAGER->findImage("hpBarBottomNumber")->frameRender(getMemDC(), x, y, a, 0);
+	if (a != 0 || b != 0) IMAGEMANAGER->findImage("hpBarBottomNumber")->frameRender(getMemDC(), x + 11, y, b, 0);
+	IMAGEMANAGER->findImage("hpBarBottomNumber")->frameRender(getMemDC(), x + 22, y, c, 0);
+	IMAGEMANAGER->findImage("hpBarBottomNumber")->frameRender(getMemDC(), x + 33, y, 10, 0);
+	IMAGEMANAGER->findImage("hpBarBottomNumber")->frameRender(getMemDC(), x + 44, y, d, 0);
+	IMAGEMANAGER->findImage("hpBarBottomNumber")->frameRender(getMemDC(), x + 55, y, e, 0);
+	IMAGEMANAGER->findImage("hpBarBottomNumber")->frameRender(getMemDC(), x + 66, y, f, 0);
+
+}
+
 void UI::letterMacro(LETTERFONT font, float x, float y, char *str)
 {
 	for (int i = 0; *(str + i) != NULL; i++)
@@ -1192,6 +1598,7 @@ void UI::letterMacro(LETTERFONT font, float x, float y, char *str)
 	}
 
 }
+
 void UI::letterMacro(LETTERFONT font, float x, float y, char *str, int alpha)
 {
 	for (int i = 0; *(str + i) != NULL; i++)
@@ -1221,7 +1628,6 @@ void UI::letterMacro(LETTERFONT font, float x, float y, char *str, int alpha)
 	}
 
 }
-
 
 void UI::repeatIndex(string keyName, int delay)
 {
@@ -1257,17 +1663,20 @@ void UI::addImg()
 	IMAGEMANAGER->addFrameImage("cursor_idle", "Img/ui/cursor_idle.bmp", 144, 36, 4, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("cursor_move", "Img/ui/cursor_move.bmp", 144, 36, 4, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("plus", "Img/ui/plus.bmp", 48, 48, 3, 3, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("equip_icon", "Img/ui/equip_icon.bmp", 48, 16, 3, 1, true, RGB(255, 0, 255)); 
+	IMAGEMANAGER->addImage("hpBarTop", "Img/ui/hpBarTop.bmp", 184, 14, true, RGB(255, 0, 255));
 	//========================= F O N T ========================================
 	IMAGEMANAGER->addFrameImage("coin_number", "Img/ui/font/number.bmp", 416, 96, 13, 3, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("letter", "Img/ui/font/letter_font.bmp", 270, 180, 27, 15, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("inputImage", "Img/ui/font/inputImage.bmp", 640, 640, 10, 10, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("inputImage", "Img/ui/font/inputImage.bmp", 320, 320, 10, 10, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("hpBarBottomNumber", "Img/ui/font/hpBarBottomNumber.bmp", 121, 14, 11, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("hpBarTopNumber", "Img/ui/font/hpBarTopNumber.bmp", 121, 14, 11, 1, true, RGB(255, 0, 255));
 
 	//========================= I T E M =========================================
 	IMAGEMANAGER->addImage("sword", "Img/ui/item/sword.bmp", 40, 40, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("heal", "Img/ui/item/heal.bmp", 40, 40, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("hand", "Img/ui/item/hand.bmp", 80, 40, 2, 1, true, RGB(255, 0, 255));
 }
-
-
 
 void UI::addItemOnMap(tagItemInfo item)
 {
