@@ -6,14 +6,15 @@ class EnemyManager;
 class Map;
 class UI;
 
-#define JUMPPOWERSTART 7
+#define JUMPPOWERSTART 5
 #define JUMPPOWERMAX 10
-#define FALLPOWERMAX 10
+#define FALLPOWERMAX 8
 #define RUNPOWERSTART 1
 #define RUNPOWERMAX 3
 #define DASHPOWER 8
 #define DASHTIME 2.5
-#define HANGSPEED 2
+#define LADDERUPSPEED 2
+#define LADDERDOWNSPEED -3
 
 /*
 !vaganteStructEnum.h 선언했으니 참조만 할 것!
@@ -71,6 +72,9 @@ struct tagPlayerInfo {
 class Player : public gameNode
 {
 private:
+	typedef vector<MYRECT> vRange;
+	typedef vector<MYRECT>::iterator viRange;
+
 	tagPlayerInfo _player;
 	EnemyManager* _em;
 	Map* _map;
@@ -81,6 +85,9 @@ private:
 	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;// 위치 정보
 	int _curTileX, _curTileY; // 현재 타일 위치
 	int _prevTileX, _prevTileY; // 이전 타일 위치
+
+	vRange _vHitRange;		//피격 판정 렉트
+	vRange _vAttackRange;	//공격범위렉트를 담을 벡터 (공격범위가 여러개가 생길경우를 대비)
 
 
 
@@ -98,7 +105,7 @@ public:
 
 	void jump();			// 점프
 	void attack();			// 공격
-	void ladder();			// 사다리 매달리기
+	void holdLadder();			// 사다리 매달리기
 	void canDown();			// 사다리 매달리기
 
 	//공격 받았을 시 (데미지만)
@@ -109,23 +116,26 @@ public:
 	void addStatusEffect(tagStatusEffect statuseffect);
 
 	//설정&접근자
-	int getHP() { return _player.stat.hp; }
-	void setHP(int hp) { _player.stat.hp = hp; }
-	POINT getPoint() { return PointMake(int(_player.pointx), int(_player.pointy)); }
-	void setPoint(POINT point) { _player.pointx = point.x; _player.pointy = point.y; }
-	RECT getRect() { return _player.rc; }
-	PLAYERSTATE getState() { return _player.state; }
-	void setState(PLAYERSTATE state) { _player.state = state; }
-	int getMoney() { return _player.money; }
-	void setMoney(int money) { _player.money = money; }
-	tagStat getStat() { return _player.stat; }
-	void setStat(tagStat stat) { _player.stat = stat; }
-	bool getCtrl() { return _canCtrl; }
-	void setCtrl(bool ctrl) { _canCtrl = ctrl; }
-	float getXSpeed() { return _player.xspeed; }
-	void setXSpeed(float xspeed) { _player.xspeed = xspeed; }
-	float getYSpeed() { return _player.yspeed; }
-	void setYSpeed(float yspeed) { _player.yspeed = yspeed; }
+	inline int getHP() { return _player.stat.hp; }
+	inline void setHP(int hp) { _player.stat.hp = hp; }
+	inline POINT getPoint() { return PointMake(int(_player.pointx), int(_player.pointy)); }
+	inline void setPoint(POINT point) { _player.pointx = point.x; _player.pointy = point.y; }
+	inline RECT getRect() { return _player.rc; }
+	inline PLAYERSTATE getState() { return _player.state; }
+	inline void setState(PLAYERSTATE state) { _player.state = state; }
+	inline int getMoney() { return _player.money; }
+	inline void setMoney(int money) { _player.money = money; }
+	inline tagStat getStat() { return _player.stat; }
+	inline void setStat(tagStat stat) { _player.stat = stat; }
+	inline bool getCtrl() { return _canCtrl; }
+	inline void setCtrl(bool ctrl) { _canCtrl = ctrl; }
+	inline float getXSpeed() { return _player.xspeed; }
+	inline void setXSpeed(float xspeed) { _player.xspeed = xspeed; }
+	inline float getYSpeed() { return _player.yspeed; }
+	inline void setYSpeed(float yspeed) { _player.yspeed = yspeed; }
+
+	inline vRange getVHitRange(void) { return _vHitRange; }
+	inline vRange getVAttackRange(void) { return _vAttackRange; }
 
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }

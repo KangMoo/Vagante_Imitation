@@ -119,13 +119,13 @@ void Boss::render()
 void Boss::render(POINT camera)
 {
 	//test~
-	char str[64];
-	Rectangle(getMemDC(), 40, 50, 150, 250);
-	for (int i = 0; i < 8; i++)
-	{
-		wsprintf(str, "%d", _openlist[i].f);
-		TextOut(getMemDC(), 50, 50 + 30 * i, str, strlen(str));
-	}
+	//char str[64];
+	//Rectangle(getMemDC(), 40, 50, 150, 250);
+	//for (int i = 0; i < 8; i++)
+	//{
+	//	wsprintf(str, "%d", _openlist[i].f);
+	//	TextOut(getMemDC(), 50, 50 + 30 * i, str, strlen(str));
+	//}
 	//~test
 	draw(camera);
 }
