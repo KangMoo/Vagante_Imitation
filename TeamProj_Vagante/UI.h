@@ -66,6 +66,14 @@ struct tagSave
 
 };
 
+struct tagHitOutput
+{
+	float x, y;
+	int damage;
+	int alphaSource;
+	LETTERFONT font;
+};
+
 class EnemyManager;
 class Player;
 class Map;
@@ -73,13 +81,18 @@ class Map;
 
 class UI : public gameNode
 {
-private:
+private: // 인벤토리 벡터
 	typedef vector<tagItem> vBag;
 	typedef vector<tagItem>::iterator viBag;
 
 	vBag _vBag;
 	viBag _viBag;
+private: //  타격 수치 출력 벡터
+	typedef vector<tagHitOutput> vHit;
+	typedef vector<tagHitOutput>::iterator viHit;
 
+	vHit _vHit;
+	viHit _viHit;
 private:
 	tagDelay _delay;
 	tagSave _save;
@@ -134,9 +147,9 @@ public:
 	void letterMacro(LETTERFONT font, float x, float y, char *str);
 	void letterMacro(LETTERFONT font, float x, float y, char *str, int alpha);
 	void setInputGuide();
-
+	void hitOutput(float x, float y, int damage, LETTERFONT font);
 	//맵에 아이템 출현~
-	void addItemOnMap(tagItemInfo item);
+	void addItemOnMap(tagItemInfo item, POINT position);
 
 	//맵에 돈 출현~ (위치정보만 가집니다~)
 	void addCoinOnMap(POINT coinPoint); 
