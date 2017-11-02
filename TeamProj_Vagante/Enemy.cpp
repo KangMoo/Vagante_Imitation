@@ -50,6 +50,8 @@ HRESULT Enemy::init(POINT point, float minCog, float maxCog)
 	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 	_attackRect = RectMakeCenter(_pointx, _pointy, 1, 1);
 	_lastPlayerPoint = _player->getPoint();
+	_dead = false;
+	_deadAlpha = 255;
 
 	return S_OK;
 }
@@ -59,6 +61,11 @@ void Enemy::release()
 }
 void Enemy::update() 
 {
+	if (KEYMANAGER->isOnceKeyDown('Z'))
+	{
+		getDamaged(10);
+	}
+
 	//공격용 렉트 정리해주는 함수, 만약 벌레같은 애들은 그냥 공격렉트가 똑같으니 그대로 처리
 	//헤더파일에 있으니까 보고 수정 필요하면 재수정할것
 	attRectClear();
@@ -66,8 +73,16 @@ void Enemy::update()
 	statusEffect();
 	//낙하 처리
 	falling();
+	if (_state == ENEMYSTATE_DEAD)
+	{
+		_deadAlpha -= 5;
+		if (_deadAlpha < 0)
+		{
+			_dead = true;
+		}
+	}
 
-	if (_isFindPlayer)
+	if (_isFindPlayer && _state != ENEMYSTATE_DEAD)
 	{
 		//각자 움직이는 메커니즘이 다르므로 알아서 처리
 		_isFindPlayer = true;
@@ -120,7 +135,10 @@ void Enemy::draw(POINT camera)
 {
 	//Rectangle(getMemDC(), _pointx - _minCog / 2 + camera.x, _pointy - _minCog / 2 + camera.y, _pointx + _minCog / 2 + camera.x, _pointy + _minCog / 2 + camera.y);
 	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
-	_image->frameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y);
+	if (_state != ENEMYSTATE_DEAD)
+		_image->frameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y);
+	else
+		_image->alphaFrameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _deadAlpha);
 	//EllipseMakeCenter(getMemDC(), _pointx + camera.x, _pointy + camera.y, 5, 5);
 
 	/*
@@ -188,68 +206,6 @@ void Enemy::statusEffect()
 
 void Enemy::falling()
 {
-
-	/*
-	각 몹마다 다른 처리가 필요할 것으로 요망
-	if (_xspeed != 0)
-	{
-		_state = ENEMYSTATE_FALLING;
-		_pointx -= cosf(_angle) * _xspeed;
-		_gravity -= 0.4f;
-		if (_gravity > 10) _gravity = 10;
-		_yspeed += _gravity;
-		_pointy += -sinf(_angle) * _yspeed;
-
-		if (static_cast<int>(_pointy + _yspeed) % TILESIZE > 16)
-		{
-			if (static_cast<int>(_pointx - cosf(_angle)*_xspeed) == static_cast<int>(_pointx))
-			{
-				if (_botM.type == 1)
-				{
-					_state = ENEMYSTATE_IDLE;
-					_pointx -= cosf(_angle) * _xspeed;
-					_xspeed = 0;
-					_yspeed = 0;
-					_gravity = 0;
-					_angle = 0;
-
-					_pointy = _botM.rc.top - _image->getFrameHeight() / 2;
-				}
-			}
-			else
-			{
-				if (cosf(_angle)*_xspeed > 0)
-				{
-					if (_botR.type == 1)
-					{
-						_state = ENEMYSTATE_IDLE;
-						_pointx -= cosf(_angle) * _xspeed;
-						_xspeed = 0;
-						_yspeed = 0;
-						_gravity = 0;
-						_angle = 0;
-
-						_pointy = _botM.rc.top - _image->getFrameHeight() / 2;
-					}
-				}
-				else
-				{
-					if (_botL.type == 1)
-					{
-						_state = ENEMYSTATE_IDLE;
-						_pointx -= cosf(_angle) * _xspeed;
-						_xspeed = 0;
-						_yspeed = 0;
-						_gravity = 0;
-						_angle = 0;
-
-						_pointy = _botM.rc.top - _image->getFrameHeight() / 2;
-					}
-				}
-			}
-		}
-	}
-	*/
 }
 
 void Enemy::rectResize()

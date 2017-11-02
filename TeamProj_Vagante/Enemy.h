@@ -56,7 +56,8 @@ protected:
 	bool _isFindPlayer;													//플레이어를 발견한 상태인지
 	int _frameTime, _frameFPS;											//프레임 변화용
 	POINT _lastPlayerPoint;
-
+	bool _dead;															//데드체크용
+	int _deadAlpha;														//데드체크용
 	RECT _attackRect;													//플레이어 공격용 렉트
 
 public:
@@ -84,24 +85,40 @@ public:
 	void addStatusEffect(tagStatusEffect statuseffect);
 
 	//설정자&접근자
+	//체력
 	int getHP() { return _statistics.hp; }
 	void setHP(int hp) { _statistics.hp = hp; }
+	//스탯 전반
 	tagStat getStat() { return _statistics; }
+	//스탯 전반 설정
 	void setStat(tagStat stat) { _statistics = stat; }
+	//몬스터 렉트
 	RECT getRect() { return _rc; }
+	//몬스터 현재 위치
 	POINT getPoint() { return PointMake(_pointx, _pointy); }
+	//몬스터 현재 위치 설정
 	void setPoint(POINT point) { _pointx = point.x; _pointy = point.y; }
+	//몬스터가 가진 돈
 	int getMoney() { return _money; }
+	//날라갈때 속도
 	float getXSpeed() { return _xspeed; }
 	void setXSpeed(float xspeed) { _xspeed = xspeed; }
 	float getYSpeed() { return _yspeed; }
 	void setYSpeed(float yspeed) { _yspeed = yspeed; }
+	//몬스터 주위 타일값
 	void setTileInfo(mapInfo ul, mapInfo um, mapInfo ur, mapInfo ml, mapInfo mm, mapInfo mr, mapInfo bl, mapInfo bm, mapInfo br) { _upL = ul; _upM = um; _upR = ur; _midL = ml; _midM = mm; _midR = mr; _botL = bl; _botM = bm; _botR = br; }
+	//맵 전체에 대한 타일값
 	void setMap(Map* map) { _map = map; }
-	
+	//죽었는지 살았는지
+	bool getdead() { return _dead; }
+	//상태 설정
+	void setState(ENEMYSTATE es) { _state = es; }
+	//공격렉트 클리어
 	virtual void attRectClear() { _attackRect = RectMake(_pointx, _pointy, 1, 1); }
+	//상태이상 효과 받을때
 	virtual void statusEffect();
 
+	//플레이어, ui랑 연결
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 

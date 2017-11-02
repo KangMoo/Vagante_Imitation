@@ -123,6 +123,11 @@ HRESULT worm::init(POINT point, float minCog, float maxCog)
 	//지렁이 어딨는지 확인용
 	//0 = 바닥, 1 = 왼쪽벽, 2 = 위쪽벽, 3 = 오른쪽벽
 	_whereIsWorm = 0;
+
+
+	//죽었는지 확인용
+	_dead = false;
+	_deadAlpha = 255;
 	
 	return S_OK;
 }
@@ -272,7 +277,7 @@ void worm::frameUpdate()
 
 void worm::falling()	
 {
-	if (_state == ENEMYSTATE_HIT)
+	if (_state == ENEMYSTATE_HIT || _state == ENEMYSTATE_DEAD)
 	{
 		//먼저 지금 날라가는 방향에 타일의 타입이 벽인지 확인한다
 		//이게 옆벽에 부딪히면 달라붙든가?
@@ -289,7 +294,7 @@ void worm::falling()
 				//날라가는 방향의 타일 y값이 현재보다 크면 바닥에 부딪힌..거..겠지?
 				_pointx = _pointx - cosf(_angle)*_xspeed;
 				_pointy = _map->getMapInfo((_pointy + -sinf(_angle)*_yspeed) / TILESIZE, (_pointx) / TILESIZE).rc.top - _moveUp->getFrameHeight() / 2;
-				_state = ENEMYSTATE_IDLE;
+				if(_state == ENEMYSTATE_HIT)	_state = ENEMYSTATE_IDLE;
 				_whereIsWorm = 0;
 				_xspeed = 0;
 				_yspeed = 0;

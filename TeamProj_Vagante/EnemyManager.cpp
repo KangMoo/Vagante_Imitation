@@ -93,12 +93,18 @@ void EnemyManager::deadEnemyCheck()
 {
 	for (int i = _vEnemy.size() - 1; i >= 0; i--)
 	{
-		if (_vEnemy[i]->getHP() <= 0)
+		if (_vEnemy[i]->getHP() <= 0 && !_vEnemy[i]->getdead())
 		{
-			for (int i = 0; i < (*_viEnemy)->getMoney(); i++)
-			{
-				_ui->addCoinOnMap(PointMake(RND->getFromIntTo((*_viEnemy)->getRect().left, (*_viEnemy)->getRect().right), ((*_viEnemy)->getRect().top, (*_viEnemy)->getRect().bottom)));
-			}
+			//for (int j = 0;j < (*_viEnemy)->getMoney(); j++)
+			//{
+			//	_ui->addCoinOnMap(PointMake(RND->getFromIntTo((*_viEnemy)->getRect().left, (*_viEnemy)->getRect().right), ((*_viEnemy)->getRect().top, (*_viEnemy)->getRect().bottom)));
+			//}
+			//SAFE_DELETE(_vEnemy[i]);
+			//_vEnemy.erase(_vEnemy.begin() + i);
+			_vEnemy[i]->setState(ENEMYSTATE_DEAD);
+		}
+		else if (_vEnemy[i]->getdead())
+		{
 			SAFE_DELETE(_vEnemy[i]);
 			_vEnemy.erase(_vEnemy.begin() + i);
 		}
