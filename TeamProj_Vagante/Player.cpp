@@ -75,6 +75,8 @@ void Player::release()
 }
 void Player::update()
 {
+	
+
 	//test~
 	_player.rc = RectMakeCenter(_player.pointx, _player.pointy, TILESIZE / 2, TILESIZE * 3 / 4);
 
@@ -129,8 +131,7 @@ void Player::draw(POINT camera)
 		Rectangle(getMemDC(), _vAttackRange[i].left + camera.x, _vAttackRange[i].top + camera.y, _vAttackRange[i].right + camera.x, _vAttackRange[i].bottom + camera.y);
 	}
 
-
-	
+		
 }
 void Player::move()
 {
@@ -163,7 +164,6 @@ void Player::move()
 	//이동
 	_player.pointx += _player.xspeed;
 	_player.pointy -= _player.yspeed;
-
 
 }
 
@@ -845,4 +845,16 @@ void Player::setmaptileInfo()
 		break;
 	}
 	*/
+
+	
+}
+
+//공격 받았을 시 (데미지만)
+void Player::getDamaged(int damage) { 
+	_player.stat.hp -= damage; 
+	_ui->hitOutput(_player.pointx, _player.pointy, damage, LETTER_RED);
+}
+//공격 받았을 시 (데미지&넉백)
+void Player::getDamaged(int damage, float angle, float knockbackpower) {
+	_player.stat.hp -= damage; _player.xspeed += cosf(angle)*knockbackpower; _player.yspeed -= sinf(angle)*knockbackpower; 
 }

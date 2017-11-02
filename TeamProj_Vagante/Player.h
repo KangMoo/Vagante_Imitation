@@ -92,7 +92,6 @@ private:
 	vEnemyRange _vEnemyRange;
 	
 
-
 public:
 	HRESULT init(POINT point);
 	void release();
@@ -113,9 +112,9 @@ public:
 	void attackCollision();
 
 	//공격 받았을 시 (데미지만)
-	void getDamaged(int damage) { _player.stat.hp -= damage; }
+	void getDamaged(int damage);
 	//공격 받았을 시 (데미지&넉백)
-	void getDamaged(int damage, float angle, float knockbackpower) { _player.stat.hp -= damage; _player.xspeed += cosf(angle)*knockbackpower; _player.yspeed -= sinf(angle)*knockbackpower; }
+	void getDamaged(int damage, float angle, float knockbackpower);
 	//상태이상효과 추가
 	void addStatusEffect(tagStatusEffect statuseffect);
 
