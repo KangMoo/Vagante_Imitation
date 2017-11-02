@@ -110,7 +110,7 @@ void Player::draw(POINT camera)
 {
 	//test
 	Rectangle(getMemDC(), _player.rc.left + camera.x, _player.rc.top + camera.y, _player.rc.right + camera.x, _player.rc.bottom + camera.y);
-
+	/*
 	Rectangle(getMemDC(), 100, 100, 200, 200);
 	char str1[256];
 	char str2[256];
@@ -121,7 +121,7 @@ void Player::draw(POINT camera)
 	TextOut(getMemDC(), 120, 110, str1, strlen(str1));
 	TextOut(getMemDC(), 120, 130, str2, strlen(str2)); 
 	TextOut(getMemDC(), 120, 150, str3, strlen(str3));
-
+	*/
 	for (int i = 0; i < _vAttackRange.size(); i++) {
 		Rectangle(getMemDC(), _vAttackRange[i].left + camera.x, _vAttackRange[i].top + camera.y, _vAttackRange[i].right + camera.x, _vAttackRange[i].bottom + camera.y);
 	}

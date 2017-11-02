@@ -55,11 +55,11 @@ typedef struct vertex {
 	int h;		//이동비용
 	int g;		//예상이동비용
 	int vx, vy;	//위치
-	vertex *p;	//부모 vertex
+	int px, py;	//부모 위치
+	//vertex *p;	//부모 vertex
 	bool operator<(const vertex &v) const {
 		return (f > v.f);
 	}
-
 };
 class Player;
 class UI;
@@ -79,32 +79,41 @@ private:
 	int _money;															//몬스터 죽으면 나올 동전 갯수
 	Map* _map;															//맵 정보
 	bool _isFindPlayer;													//플레이어를 발견한 상태인지
-	bool _stampHitLand;
-	bool _totallydead;
+	bool _stampHitLand;													//stamp공격 체크를 위한 bool값	
+	bool _totallydead;													//연산 정지 확인을 위한 bool값
+	int _fireballCount;													//불 발사 갯수
 	FireBall* _fireball;
-	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;// 위치 정보
-	
+	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;			// 위치 정보
 	bool _canfire;
 	bool _lookleft;
 	float _actTimer;													//행동시간
 	int _frameTime, _frameFPS;											//프레임 변화용
 	float _minCog, _maxCog;												//몬스터 최초 인식범위, 한계 인식범위
 	float _timerForFrameUpdate;
+	float _timerForAstar;
 
 	//For A* 알고리즘!!
 	int _curTileX, _curTileY;		//현재 위치
 	int _goalTileX, _goalTileY;		//목표 위치
-	vertex _startpoint;
+	vertex _startpoint;			//시작점
+	vertex* _currentvertex;			//현재 탐색 위치
+	vertex _npcurrentvertex;			//현재 탐색 위치
+	vector<vertex> _wayToPlayer;		//플레이어에게 가는 길 정보
 	int _tileinfo[40][58];			//맵 정보
-
 	//일단 벡터로 만들어봄
 	vector<vertex> _openlist;
 	vector<vertex> _closelist;
-	void add_openlist(vertex v);	//열림목록에 추가
-	void add_closelist(vertex v);	//닫힘목록에 추가
-	vertex pop_openlist();			//열림목록에서 최소값 리턴
-	vertex pop_closelist();			//닫힘목록에서 최소값 리턴
-	vertex calc_vertex(vertex v);	//vertex의 값 계산
+	void add_openlist(vertex v);					//열림목록에 추가
+	void add_closelist(vertex v);					//닫힘목록에 추가
+	vertex getcloselist(int x, int y);				//닫힘목록의 항목 가져오기
+	vertex getopenlist(int x, int y);				//닫힘목록의 항목 가져오기
+	vertex pop_openlist();							//열림목록에서 최소값 리턴
+	vertex pop_closelist();						//닫힘목록에서 뒷 값 리턴
+	vertex pop_closelist(int vx, int vy);			//해당하는 행렬의 vertex값 리턴
+	vertex calc_vertex(vertex v, vertex p);					//vertex의 값 계산
+	void add_opelistEightWay(vertex* v);	//주위 8개 타일 열림목록에 추가
+	bool checkGoal();
+	void makeWay();
 	void astar();
 
 public:
