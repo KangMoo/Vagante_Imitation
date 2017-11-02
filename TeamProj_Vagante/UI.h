@@ -120,6 +120,8 @@ public:
 	void update();
 	void render();
 	void draw();
+	void render(POINT camera) {};
+	void draw(POINT camera) {};
 	void explanation();
 	void setItemToBag(ITEMNAME name);
 

@@ -29,6 +29,8 @@ public:
 
 	void deadEnemyCheck();
 
+	vector<Enemy*> getEnemyVector() { return _vEnemy; }
+	Boss* getBoss() { return _boss; }
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setMapAddressLink(Map* map) { _map = map; }

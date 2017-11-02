@@ -127,12 +127,11 @@ void UI::render()
 {
 	draw();
 	explanation();
-
 }
 void UI::draw()
 {
 	IMAGEMANAGER->findImage("equip_slot")->render(getMemDC(), _menuRect.left + 52, _menuRect.top);
-	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 	{
 		if (_viBag->equip)
 		{
@@ -141,11 +140,11 @@ void UI::draw()
 		}
 		if (_viBag == --_vBag.end() && !_viBag->equip) IMAGEMANAGER->findImage("hand")->frameRender(getMemDC(),
 			_menuRect.left + 52, _menuRect.top, 0, 0);
-		
+
 	}
 	IMAGEMANAGER->findImage("hpBarBottom")->render(getMemDC(), _menuRect.left + 2, _menuRect.top + 44);
-	hpBottomNumberMacro(_menuRect.left + 90, _menuRect.top + 50,_currentHp);
-	IMAGEMANAGER->findImage("hpBarTop")->render(getMemDC(), _menuRect.left +38, _menuRect.top + 50, 0,0,184* _currentHp / _maxHp, 14);
+	hpBottomNumberMacro(_menuRect.left + 90, _menuRect.top + 50, _currentHp);
+	IMAGEMANAGER->findImage("hpBarTop")->render(getMemDC(), _menuRect.left + 38, _menuRect.top + 50, 0, 0, 184 * _currentHp / _maxHp, 14);
 	hpTopNumberMacro(_menuRect.left + 90, _menuRect.top + 50, _currentHp);
 
 	if (!_active)
@@ -160,16 +159,16 @@ void UI::draw()
 		{
 			_viBag->img->render(getMemDC(), _menuRect.left + 5 + (_viBag->position % 6) * 36,
 				_menuRect.top + 90 + (_viBag->position / 6) * 36);
-			if(_viBag->equip == true)
+			if (_viBag->equip == true)
 				IMAGEMANAGER->findImage("equip_icon")->frameRender(getMemDC(), _menuRect.left + 32 + (_viBag->position % 6) * 36,
-					_menuRect.top + 115 + (_viBag->position / 6) * 36,1,0);
+					_menuRect.top + 115 + (_viBag->position / 6) * 36, 1, 0);
 		}
 
 		if (!_move)IMAGEMANAGER->findImage("cursor_idle")->frameRender(getMemDC(),
 			_menuRect.left - 13 + (_bagNum % 6) * 36, _menuRect.top + 113 + (_bagNum / 6) * 36);
 		else
 		{
-			for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+			for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 			{
 				if (_viBag->position == _save.position0)
 				{
@@ -189,8 +188,8 @@ void UI::draw()
 				{
 				case 0:
 					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
-						_menuRect.right + 10, _menuRect.top + 100,8,3,_inputAlphaSource);
-					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Next Tab",_inputAlphaSource);
+						_menuRect.right + 10, _menuRect.top + 100, 8, 3, _inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Next Tab", _inputAlphaSource);
 					break;
 				case 1:
 					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
@@ -239,7 +238,7 @@ void UI::draw()
 			}
 
 		}
-		
+
 
 		break;
 	case 1:
@@ -326,7 +325,7 @@ void UI::draw()
 			itoa(_lvlPoint, tmp, 10);
 			IMAGEMANAGER->findImage("plus")->alphaFrameRender(getMemDC(),
 				_menuRect.left + 10, _menuRect.bottom - 28, _plusAlphaSource);
-			letterMacro(LETTER_WHITE, _menuRect.left + 40, _menuRect.bottom - 26, tmp,_plusAlphaSource);
+			letterMacro(LETTER_WHITE, _menuRect.left + 40, _menuRect.bottom - 26, tmp, _plusAlphaSource);
 			letterMacro(LETTER_WHITE, _menuRect.left + 50, _menuRect.bottom - 26, " point available", _plusAlphaSource);
 		}
 		IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
@@ -357,6 +356,10 @@ void UI::draw()
 	}
 
 }
+
+
+
+
 
 void UI::setItemToBag(ITEMNAME name)
 {

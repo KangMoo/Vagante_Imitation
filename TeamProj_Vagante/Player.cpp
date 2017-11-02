@@ -50,7 +50,7 @@ HRESULT Player::init(POINT point)
 
 	for (int i = 0; i < 5; i++)_player.statusEffect[i].type = STATUSEFFECT_NULL;
 	
-	_player.stat.hp = 0;
+	_player.stat.hp = 100;
 	_player.stat.str = 0;
 	_player.stat.dex = 0;
 	_player.stat.vit = 0;

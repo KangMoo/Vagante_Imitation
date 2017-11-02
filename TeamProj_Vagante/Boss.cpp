@@ -420,7 +420,7 @@ void Boss::stateHandle()
 		break;
 	case BOSSSTATE_FLYING:
 		//플레이어 방향으로 이동 후 일정 거리가 되면 BOSSSTATE_FIREING로 상태 변화
-
+		RECT temp;
 		if (TIMEMANAGER->getWorldTime() - _actTimer > 4 && getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 500)
 		{
 			if ((_player->getPoint().x - 50 < _pointx && _pointx < _player->getPoint().x + 50) && _player->getPoint().y > _pointy)
@@ -434,6 +434,12 @@ void Boss::stateHandle()
 				_canfire = true;
 			}
 			//상태 변화에 따른 이미지 변화
+			imageChange();
+			_actTimer = TIMEMANAGER->getWorldTime();
+		}
+		else if (IntersectRect(&temp, &_rc, &_player->getRect()))
+		{
+			_state = BOSSSTATE_FIREING;
 			imageChange();
 			_actTimer = TIMEMANAGER->getWorldTime();
 		}
