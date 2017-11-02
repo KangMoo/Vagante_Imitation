@@ -74,6 +74,18 @@ HRESULT Boss::init(POINT point)
 	botR = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE + 1);
 	_lookleft = true;
 	_rc = RectMakeCenter(_pointx, _pointy, 40, 40);
+	_curTileX = int(_pointx) / TILESIZE;
+	_curTileY = int(_pointy) / TILESIZE;
+	_goalTileX = int(_player->getPoint().x) / TILESIZE;
+	_goalTileY = int(_player->getPoint().y) / TILESIZE;
+	for (int i = 0; i < 40; i++)
+	{
+		for (int j = 0; j < 58; j++)
+		{
+			_tileinfo[i][j] = _map->getMapInfo(i, j).type;
+		}
+	}
+	astar();
 
 	return S_OK;
 }
@@ -94,7 +106,7 @@ void Boss::update()
 		_timerForFrameUpdate = TIMEMANAGER->getWorldTime();
 	}
 	_fireball->update();
-	
+
 }
 void Boss::render()
 {
@@ -105,6 +117,15 @@ void Boss::render()
 //			y좌표에 camera.y 만큼 더해주기!!!!
 void Boss::render(POINT camera)
 {
+	//test~
+	char str[64];
+	Rectangle(getMemDC(), 40, 50, 150, 250);
+	for (int i = 0; i < 8; i++)
+	{
+		wsprintf(str, "%d", _openlist[i].f);
+		TextOut(getMemDC(), 50, 50 + 30 * i, str, strlen(str));
+	}
+	//~test
 	draw(camera);
 }
 void Boss::draw(POINT camera)
@@ -115,7 +136,7 @@ void Boss::draw(POINT camera)
 	//	_image->frameRender(getMemDC(), _rc.left - camera.x, _rc.top - camera.y);
 	Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
 	_fireball->render(camera);
-	_image->frameRender(getMemDC(), _pointx - _image->getFrameWidth()/2 + camera.x, _pointy - _image->getFrameHeight()/2 + camera.y, _currentFrameX, _currentFrameY);
+	_image->frameRender(getMemDC(), _pointx - _image->getFrameWidth() / 2 + camera.x, _pointy - _image->getFrameHeight() / 2 + camera.y, _currentFrameX, _currentFrameY);
 
 
 
@@ -149,7 +170,55 @@ void Boss::mapCollisionHandle()
 	botL = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE - 1);
 	botM = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE);
 	botR = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE + 1);
+	/*
+	RECT temp;
+	if ((upL.type == MAPTILE_WALL || upL.type == MAPTILE_WALL2) && IntersectRect(&temp,&upL.rc,&_rc))
+	{
+		_pointx += cosf(getAngle(upL.point.x + TILESIZE / 2, upL.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.right - temp.left);
+		_pointy -= sinf(getAngle(upL.point.x + TILESIZE / 2, upL.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.bottom - temp.top);
 
+	}
+	else if ((upM.type == MAPTILE_WALL || upM.type == MAPTILE_WALL2) && IntersectRect(&temp, &upM.rc, &_rc))
+	{
+		_pointx += cosf(getAngle(upM.point.x + TILESIZE / 2, upM.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.right - temp.left);
+		_pointy -= sinf(getAngle(upM.point.x + TILESIZE / 2, upM.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.bottom - temp.top);
+	}
+	else if ((upR.type == MAPTILE_WALL || upR.type == MAPTILE_WALL2) && IntersectRect(&temp, &upR.rc, &_rc))
+	{
+		_pointx += cosf(getAngle(upR.point.x + TILESIZE / 2, upR.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.right - temp.left);
+		_pointy -= sinf(getAngle(upR.point.x + TILESIZE / 2, upR.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.bottom - temp.top);
+	}
+	else if ((midL.type == MAPTILE_WALL || midL.type == MAPTILE_WALL2) && IntersectRect(&temp, &midL.rc, &_rc))
+	{
+		_pointx += cosf(getAngle(midL.point.x + TILESIZE / 2, midL.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.right - temp.left);
+		_pointy -= sinf(getAngle(midL.point.x + TILESIZE / 2, midL.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.bottom - temp.top);
+	}
+	else if ((midM.type == MAPTILE_WALL || midM.type == MAPTILE_WALL2) && IntersectRect(&temp, &midM.rc, &_rc))
+	{
+		_pointx += cosf(getAngle(midM.point.x + TILESIZE / 2, midM.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.right - temp.left);
+		_pointy -= sinf(getAngle(midM.point.x + TILESIZE / 2, midM.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.bottom - temp.top);
+	}
+	else if ((midR.type == MAPTILE_WALL || midR.type == MAPTILE_WALL2) && IntersectRect(&temp, &midR.rc, &_rc))
+	{
+		_pointx += cosf(getAngle(midR.point.x + TILESIZE / 2, midR.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.right - temp.left);
+		_pointy -= sinf(getAngle(midR.point.x + TILESIZE / 2, midR.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.bottom - temp.top);
+	}
+	else if ((botL.type == MAPTILE_WALL || botL.type == MAPTILE_WALL2) && IntersectRect(&temp, &botL.rc, &_rc))
+	{
+		_pointx += cosf(getAngle(botL.point.x + TILESIZE / 2, botL.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.right - temp.left);
+		_pointy -= sinf(getAngle(botL.point.x + TILESIZE / 2, botL.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.bottom - temp.top);
+	}
+	else if ((botM.type == MAPTILE_WALL || botM.type == MAPTILE_WALL2) && IntersectRect(&temp, &botM.rc, &_rc))
+	{
+		_pointx += cosf(getAngle(botM.point.x + TILESIZE / 2, botM.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.right - temp.left);
+		_pointy -= sinf(getAngle(botM.point.x + TILESIZE / 2, botM.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.bottom - temp.top);
+	}
+	else if ((botR.type == MAPTILE_WALL || botR.type == MAPTILE_WALL2) && IntersectRect(&temp, &botR.rc, &_rc))
+	{
+		_pointx += cosf(getAngle(botR.point.x + TILESIZE / 2, botR.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.right - temp.left);
+		_pointy -= sinf(getAngle(botR.point.x + TILESIZE / 2, botR.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.bottom - temp.top);
+	}
+	*/
 
 	if ((upL.type == MAPTILE_WALL || upL.type == MAPTILE_WALL2) && isCollisionReaction(upL.rc, _rc))
 	{
@@ -196,6 +265,7 @@ void Boss::mapCollisionHandle()
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
 	}
+
 	_rc = RectMakeCenter(_pointx, _pointy, 30, 30);
 }
 void Boss::addStatusEffect(tagStatusEffect statuseffect)
@@ -245,11 +315,11 @@ void Boss::frameUpdate()
 			_currentFrameY = 1;
 		}
 	}
-	
+
 	switch (_state)
 	{
 	case BOSSSTATE_SLEEP:
-		
+
 		break;
 	case BOSSSTATE_ACTIVATE:
 		if (_currentFrameX >= _image->getMaxFrameX()) _currentFrameX = 0;
@@ -371,8 +441,155 @@ void Boss::fireFireBall()
 {
 	if (_canfire && _currentFrameX == 4)
 	{
-		_fireball->fire(_pointx, _pointy, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), 2.5);
+		_fireball->fire(_pointx, _pointy, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), 4);
 		_canfire = false;
 	}
 	if (_currentFrameX == 0) _canfire = true;
+}
+
+
+void Boss::add_openlist(vertex v)
+{
+	//예외처리
+	for (int i = 0; i < _openlist.size(); i++)
+	{
+		if (_openlist[i].vx == v.vx && _openlist[i].vy == v.vy)
+		{
+			return;
+		}
+	}
+	for (int i = 0; i < _closelist.size(); i++)
+	{
+		if (_closelist[i].vx == v.vx && _closelist[i].vy == v.vy)
+		{
+			return;
+		}
+	}
+	//추가
+	_openlist.push_back(v);
+	//정렬
+	sort(_openlist.begin(), _openlist.end());
+}
+void Boss::add_closelist(vertex v)
+{
+	//예외처리
+	for (int i = 0; i < _closelist.size(); i++)
+	{
+		if (_closelist[i].vx == v.vx && _closelist[i].vy == v.vy)
+		{
+			return;
+		}
+	}
+	//추가
+	_closelist.push_back(v);
+}
+vertex Boss::pop_openlist()
+{
+	vertex temp;
+	temp = _openlist[_openlist.size() - 1];
+	return temp;
+}
+vertex Boss::pop_closelist()
+{
+	vertex temp;
+	temp = _closelist[_closelist.size() - 1];
+	return temp;
+}
+vertex Boss::calc_vertex(vertex v)
+{
+	//이동비용 구하기
+	if (v.vx != v.p->vx && v.vy != v.p->vy)
+	{
+		v.h = v.p->h + 14;
+	}
+	else if (v.vx == v.p->vx && v.vy != v.p->vy)
+	{
+		v.h = v.p->h + 10;
+	}
+	else if (v.vx != v.p->vx && v.vy == v.p->vy)
+	{
+		v.h = v.p->h + 10;
+	}
+	//예상이동비용 구하기
+	v.g = 0;
+	if (v.vx != _goalTileX)
+	{
+		v.g += 10 * (abs(_goalTileX - v.vx));
+	}
+	if (v.vy != _goalTileY)
+	{
+		v.g += 10 * (abs(_goalTileY - v.vy));
+	}
+	//비용 구하기
+	v.f = v.g + v.h;
+	return v;
+}
+
+void Boss::astar()
+{
+	_startpoint.vx = _curTileX;
+	_startpoint.vy = _curTileY;
+	_startpoint.h = 0;
+	_startpoint.g = 0;
+	if (_startpoint.vx != _goalTileX)
+	{
+		_startpoint.g += 10 * (abs(_goalTileX - _startpoint.vx));
+	}
+	if (_startpoint.vy != _goalTileY)
+	{
+		_startpoint.g += 10 * (abs(_goalTileY - _startpoint.vy));
+	}
+	_startpoint.f = _startpoint.g + _startpoint.h;
+
+	vertex temp;
+	temp.p = &_startpoint;
+	temp.vx = _startpoint.vx;
+	temp.vy = _startpoint.vy;
+	temp.vx -= 1;
+	temp.vy -= 1;
+	temp = calc_vertex(temp);
+	add_openlist(temp);
+	temp.vx = _startpoint.vx;
+	temp.vy = _startpoint.vy;
+	temp.vx -= 1;
+	temp.vy -= 0;
+	temp = calc_vertex(temp);
+	add_openlist(temp);
+	temp.vx = _startpoint.vx;
+	temp.vy = _startpoint.vy;
+	temp.vx -= 1;
+	temp.vy -= -1;
+	temp = calc_vertex(temp);
+	add_openlist(temp);
+	temp.vx = _startpoint.vx;
+	temp.vy = _startpoint.vy;
+	temp.vx -= 0;
+	temp.vy -= 1;
+	temp = calc_vertex(temp);
+	add_openlist(temp);
+	temp.vx = _startpoint.vx;
+	temp.vy = _startpoint.vy;
+	temp.vx -= 0;
+	temp.vy -= -1;
+	temp = calc_vertex(temp);
+	add_openlist(temp);
+	temp.vx = _startpoint.vx;
+	temp.vy = _startpoint.vy;
+	temp.vx -= -1;
+	temp.vy -= 1;
+	temp = calc_vertex(temp);
+	add_openlist(temp);
+	temp.vx = _startpoint.vx;
+	temp.vy = _startpoint.vy;
+	temp.vx -= -1;
+	temp.vy -= 0;
+	temp = calc_vertex(temp);
+	add_openlist(temp);
+	temp.vx = _startpoint.vx;
+	temp.vy = _startpoint.vy;
+	temp.vx -= -1;
+	temp.vy -= -1;
+	temp = calc_vertex(temp);
+	add_openlist(temp);
+
 }

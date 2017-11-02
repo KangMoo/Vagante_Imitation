@@ -1,8 +1,11 @@
 #pragma once
 #include "gameNode.h"
+#include <list>
+#include <algorithm>
 #include "Map.h"
 #include "vaganteStructEnum.h"
 #include "FireBall.h"
+
 /*
 !vaganteStructEnum.h에서 선언했으니 참조만 할 것!
 enum BossSTATE {
@@ -35,6 +38,8 @@ int spd;	//이속
 };
 */
 
+
+
 enum BOSSSTATE {
 	BOSSSTATE_SLEEP,
 	BOSSSTATE_ACTIVATE,
@@ -44,6 +49,18 @@ enum BOSSSTATE {
 	BOSSSTATE_DEAD
 };
 
+//For A*알고리즘!!
+typedef struct vertex {
+	int f;		//비용
+	int h;		//이동비용
+	int g;		//예상이동비용
+	int vx, vy;	//위치
+	vertex *p;	//부모 vertex
+	bool operator<(const vertex &v) const {
+		return (f > v.f);
+	}
+
+};
 class Player;
 class UI;
 class Boss : public gameNode
@@ -72,6 +89,22 @@ private:
 	int _frameTime, _frameFPS;											//프레임 변화용
 	float _minCog, _maxCog;												//몬스터 최초 인식범위, 한계 인식범위
 	float _timerForFrameUpdate;
+
+	//For A* 알고리즘!!
+	int _curTileX, _curTileY;		//현재 위치
+	int _goalTileX, _goalTileY;		//목표 위치
+	vertex _startpoint;
+	int _tileinfo[40][58];			//맵 정보
+
+	//일단 벡터로 만들어봄
+	vector<vertex> _openlist;
+	vector<vertex> _closelist;
+	void add_openlist(vertex v);	//열림목록에 추가
+	void add_closelist(vertex v);	//닫힘목록에 추가
+	vertex pop_openlist();			//열림목록에서 최소값 리턴
+	vertex pop_closelist();			//닫힘목록에서 최소값 리턴
+	vertex calc_vertex(vertex v);	//vertex의 값 계산
+	void astar();
 
 public:
 	HRESULT init();

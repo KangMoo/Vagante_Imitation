@@ -54,6 +54,7 @@ public:
 	void setMapAddressLink(Map* map) { _map = map; }
 	void setPlayerAddressLink(Player* player) { _player = player; }
 
+	//for A* 알고리즘
 	FireBall();
 	~FireBall();
 };
