@@ -129,6 +129,7 @@ void Player::draw(POINT camera)
 		Rectangle(getMemDC(), _vAttackRange[i].left + camera.x, _vAttackRange[i].top + camera.y, _vAttackRange[i].right + camera.x, _vAttackRange[i].bottom + camera.y);
 	}
 
+
 	
 }
 void Player::move()

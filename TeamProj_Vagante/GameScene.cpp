@@ -19,7 +19,7 @@ HRESULT GameScene::init()
 	_player = new Player;
 	_map = new Map;
 	_ui = new UI;
-	
+
 	//상호참조 연결
 	_map->setEnemyManagerAddressLink(_em);
 	_map->setPlayerAddressLink(_player);
@@ -80,15 +80,25 @@ void GameScene::render()
 	_map->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_em->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_player->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
-	_ui->render();
+	_ui->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+	TIMEMANAGER->render(getMemDC());
 }
 
 void GameScene::addImage()
 {
 	//이미지 추가는 여기서!!
-	IMAGEMANAGER->addImage("bg", "Img\\etc\\temp_bg.bmp", TILESIZE * 58, TILESIZE * 40, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("폭발", "Img\\etc\\explosion_1.bmp", 448, 64, 7, 1, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("test", "Img\\etc\\tes.bmp", 40, 224, 1, 7, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("bg", "Img/etc/temp_bg.bmp", TILESIZE * 58, TILESIZE * 40, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("폭발", "Img/etc/explosion_1.bmp", 448, 64, 7, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("test", "Img/etc/tes.bmp", 40, 224, 1, 7, true, RGB(255, 0, 255));
+
+
+	IMAGEMANAGER->addFrameImage("boss_dragon_cry", "Img/enemy/dragon_cry.bmp", 304, 164, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("boss_dragon_dead", "Img/enemy/dragon_dead.bmp", 39 * 2, 30 * 2, 1, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("boss_dragon_stamp", "Img/enemy/dragon_drive.bmp", 152 * 2, 80 * 2, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("boss_dragon_fire", "Img/enemy/dragon_fire.bmp", 175 * 2, 76 * 2, 5, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("fireball", "Img/enemy/dragon_fireball.bmp", 640, 160, 16, 4, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("boss_dragon_fly", "Img/enemy/dragon_fly.bmp", 186 * 2, 76 * 2, 6, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("boss_dragon_sleep", "Img/enemy/dragon_sleep.bmp", 37 * 2, 30 * 2, 1, 2, true, RGB(255, 0, 255));
 
 
 }

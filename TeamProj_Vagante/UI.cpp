@@ -117,6 +117,23 @@ void UI::update()
 			if (_plusAlphaSource < 0) _plusAlphaSource = 0;
 		}
 	}
+	//====================== H I T   O U T P U T ======================
+	for ( _viHit = _vHit.begin(); _viHit != _vHit.end(); ++_viHit)
+	{
+		_viHit->y--;
+		_viHit->alphaSource += 10;
+	}
+
+	for (_viHit = _vHit.begin(); _viHit != _vHit.end(); )
+	{
+		if (_viHit->alphaSource >= 255)
+		{
+			_vHit.erase(_viHit);
+			break;
+		}
+		else ++_viHit;
+	}
+
 
 	//======================== F U N C T I O N ========================
 	rectMove();
@@ -125,14 +142,22 @@ void UI::update()
 }
 void UI::render()
 {
-	draw();
-	explanation();
 
 }
 void UI::draw()
 {
+
+}
+void UI::render(POINT camera)
+{
+	draw(camera);
+	if(_active) explanation();
+
+}
+void UI::draw(POINT camera)
+{
 	IMAGEMANAGER->findImage("equip_slot")->render(getMemDC(), _menuRect.left + 52, _menuRect.top);
-	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 	{
 		if (_viBag->equip)
 		{
@@ -141,11 +166,11 @@ void UI::draw()
 		}
 		if (_viBag == --_vBag.end() && !_viBag->equip) IMAGEMANAGER->findImage("hand")->frameRender(getMemDC(),
 			_menuRect.left + 52, _menuRect.top, 0, 0);
-		
+
 	}
 	IMAGEMANAGER->findImage("hpBarBottom")->render(getMemDC(), _menuRect.left + 2, _menuRect.top + 44);
-	hpBottomNumberMacro(_menuRect.left + 90, _menuRect.top + 50,_currentHp);
-	IMAGEMANAGER->findImage("hpBarTop")->render(getMemDC(), _menuRect.left +38, _menuRect.top + 50, 0,0,184* _currentHp / _maxHp, 14);
+	hpBottomNumberMacro(_menuRect.left + 90, _menuRect.top + 50, _currentHp);
+	IMAGEMANAGER->findImage("hpBarTop")->render(getMemDC(), _menuRect.left + 38, _menuRect.top + 50, 0, 0, 184 * _currentHp / _maxHp, 14);
 	hpTopNumberMacro(_menuRect.left + 90, _menuRect.top + 50, _currentHp);
 
 	if (!_active)
@@ -160,16 +185,16 @@ void UI::draw()
 		{
 			_viBag->img->render(getMemDC(), _menuRect.left + 5 + (_viBag->position % 6) * 36,
 				_menuRect.top + 90 + (_viBag->position / 6) * 36);
-			if(_viBag->equip == true)
+			if (_viBag->equip == true)
 				IMAGEMANAGER->findImage("equip_icon")->frameRender(getMemDC(), _menuRect.left + 32 + (_viBag->position % 6) * 36,
-					_menuRect.top + 115 + (_viBag->position / 6) * 36,1,0);
+					_menuRect.top + 115 + (_viBag->position / 6) * 36, 1, 0);
 		}
 
 		if (!_move)IMAGEMANAGER->findImage("cursor_idle")->frameRender(getMemDC(),
 			_menuRect.left - 13 + (_bagNum % 6) * 36, _menuRect.top + 113 + (_bagNum / 6) * 36);
 		else
 		{
-			for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+			for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 			{
 				if (_viBag->position == _save.position0)
 				{
@@ -189,8 +214,8 @@ void UI::draw()
 				{
 				case 0:
 					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
-						_menuRect.right + 10, _menuRect.top + 100,8,3,_inputAlphaSource);
-					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Next Tab",_inputAlphaSource);
+						_menuRect.right + 10, _menuRect.top + 100, 8, 3, _inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Next Tab", _inputAlphaSource);
 					break;
 				case 1:
 					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
@@ -239,7 +264,7 @@ void UI::draw()
 			}
 
 		}
-		
+
 
 		break;
 	case 1:
@@ -326,7 +351,7 @@ void UI::draw()
 			itoa(_lvlPoint, tmp, 10);
 			IMAGEMANAGER->findImage("plus")->alphaFrameRender(getMemDC(),
 				_menuRect.left + 10, _menuRect.bottom - 28, _plusAlphaSource);
-			letterMacro(LETTER_WHITE, _menuRect.left + 40, _menuRect.bottom - 26, tmp,_plusAlphaSource);
+			letterMacro(LETTER_WHITE, _menuRect.left + 40, _menuRect.bottom - 26, tmp, _plusAlphaSource);
 			letterMacro(LETTER_WHITE, _menuRect.left + 50, _menuRect.bottom - 26, " point available", _plusAlphaSource);
 		}
 		IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
@@ -356,7 +381,30 @@ void UI::draw()
 		coinNumberMacro(NUMBER_COIN_GREEN, WINSIZEX - 104, 34, _income);
 	}
 
+	for ( _viHit = _vHit.begin(); _viHit != _vHit.end(); ++_viHit)
+	{
+		char str[10];
+		letterMacro(_viHit->font, _viHit->x+camera.x, _viHit->y + camera.y, itoa(_viHit->damage, str, 10), _viHit->alphaSource);
+	}
+
 }
+
+void UI::hitOutput(float x, float y, int damage, LETTERFONT font)
+{
+	tagHitOutput hit;
+	ZeroMemory(&hit, sizeof(tagHitOutput));
+	hit.x = x;
+	hit.y = y;
+	hit.damage = damage;
+	hit.alphaSource = 0;
+	hit.font = font;
+
+	_vHit.push_back(hit);
+}
+
+
+
+
 
 void UI::setItemToBag(ITEMNAME name)
 {
@@ -416,6 +464,38 @@ void UI::explanation()
 	switch (_menuNum)
 	{
 	case 0:
+		for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+		{
+			if (_viBag->position == _bagNum)
+			{
+				switch (_viBag->name)
+				{
+				case NAME_SWORD:
+					letterMacro(LETTER_GREEN, _menuRect.left + 10, _menuRect.top - SPACE * 5,
+						"Normal Sword");
+					letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+						"2-5 damage");
+					letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+						"Normal Attack speed");
+					letterMacro(LETTER_GRAY, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+						"Not the sharpest edge,");
+					letterMacro(LETTER_GRAY, _menuRect.left + 10, _menuRect.top - SPACE * 1,
+						" but it does its job.");
+					break;
+				case NAME_HEAL:					
+					letterMacro(LETTER_GREEN, _menuRect.left + 10, _menuRect.top - SPACE * 4,
+						"healing potion");
+					letterMacro(LETTER_WHITE, _menuRect.left + 10, _menuRect.top - SPACE * 3,
+						"+10 health point");
+					letterMacro(LETTER_GRAY, _menuRect.left + 10, _menuRect.top - SPACE * 2,
+						"you can use potion");
+					letterMacro(LETTER_GRAY, _menuRect.left + 10, _menuRect.top - SPACE * 1,
+						" when you are in danger");
+					break;
+				}
+			}
+
+		}
 		break;
 	case 1:
 		break;
@@ -1450,13 +1530,17 @@ void UI::keyControl()
 
 	//if (KEYMANAGER->isOnceKeyDown('T'))
 	//{
-	//	setItemToBag(NAME_SWORD);
+	//	setItemToBag(NAME_HEAL);
 	//}
 
 	//if (KEYMANAGER->isOnceKeyDown('Y'))
 	//{
 	//	setCoin(1);
 	//}
+	if (KEYMANAGER->isOnceKeyDown('U'))
+	{
+		hitOutput(WINSIZEX / 2, WINSIZEY / 2, 10, LETTER_WHITE);
+	}
 }
 
 void UI::setInputGuide()
@@ -1678,7 +1762,7 @@ void UI::addImg()
 	IMAGEMANAGER->addFrameImage("hand", "Img/ui/item/hand.bmp", 80, 40, 2, 1, true, RGB(255, 0, 255));
 }
 
-void UI::addItemOnMap(tagItemInfo item)
+void UI::addItemOnMap(tagItemInfo item, POINT position)
 {
 
 }

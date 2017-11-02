@@ -5,6 +5,7 @@
 
 class Player;
 class Map;
+class UI;
 struct tagFireBall
 {
 
@@ -32,15 +33,17 @@ private:
 	const char* _imageName;
 	float _range;
 	int _FireBallMax;
+	float _timerForFrameUpdate;
 	Player* _player;
 	Map* _map;
-
+	UI* _ui;
 
 public:
 	HRESULT init(int FireBallMax, float range, const char* imageName);
 	void release(void);
 	void update(void);
 	void render(POINT camera);
+	void frameHandle();
 
 	void fire(float x, float y, float angle, float speed);
 
@@ -51,7 +54,9 @@ public:
 	vector<tagFireBall>::iterator getVIFireBall(void) { return _viFireBall; }
 	void setMapAddressLink(Map* map) { _map = map; }
 	void setPlayerAddressLink(Player* player) { _player = player; }
+	void setUIAddressLink(UI* ui) { _ui = ui; }
 
+	//for A* 알고리즘
 	FireBall();
 	~FireBall();
 };

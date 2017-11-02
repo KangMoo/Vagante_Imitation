@@ -2,6 +2,7 @@
 #include "FireBall.h"
 #include "Map.h"
 #include "Player.h"
+#include "UI.h"
 
 FireBall::FireBall() {}
 FireBall::~FireBall() {}
@@ -11,6 +12,7 @@ HRESULT FireBall::init(int FireBallMax, float range, const char* imageName)
 	_FireBallMax = FireBallMax;
 	_range = range;
 	_fireBallImage = IMAGEMANAGER->findImage(imageName);
+	_timerForFrameUpdate = TIMEMANAGER->getWorldTime();
 	return S_OK;
 }
 
@@ -21,15 +23,12 @@ void FireBall::release(void)
 
 void FireBall::update(void)
 {
-	for (_viFireBall = _vFireBall.begin(); _viFireBall != _vFireBall.end(); ++_viFireBall)
+	if (TIMEMANAGER->getWorldTime() - _timerForFrameUpdate > 0.1)
 	{
-		if (_viFireBall->currentFrameX < _fireBallImage->getMaxFrameX())
-		{
-			_viFireBall->currentFrameX++;
-		}
-		else _viFireBall->currentFrameX = 0;
+		frameHandle();
+		_timerForFrameUpdate = TIMEMANAGER->getWorldTime();
 	}
-
+	
 	move();
 	hitPlayer();
 }
@@ -41,7 +40,30 @@ void FireBall::render(POINT camera)
 		_fireBallImage->frameRender(getMemDC(), _viFireBall->rc.left + camera.x, _viFireBall->rc.top + camera.y, _viFireBall->currentFrameX, _viFireBall->currentFrameY);
 	}
 }
+void FireBall::frameHandle()
+{
+	for (_viFireBall = _vFireBall.begin(); _viFireBall != _vFireBall.end(); ++_viFireBall)
+	{
+		if (_viFireBall->currentFrameY < _fireBallImage->getMaxFrameY())
+		{
+			_viFireBall->currentFrameY++;
+		}
+		else _viFireBall->currentFrameY = 0;
 
+		int frame;
+		float angle;
+
+		angle = _viFireBall->angle + PI16;
+		if (angle >= PI2) angle -= PI2;
+
+		frame = int(angle / PI8);
+		_viFireBall->currentFrameX = frame;
+	}
+
+
+
+
+}
 
 void FireBall::fire(float x, float y, float angle, float speed)
 {
@@ -56,6 +78,7 @@ void FireBall::fire(float x, float y, float angle, float speed)
 	FireBall.y = FireBall.fireY = y;
 	FireBall.angle = angle;
 	FireBall.currentFrameX = FireBall.currentFrameY = 0;
+	FireBall.power = 8;
 	FireBall.rc = RectMakeCenter(FireBall.x, FireBall.y,
 		_fireBallImage->getFrameWidth(),
 		_fireBallImage->getFrameHeight());
@@ -73,8 +96,8 @@ void FireBall::move(void)
 		_vFireBall[i].y += -sinf(_vFireBall[i].angle) * _vFireBall[i].speed;
 
 		_vFireBall[i].rc = RectMakeCenter(_vFireBall[i].x, _vFireBall[i].y,
-			_fireBallImage->getFrameWidth(),
-			_fireBallImage->getFrameHeight());
+			_fireBallImage->getFrameWidth() - 5,
+			_fireBallImage->getFrameHeight() - 5);
 
 		if (!(0<_vFireBall[i].y / TILESIZE && _vFireBall[i].y / TILESIZE <40) ||
 			!(0<_vFireBall[i].x / TILESIZE && _vFireBall[i].x / TILESIZE <58))
