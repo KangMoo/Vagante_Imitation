@@ -8,6 +8,7 @@ private:
 	image* _moveRight;
 	image* _moveUp;
 	image* _moveDown;
+	image* _hit;
 
 	bool _isLeft;
 	int _whereIsWorm;
@@ -15,7 +16,7 @@ private:
 	bool _reverseFrame;
 
 public:
-
+	//생성 위치, 최소인식범위, 최대인식범위
 	HRESULT init(POINT point, float minCog, float maxCog);
 	void falling();			// 낙하 처리
 	void rectResize();		// 혹시 rect 사이즈 변경 필요시 여길 통해서

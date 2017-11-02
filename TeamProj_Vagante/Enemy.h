@@ -79,7 +79,7 @@ public:
 	//공격 받았을 시 (데미지만)
 	void getDamaged(int damage) { _statistics.hp -= damage; }
 	//공격 받았을 시 (데미지&넉백)
-	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _angle = angle; _gravity = 0; }
+	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _angle = angle; _gravity = 0; _state = ENEMYSTATE_HIT; }
 	//상태이상
 	void addStatusEffect(tagStatusEffect statuseffect);
 

@@ -121,8 +121,9 @@ void Enemy::draw(POINT camera)
 	//Rectangle(getMemDC(), _pointx - _minCog / 2 + camera.x, _pointy - _minCog / 2 + camera.y, _pointx + _minCog / 2 + camera.x, _pointy + _minCog / 2 + camera.y);
 	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
 	_image->frameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y);
-	EllipseMakeCenter(getMemDC(), _pointx + camera.x, _pointy + camera.y, 5, 5);
+	//EllipseMakeCenter(getMemDC(), _pointx + camera.x, _pointy + camera.y, 5, 5);
 
+	/*
 	char string[128];
 	sprintf(string, "x : %d, y : %d", _rc.left / TILESIZE, _rc.top / TILESIZE);
 	TextOut(getMemDC(), WINSIZEX / 2, WINSIZEY / 2, string, strlen(string));
@@ -136,7 +137,7 @@ void Enemy::draw(POINT camera)
 		sprintf(string, "¤¤¤¤");
 		TextOut(getMemDC(), 300, 300, string, strlen(string));
 	}
-
+	*/
 }
 void Enemy::move()
 {
