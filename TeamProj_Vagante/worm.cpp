@@ -48,7 +48,23 @@ HRESULT worm::init(POINT point, float minCog, float maxCog)
 	_xspeed = _yspeed = _angle = _gravity = 0;
 	
 	_money = 0;
-	
+
+	_moveLeft = new image;
+	_moveLeft->init("Img\\enemy\\crawler_move_left.bmp", 0, 0, 40 * 2, 32 * 2, 4, 2, true, RGB(255, 0, 255));
+	_moveRight = new image;
+	_moveRight->init("Img\\enemy\\crawler_move_right.bmp", 0, 0, 40 * 2, 32 * 2, 4, 2, true, RGB(255, 0, 255));
+	_moveUp = new image;
+	_moveUp->init("Img\\enemy\\crawler_move_up.bmp", 0, 0, 64 * 2, 20 * 2, 4, 2, true, RGB(255, 0, 255));
+	_moveDown = new image;
+	_moveDown->init("Img\\enemy\\crawler_move_down.bmp", 0, 0, 64 * 2, 20 * 2, 4, 2, true, RGB(255, 0, 255));
+
+	/*
+	IMAGEMANAGER->addFrameImage("wormMoveUp", "Img\\enemy\\crawler_move_up.bmp", 0, 0, 64 * 2, 20 * 2, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("wormMoveDown", "Img\\enemy\\crawler_move_down.bmp", 0, 0, 64 * 2, 20 * 2, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("wormMoveLeft", "Img\\enemy\\crawler_move_left.bmp", 0, 0, 40 * 2, 32 * 2, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("wormMoveRight", "Img\\enemy\\crawler_move_right.bmp", 0, 0, 40 * 2, 32 * 2, 4, 2, true, RGB(255, 0, 255));
+	*/
+
 	_isFindPlayer = false;
 	//_statusEffect[5]
 	for (int i = 0; i < 5; i++)
@@ -66,7 +82,7 @@ HRESULT worm::init(POINT point, float minCog, float maxCog)
 
 	if (a == 0) _isLeft = true;
 	else _isLeft = false;
-	_isLeft = false;
+	//_isLeft = true;
 	
 	_reverseFrame = false;
 	
@@ -373,33 +389,37 @@ void worm::frameUpdate()
 		switch (_whereIsWorm)
 		{
 		case 0:
-			_image = IMAGEMANAGER->findImage("wormMoveUp");
+			//_image = IMAGEMANAGER->findImage("wormMoveUp");
+			_image = _moveUp;
 			if (_isLeft)
 				_image->setFrameY(0);
 			else _image->setFrameY(1);
 			break;
 		case 1:
-			_image = IMAGEMANAGER->findImage("wormMoveRight");
+			//_image = IMAGEMANAGER->findImage("wormMoveRight");
+			_image = _moveRight;
 			if (_isLeft)
 				_image->setFrameY(0);
 			else _image->setFrameY(1);
 			break;
 		case 2:
-			_image = IMAGEMANAGER->findImage("wormMoveDown");
+			//_image = IMAGEMANAGER->findImage("wormMoveDown");
+			_image = _moveDown;
 			if (_isLeft)
-				_image->setFrameY(1);
-			else _image->setFrameY(0);
+				_image->setFrameY(0);
+			else _image->setFrameY(1);
 			break;
 		case 3:
-			_image = IMAGEMANAGER->findImage("wormMoveLeft");
+			//_image = IMAGEMANAGER->findImage("wormMoveLeft");
+			_image = _moveLeft;
 			if (_isLeft)
 				_image->setFrameY(1);
 			else _image->setFrameY(0);
 			break;
 		}
-		if (_isLeft)
-			_image->setFrameY(0);
-		else _image->setFrameY(1);
+		//if (_isLeft)
+		//	_image->setFrameY(0);
+		//else _image->setFrameY(1);
 		_frameTime ++;
 		if (_frameTime >= _frameFPS)
 		{
@@ -416,7 +436,7 @@ void worm::frameUpdate()
 			else if (_currentFrameX < 0)
 			{
 				_reverseFrame = false;
-				_currentFrameX = 0;
+				_currentFrameX = 1;
 			}
 			_image->setFrameX(_currentFrameX);
 		}
@@ -466,44 +486,248 @@ void worm::isThereWall()
 	case 0:
 		if (_isLeft)
 		{
-			if (_pointx - _image->getFrameWidth() / 2 < _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).rc.left)
+			//이번에 움직일 때 중심이 타일을 넘기는지 체크
+			if ((_pointx - _moveSpeed)/TILESIZE < (_pointx)/TILESIZE)
 			{
+				//넘겼으면 변환을 시작
+				//먼저 앞쪽에 벽이 있는지 계산
+				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type == MAPTILE_WALL)
+				{
+					//벽이 있다면 그 벽을 타고 올라가게 바꿔준다
+					//모션은 1번(wormMoveRight)
+					_whereIsWorm = 1;
 
+					//x, y값을 보정한다
+					//x는 앞쪽 벽(x-1) rect의 오른쪽에서 이미지 절반값만큼 더하고, y는 rect의 아래쪽에서 이속만큼 빼준다
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).rc.right + IMAGEMANAGER->findImage("wormMoveRight")->getFrameWidth() / 2;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.bottom - _moveSpeed;
+				}
+				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL)
+				{
+					//만약 앞쪽에 벽이 없는데 그 아래에도 벽이 없을 경우 지금 자기 아래 타일을 타고 내려가야한다
+					//x는 그대로, y는 + 1 해준 자기 앞 아래의 타일 검사, 또 자기 바로 앞 타일 검사
+					//없으면 타고 내려간다
+					//3번(wormMoveLeft)
+					_whereIsWorm = 3;
+					//값보정
+					//x는 자기가 밟고있는 바닥(y+1)rect 왼쪽에서 이미지 절반값만큼 빼주고, y는 자기가 밟고있는 바닥rect 위에서 이속만큼 더해준다
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.left - IMAGEMANAGER->findImage("wormMoveLeft")->getFrameWidth() / 2;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.top + _moveSpeed;
+				}
 			}
 		}
 		else
 		{
-
+			//움직일 때 중심이 타일을 넘기는지 체크, _isLeft가 true일 때와는 다르다
+			if ((_pointx + _moveSpeed) > (_pointx)/TILESIZE)
+			{
+				//역시 넘겼으면 변환을 시작
+				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type == MAPTILE_WALL)
+				{
+					//앞쪽에 벽이 있으면 타고 올라간다
+					//3번(wormMoveLeft)
+					_whereIsWorm = 3;
+					//값보정
+					//x는 앞쪽 벽(x+1) rect의 왼쪽에서 이미지 절반값만큼 빼주고, y는 앞쪽 벽 rect의 아래쪽에서 이속만큼 빼준다
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).rc.left - IMAGEMANAGER->findImage("wormMoveLeft")->getFrameWidth() / 2;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE + 1).rc.bottom - _moveSpeed;
+				}
+				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy)/TILESIZE + 1, (_pointx + _moveSpeed)/TILESIZE).type != MAPTILE_WALL)
+				{
+					//역시 앞쪽에 벽 없는지 체크하고 아래도 체크해준다
+					//둘다 없으면 1번(wormMoveRight)
+					_whereIsWorm = 1;
+					//값보정
+					//x는 자기가 밟고있는 바닥(y+1)rect의 오른쪽에서 이미지 절반값만큼 더해주고, y는 자기가 밟고있는 바닥rect의 윗쪽에서 이속만큼 더한다
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.right + IMAGEMANAGER->findImage("wormMoveRight")->getFrameWidth() / 2;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.top + _moveSpeed;
+				}
+			}
 		}
 		break;
 	case 1:
+		
 		if (_isLeft)
 		{
-
+			//중심을 넘기는지 체크, 이번엔 y값을 체크한다
+			if ((_pointy - _moveSpeed)/TILESIZE < (_pointy)/TILESIZE)
+			{
+				//넘겼으면 변환 시작
+				if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
+				{
+					//앞쪽에 벽이 있으니 올라탄다
+					//천장에 붙으므로 2번(wormMoveDown)
+					_whereIsWorm = 2;
+					//값보정
+					//x는 위쪽 벽(y-1)rect의 왼쪽에서 이속만큼 더해주고, y는 위쪽벽 rect의 아래쪽에서 이미지 절반값만큼 더해준다
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).rc.left + _moveSpeed;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).rc.bottom + IMAGEMANAGER->findImage("wormMoveDown")->getFrameHeight()/2;
+				}
+				else if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE - 1).type != MAPTILE_WALL)
+				{
+					//위쪽에도 벽이 없고 그 아래에도 벽이 없으니 꺾인다
+					//바닥에 붙으니 0번(wormMoveUp)
+					_whereIsWorm = 0;
+					//값보정
+					//x는 밟고있는 바닥(x-1)rect의 오른쪽에서 이속만큼 빼주고, y는 밟고있는 바닥rect의 위쪽에서 이미지 절반값만큼 빼준다
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.right - _moveSpeed;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.top - IMAGEMANAGER->findImage("wormMoveUp")->getFrameHeight() / 2;
+				}
+			}
 		}
 		else
 		{
-
+			//지금 있는 타일보다 내려가는지 체크
+			if ((_pointy + _moveSpeed) / TILESIZE > (_pointy)/TILESIZE)
+			{
+				if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
+				{
+					//앞쪽에 벽이 있다면 안착하니 0번(wormMoveUp)
+					_whereIsWorm = 0;
+					//값보정
+					//x는 벽(y+1) rect의 왼쪽값에서 이속만큼 더해주고, y는 벽rect의 위쪽에서 이미지 절반값만큼 빼준다
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.left + _moveSpeed;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.top - IMAGEMANAGER->findImage("wormMoveUp")->getFrameHeight() / 2;
+				}
+				else if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE - 1).type != MAPTILE_WALL)
+				{
+					//아래쪽에도 벽이 없고 그 왼쪽에도 없으니 천장
+					//2번(wormMoveDown)
+					_whereIsWorm = 2;
+					//값보정
+					//x는 자기가 밟고있는 벽(x-1) rect의 오른쪽에서 이속만큼 빼주고, y는 밟고있는 벽 rect의 아래에서 이미지 절반값만큼 더해준다
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.right - _moveSpeed;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).rc.bottom + IMAGEMANAGER->findImage("wormMoveDown")->getFrameHeight() / 2;
+				}
+			}
 		}
+		
 		break;
 	case 2:
+		//0번과 기본은 같다
 		if (_isLeft)
 		{
-
+			//움직일 때 중심이 타일을 넘기는지 체크, _isLeft가 true일 때와는 다르다
+			if ((_pointx + _moveSpeed) / TILESIZE > (_pointx) / TILESIZE)
+			{
+				//역시 넘겼으면 변환을 시작
+				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type == MAPTILE_WALL)
+				{
+					//앞쪽에 벽이 있으면 타고 올라간다
+					//3번(wormMoveLeft)
+					_whereIsWorm = 3;
+					//값보정
+					//x는 앞쪽벽(x+1)의 왼쪽에서 이미지 절반값만큼 -, y는 위에서 이속만큼 +
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).rc.left - IMAGEMANAGER->findImage("wormMoveLeft")->getFrameWidth()/2;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).rc.top + _moveSpeed;
+				}
+				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveSpeed) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx + _moveSpeed) / TILESIZE).type != MAPTILE_WALL)
+				{
+					//역시 앞쪽에 벽 없는지 체크하고 아래도 체크해준다
+					//둘다 없으면 1번(wormMoveRight)
+					_whereIsWorm = 1;
+					//값보정
+					//x는 자기가 밟은벽(y - 1)의 오른쪽에서 이미지절반+, y는 자기가 밟은벽의 아래에서 이속만큼 빼줌
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).rc.right + IMAGEMANAGER->findImage("wormMoveRight")->getFrameWidth() / 2;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).rc.bottom - _moveSpeed;
+				}
+			}
 		}
 		else
 		{
+			//이번에 움직일 때 중심이 타일을 넘기는지 체크
+			if ((_pointx - _moveSpeed) / TILESIZE < (_pointx) / TILESIZE)
+			{
+				//넘겼으면 변환을 시작
+				//먼저 앞쪽에 벽이 있는지 계산
+				if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type == MAPTILE_WALL)
+				{
+					//벽이 있다면 그 벽을 타고 올라가게 바꿔준다
+					//모션은 1번(wormMoveRight)
+					_whereIsWorm = 1;
 
+					//x, y값을 보정한다
+					//x는 앞쪽벽(x-1)의 오른쪽에서 이미지 절반+, y는 앞쪽벽 위에서 이속만큼 +
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.right + IMAGEMANAGER->findImage("wormMoveRight")->getFrameWidth() / 2;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.top + _moveSpeed;
+				}
+				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).type != MAPTILE_WALL)
+				{
+					//만약 앞쪽에 벽이 없는데 그 아래에도 벽이 없을 경우 지금 자기 아래 타일을 타고 내려가야한다
+					//x는 그대로, y는 + 1 해준 자기 앞 아래의 타일 검사, 또 자기 바로 앞 타일 검사
+					//없으면 타고 내려간다
+					//3번(wormMoveLeft)
+					_whereIsWorm = 3;
+					//값보정
+					//x는 밟은벽(y-1)왼쪽에서 이미지절반만큼-, y는 밟은벽 아래서 이속만큼-
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).rc.left - IMAGEMANAGER->findImage("wormMoveLeft")->getFrameWidth() / 2;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).rc.bottom + _moveSpeed;
+				}
+			}
 		}
 		break;
 	case 3:
 		if (_isLeft)
 		{
-
+			//지금 있는 타일보다 내려가는지 체크
+			if ((_pointy + _moveSpeed) / TILESIZE > (_pointy)/TILESIZE)
+			{
+				if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
+				{
+					//앞쪽에 벽이 있다면 안착하니 0번(wormMoveUp)
+					_whereIsWorm = 0;
+					//값보정
+					//x는 앞쪽벽(y+1)의 오른쪽에서 이속만큼-, y는 위에서 이미지절반만큼-
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.right - _moveSpeed;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE + 1, (_pointx) / TILESIZE).rc.top - IMAGEMANAGER->findImage("wormMoveUp")->getFrameHeight() / 2;
+				}
+				else if (_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy + _moveSpeed) / TILESIZE, (_pointx) / TILESIZE + 1).type != MAPTILE_WALL)
+				{
+					//아래쪽에도 벽이 없고 그 왼쪽에도 없으니 천장
+					//2번(wormMoveDown)
+					_whereIsWorm = 2;
+					//값보정
+					//x는 밟은벽(x + 1)왼쪽에서 이속만큼+, y는 아래에서 이미지 절반만큼+
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE + 1).rc.left + _moveSpeed;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE + 1).rc.bottom + IMAGEMANAGER->findImage("wormMoveDown")->getFrameHeight() / 2;
+				}
+			}
 		}
 		else
 		{
-
+			//중심을 넘기는지 체크, 이번엔 y값을 체크한다
+			if ((_pointy - _moveSpeed)/TILESIZE < (_pointy)/TILESIZE)
+			{
+				//넘겼으면 변환 시작
+				if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
+				{
+					//앞쪽에 벽이 있으니 올라탄다
+					//천장에 붙으므로 2번(wormMoveDown)
+					_whereIsWorm = 2;
+					//값보정
+					//x는 앞쪽벽(y-1)의 오른쪽에서 이속만큼-, y는 아래에서 이미지 절반만큼+
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).rc.right - _moveSpeed;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).rc.bottom + IMAGEMANAGER->findImage("wormMoveDown")->getFrameHeight() / 2;
+				}
+				else if (_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE).type != MAPTILE_WALL &&
+					_map->getMapInfo((_pointy - _moveSpeed) / TILESIZE, (_pointx) / TILESIZE + 1).type != MAPTILE_WALL)
+				{
+					//위쪽에도 벽이 없고 그 아래에도 벽이 없으니 꺾인다
+					//바닥에 붙으니 0번(wormMoveUp)
+					_whereIsWorm = 0;
+					//값보정
+					//x는 밟은벽(x+1)의 왼쪽에서 이속만큼+, y는 위에서 이미지 절반만큼 -
+					_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE + 1).rc.left + _moveSpeed;
+					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).rc.top - IMAGEMANAGER->findImage("wormMoveUp")->getFrameHeight() / 2;
+				}
+			}
 		}
 		break;
 	}

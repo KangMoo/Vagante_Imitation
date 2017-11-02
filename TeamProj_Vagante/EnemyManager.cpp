@@ -26,14 +26,16 @@ HRESULT EnemyManager::init()
 	_vEnemy.push_back(temp);
 	*/
 	
-	POINT pt = PointMake(TILESIZE*14, TILESIZE*18-1);
-	Enemy* temp = new worm;
-	temp->init(pt, 9999, 9999);
-	temp->setMap(_map);
-	temp->setPlayerAddressLink(_player);
-	temp->setUiAddressLink(_ui);
-	_vEnemy.push_back(temp);
-	
+	for (int i = 0; i < 2; i++)
+	{
+		POINT pt = PointMake(TILESIZE * 14, TILESIZE * 18 - 1);
+		Enemy* temp = new worm;
+		temp->init(pt, 9999, 9999);
+		temp->setMap(_map);
+		temp->setPlayerAddressLink(_player);
+		temp->setUiAddressLink(_ui);
+		_vEnemy.push_back(temp);
+	}
 	/*
 	_boss = new Boss();
 	//상호참조를 위한 address링크

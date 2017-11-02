@@ -74,6 +74,7 @@ public:
 	virtual void frameUpdate() {}	// 프레임 업데이트
 	virtual void falling();			// 낙하 처리
 	virtual void rectResize();		// 혹시 rect 사이즈 변경 필요시 여길 통해서
+	virtual void playerCog();		// 플레이어와 몬스터 사이의 벽 있는지 판단
 
 	//공격 받았을 시 (데미지만)
 	void getDamaged(int damage) { _statistics.hp -= damage; }
