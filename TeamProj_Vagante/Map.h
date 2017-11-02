@@ -35,9 +35,15 @@ struct mapInfo
 struct tagObj
 {
 	image* Image;
+	RECT rc;
+	float X, Y;
 	int FrameX, FrameY;
-	bool _openBox;
-	bool _closeDoor;
+
+	// 상자 개봉 상태
+	bool _openBox;  
+
+	// 상자가 열렸었는지 확인하기 위한 불값
+	bool _eventChk;
 };
 
 
@@ -48,7 +54,7 @@ private:
 	image* _mapImg;
 	image* _BgImg;
 	tagObj itemBox[2];
-	tagObj coinBox[10];
+	tagObj coinBox[5];
 	tagObj Door;
 	
 
@@ -70,6 +76,13 @@ public:
 	
 	void setTile();
 	void setObject();
+	
+	
+	tagObj getCoinBox(int i) { return coinBox[i]; }// 코인박스의 정보
+	tagObj getitemBox(int i) { return itemBox[i]; }// 아이템박스의 정보
+	tagObj setCoinBox(int i, bool isOpen) { coinBox[i]._openBox = isOpen; }// 코인박스의 상태변화
+	tagObj setItemBox(int i, bool isOpen) { itemBox[i]._openBox = isOpen; }// 아이템박스의 상태변화
+
 	mapInfo getMapInfo(int i, int j) { return _mapInfo[i][j]; }
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
