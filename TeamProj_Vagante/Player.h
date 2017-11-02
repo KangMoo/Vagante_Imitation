@@ -5,6 +5,7 @@
 class EnemyManager;
 class Map;
 class UI;
+class Enemy;
 
 #define JUMPPOWERSTART 5
 #define JUMPPOWERMAX 10
@@ -71,9 +72,10 @@ struct tagPlayerInfo {
 */
 class Player : public gameNode
 {
+
 private:
-	typedef vector<MYRECT> vRange;
-	typedef vector<MYRECT>::iterator viRange;
+	typedef vector<Enemy*> vEnemyRange;
+	typedef vector<Enemy*>::iterator viEnemyRange;
 
 	tagPlayerInfo _player;
 	EnemyManager* _em;
@@ -86,9 +88,9 @@ private:
 	int _curTileX, _curTileY; // 현재 타일 위치
 	int _prevTileX, _prevTileY; // 이전 타일 위치
 
-	vRange _vHitRange;		//피격 판정 렉트
-	vRange _vAttackRange;	//공격범위렉트를 담을 벡터 (공격범위가 여러개가 생길경우를 대비)
-
+	vAttackRange _vAttackRange;	//공격범위렉트를 담을 벡터 (공격범위가 여러개가 생길경우를 대비)
+	vEnemyRange _vEnemyRange;
+	
 
 
 public:
@@ -106,7 +108,9 @@ public:
 	void jump();			// 점프
 	void attack();			// 공격
 	void holdLadder();			// 사다리 매달리기
-	void canDown();			// 사다리 매달리기
+	void canDown();			// 
+
+	void attackCollision();
 
 	//공격 받았을 시 (데미지만)
 	void getDamaged(int damage) { _player.stat.hp -= damage; }
@@ -134,13 +138,13 @@ public:
 	inline float getYSpeed() { return _player.yspeed; }
 	inline void setYSpeed(float yspeed) { _player.yspeed = yspeed; }
 
-	inline vRange getVHitRange(void) { return _vHitRange; }
-	inline vRange getVAttackRange(void) { return _vAttackRange; }
+	inline void setEquipWeapon(tagItemInfo weapon) { _player.equipWeapon = weapon; }
 
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
+
 	Player();
 	~Player();
 };

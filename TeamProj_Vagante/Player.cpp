@@ -50,7 +50,7 @@ HRESULT Player::init(POINT point)
 
 	for (int i = 0; i < 5; i++)_player.statusEffect[i].type = STATUSEFFECT_NULL;
 	
-	_player.stat.hp = 0;
+	_player.stat.hp = 100;
 	_player.stat.str = 0;
 	_player.stat.dex = 0;
 	_player.stat.vit = 0;
@@ -115,12 +115,15 @@ void Player::draw(POINT camera)
 	char str1[256];
 	char str2[256];
 	char str3[256];
+	char str4[256];
 	sprintf(str1, "%d %d %d", upL.type, upM.type, upR.type);
 	sprintf(str2, "%d %d %d", midL.type, midM.type, midR.type);
 	sprintf(str3, "%d %d %d", botL.type, botM.type, botR.type);
+	sprintf(str4, "%d", _player.stat.hp);
 	TextOut(getMemDC(), 120, 110, str1, strlen(str1));
 	TextOut(getMemDC(), 120, 130, str2, strlen(str2)); 
 	TextOut(getMemDC(), 120, 150, str3, strlen(str3));
+	TextOut(getMemDC(), 120, 170, str4, strlen(str4));
 
 	for (int i = 0; i < _vAttackRange.size(); i++) {
 		Rectangle(getMemDC(), _vAttackRange[i].left + camera.x, _vAttackRange[i].top + camera.y, _vAttackRange[i].right + camera.x, _vAttackRange[i].bottom + camera.y);
@@ -501,6 +504,10 @@ void Player::attack()
 			_offset = -5;
 		_vAttackRange[0].move(_offset, 0);
 	}
+}
+
+void Player::attackCollision() {
+
 }
 
 void Player::holdLadder()

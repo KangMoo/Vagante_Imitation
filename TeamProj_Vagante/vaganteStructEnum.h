@@ -106,6 +106,9 @@ struct tagPlayerInfo {
 	int money;							//돈
 	float gravity;						//중력
 	int currentFrameX, curretFrameY;	//현재 프레임
-
+	
+	tagItemInfo equipWeapon;
 };
 
+typedef vector<MYRECT> vAttackRange;
+typedef vector<MYRECT>::iterator viAttackRange;
