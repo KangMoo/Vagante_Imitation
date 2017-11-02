@@ -90,6 +90,34 @@ void GameScene::addImage()
 	IMAGEMANAGER->addFrameImage("Æø¹ß", "Img\\etc\\explosion_1.bmp", 448, 64, 7, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("test", "Img\\etc\\tes.bmp", 40, 224, 1, 7, true, RGB(255, 0, 255));
 
+	//============================================================== ManEater ====================================================================
+
+	IMAGEMANAGER->addImage("maneater_Dead", "image/enemy/manEater_dead.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("maneataer_Attack", "image/enemy/manEater_attack.bmp", 64, 32, 2, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("maneater_Attack_After", "image/enemy/manEater_after_attack.bmp", 224, 32, 7, 1, true, RGB(255, 0, 255));
+
+	//============================================================== Goblin ====================================================================
+
+	IMAGEMANAGER->addFrameImage("goblin_Idle", "image/enemy/goblin_idle.bmp", 32, 68, 1, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("doblin_Hit", "image/enemy/goblin_hit.bmp", 32, 68, 1, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("goblin_Dead", "image/enemy/goblin_dead.bmp", 32, 68, 1, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("goblin_Attack", "image/enemy/goblin_attack.bmp,", 256, 68, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("goblin_Jump", "image/enemy/goblin_jump.bmp", 128, 68, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("goblin_Move", "image/enemy/goblin_move.bmp,", 256, 68, 8, 2, true, RGB(255, 0, 255));
+
+	//============================================================== Bat ====================================================================
+
+	IMAGEMANAGER->addImage("bat_Idle", "image/enemy/bat_idle.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("bat_Hit", "image/enemy/bat_hit.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("bat_Move", "image/enemy/bat_moving.bmp", 128, 32, 4, 1, true, RGB(255, 0, 255));
+
+	//============================================================== Slime ====================================================================
+
+	IMAGEMANAGER->addFrameImage("slime_Idle", "image/enemy/slime_idle.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("slime_Move", "image/enemy/slime_move.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("slime_Dash_Cast", "image/enemy/slime_dashCast.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("slime_Dash", "image/enemy/slime_dash.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("slime_Jump", "image/enemy/slime_jump.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
 
 }
 void GameScene::keyInput()

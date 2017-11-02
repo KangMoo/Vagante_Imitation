@@ -14,7 +14,7 @@
     <ProjectGuid>{03A295ED-8259-42B5-BB8D-346487E24943}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>My20170728_1</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -92,12 +92,14 @@
     <ClInclude Include="FireBall.h" />
     <ClInclude Include="gameNode.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="goblin.h" />
     <ClInclude Include="image.h" />
     <ClInclude Include="imageManager.h" />
     <ClInclude Include="iniDataManager.h" />
     <ClInclude Include="keyAniManager.h" />
     <ClInclude Include="keyManager.h" />
     <ClInclude Include="mainGame.h" />
+    <ClInclude Include="manEater.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="progressBar.h" />
@@ -129,12 +131,14 @@
     <ClCompile Include="FireBall.cpp" />
     <ClCompile Include="gameNode.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="goblin.cpp" />
     <ClCompile Include="image.cpp" />
     <ClCompile Include="imageManager.cpp" />
     <ClCompile Include="iniDataManager.cpp" />
     <ClCompile Include="keyAniManager.cpp" />
     <ClCompile Include="keyManager.cpp" />
     <ClCompile Include="mainGame.cpp" />
+    <ClCompile Include="manEater.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="progressBar.cpp" />
