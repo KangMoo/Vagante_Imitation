@@ -34,8 +34,7 @@ HRESULT Boss::init(POINT point)
 	_pointy = point.y;										//좌표
 	_xspeed = _yspeed = 0;												//x,y축 이동 속도
 	_money = 10;															//몬스터 죽으면 나올 동전 갯수
-														   //맵 정보
-	_isFindPlayer = false;													//플레이어를 발견한 상태인지
+	//_isFindPlayer = false;													//플레이어를 발견한 상태인지
 	_fireball = new FireBall;
 	_fireball->setMapAddressLink(_map);
 	_fireball->setPlayerAddressLink(_player);
@@ -62,7 +61,8 @@ HRESULT Boss::init(POINT point)
 	_statistics.spd = 1;
 	_canfire = true;
 	_timerForFrameUpdate = TIMEMANAGER->getWorldTime();
-
+	_stampHitLand = false;
+	_totallydead = false;
 	upL = _map->getMapInfo(int(_pointy) / TILESIZE - 1, int(_pointx) / TILESIZE - 1);
 	upM = _map->getMapInfo(int(_pointy) / TILESIZE - 1, int(_pointx) / TILESIZE);
 	upR = _map->getMapInfo(int(_pointy) / TILESIZE - 1, int(_pointx) / TILESIZE + 1);
@@ -95,6 +95,7 @@ void Boss::release()
 }
 void Boss::update()
 {
+	if (_totallydead) return;
 
 	stateHandle();
 	speedAdjust();
@@ -106,7 +107,7 @@ void Boss::update()
 		_timerForFrameUpdate = TIMEMANAGER->getWorldTime();
 	}
 	_fireball->update();
-
+	deadCheck();
 }
 void Boss::render()
 {
@@ -224,46 +225,64 @@ void Boss::mapCollisionHandle()
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+		//스탬핑 체크!
+		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
 	}
 	else if ((upM.type == MAPTILE_WALL || upM.type == MAPTILE_WALL2) && isCollisionReaction(upM.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+		//스탬핑 체크!
+		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
 	}
 	else if ((upR.type == MAPTILE_WALL || upR.type == MAPTILE_WALL2) && isCollisionReaction(upR.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+		//스탬핑 체크!
+		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
 	}
 	else if ((midL.type == MAPTILE_WALL || midL.type == MAPTILE_WALL2) && isCollisionReaction(midL.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+		//스탬핑 체크!
+		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
 	}
 	else if ((midM.type == MAPTILE_WALL || midM.type == MAPTILE_WALL2) && isCollisionReaction(midM.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+		//스탬핑 체크!
+		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
 	}
 	else if ((midR.type == MAPTILE_WALL || midR.type == MAPTILE_WALL2) && isCollisionReaction(midR.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+		//스탬핑 체크!
+		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
 	}
 	else if ((botL.type == MAPTILE_WALL || botL.type == MAPTILE_WALL2) && isCollisionReaction(botL.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+		//스탬핑 체크!
+		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
 	}
 	else if ((botM.type == MAPTILE_WALL || botM.type == MAPTILE_WALL2) && isCollisionReaction(botM.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+		//스탬핑 체크!
+		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
 	}
 	else if ((botR.type == MAPTILE_WALL || botR.type == MAPTILE_WALL2) && isCollisionReaction(botR.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+		//스탬핑 체크!
+		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
 	}
 
 	_rc = RectMakeCenter(_pointx, _pointy, 30, 30);
@@ -304,7 +323,7 @@ void Boss::statusEffect()
 
 void Boss::frameUpdate()
 {
-	if (_state != BOSSSTATE_SLEEP && _state != BOSSSTATE_DEAD)
+	if (_state != BOSSSTATE_SLEEP && _state != BOSSSTATE_DEAD && _state!= BOSSSTATE_STAMPING)
 	{
 		if (_player->getPoint().x > _pointx)
 		{
@@ -334,7 +353,7 @@ void Boss::frameUpdate()
 		else _currentFrameX++;
 		break;
 	case BOSSSTATE_STAMPING:
-		if (_currentFrameX >= _image->getMaxFrameX()) _currentFrameX = 0;
+		if (_currentFrameX >= _image->getMaxFrameX()) {}
 		else _currentFrameX++;
 		break;
 	case BOSSSTATE_DEAD:
@@ -404,7 +423,16 @@ void Boss::stateHandle()
 
 		if (TIMEMANAGER->getWorldTime() - _actTimer > 4 && getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 500)
 		{
-			_state = BOSSSTATE_FIREING;
+			if ((_player->getPoint().x - 50 < _pointx && _pointx < _player->getPoint().x + 50) && _player->getPoint().y > _pointy)
+			{
+				_state = BOSSSTATE_STAMPING;
+				_stampHitLand = false;
+			}
+			else
+			{
+				_state = BOSSSTATE_FIREING;
+				_canfire = true;
+			}
 			//상태 변화에 따른 이미지 변화
 			imageChange();
 			_actTimer = TIMEMANAGER->getWorldTime();
@@ -429,24 +457,58 @@ void Boss::stateHandle()
 		}
 		break;
 	case BOSSSTATE_STAMPING:
-
+		stamping();
 		break;
 	case BOSSSTATE_DEAD:
-
+		if (TIMEMANAGER->getWorldTime() - _actTimer > 20)
+		{
+			_totallydead = true;
+		}
 		break;
 	}
 }
 
 void Boss::fireFireBall()
 {
-	if (_canfire && _currentFrameX == 4)
+	if (_canfire && _currentFrameX >= 4)
 	{
 		_fireball->fire(_pointx, _pointy, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), 4);
 		_canfire = false;
 	}
 	if (_currentFrameX == 0) _canfire = true;
 }
-
+void Boss::stamping()
+{
+	if (_currentFrameX == _image->getMaxFrameX())
+	{
+		_yspeed = -10;
+	}
+	if (_stampHitLand)
+	{
+		if (_player->getState() != PLAYERSTATE_JUMPING && _player->getState() != PLAYERSTATE_FALLING)
+		{
+			_player->getDamaged(10);
+		}
+		_stampHitLand = false;
+		_state = BOSSSTATE_FLYING;
+		imageChange();
+		_actTimer = TIMEMANAGER->getWorldTime();
+	}
+}
+void Boss::deadCheck()
+{
+	if (_statistics.hp <= 0 && _state != BOSSSTATE_DEAD)
+	{
+		_yspeed -= 5;
+		_state = BOSSSTATE_DEAD;
+		imageChange();
+		_actTimer = TIMEMANAGER->getWorldTime();
+	}
+	else if (_statistics.hp <= 0 && _state == BOSSSTATE_DEAD)
+	{
+		_yspeed -= 5;
+	}
+}
 
 void Boss::add_openlist(vertex v)
 {

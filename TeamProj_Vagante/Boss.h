@@ -79,10 +79,11 @@ private:
 	int _money;															//몬스터 죽으면 나올 동전 갯수
 	Map* _map;															//맵 정보
 	bool _isFindPlayer;													//플레이어를 발견한 상태인지
+	bool _stampHitLand;
+	bool _totallydead;
 	FireBall* _fireball;
-
 	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;// 위치 정보
-
+	
 	bool _canfire;
 	bool _lookleft;
 	float _actTimer;													//행동시간
@@ -118,7 +119,9 @@ public:
 	void stateHandle();
 	void speedAdjust();
 	void fireFireBall();
+	void stamping();
 	void imageChange();
+	void deadCheck();
 
 	virtual void move();			// 이동관련함수
 	void mapCollisionHandle();
@@ -128,7 +131,7 @@ public:
 									//공격 받았을 시 (데미지만)
 	void getDamaged(int damage) { _statistics.hp -= damage; }
 	//공격 받았을 시 (데미지&넉백)
-	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; }
+	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; }
 	//상태이상
 	void addStatusEffect(tagStatusEffect statuseffect);
 

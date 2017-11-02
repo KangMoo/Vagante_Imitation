@@ -95,8 +95,8 @@ void FireBall::move(void)
 		_vFireBall[i].y += -sinf(_vFireBall[i].angle) * _vFireBall[i].speed;
 
 		_vFireBall[i].rc = RectMakeCenter(_vFireBall[i].x, _vFireBall[i].y,
-			_fireBallImage->getFrameWidth(),
-			_fireBallImage->getFrameHeight());
+			_fireBallImage->getFrameWidth() - 5,
+			_fireBallImage->getFrameHeight() - 5);
 
 		if (!(0<_vFireBall[i].y / TILESIZE && _vFireBall[i].y / TILESIZE <40) ||
 			!(0<_vFireBall[i].x / TILESIZE && _vFireBall[i].x / TILESIZE <58))
