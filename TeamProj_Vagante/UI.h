@@ -66,6 +66,14 @@ struct tagSave
 
 };
 
+struct tagHitOutput
+{
+	float x, y;
+	int damage;
+	int alphaSource;
+	LETTERFONT font;
+};
+
 class EnemyManager;
 class Player;
 class Map;
@@ -73,13 +81,18 @@ class Map;
 
 class UI : public gameNode
 {
-private:
+private: // 인벤토리 벡터
 	typedef vector<tagItem> vBag;
 	typedef vector<tagItem>::iterator viBag;
 
 	vBag _vBag;
 	viBag _viBag;
+private: //  타격 수치 출력 벡터
+	typedef vector<tagHitOutput> vHit;
+	typedef vector<tagHitOutput>::iterator viHit;
 
+	vHit _vHit;
+	viHit _viHit;
 private:
 	tagDelay _delay;
 	tagSave _save;
@@ -120,8 +133,8 @@ public:
 	void update();
 	void render();
 	void draw();
-	void render(POINT camera) {};
-	void draw(POINT camera) {};
+	void render(POINT camera);
+	void draw(POINT camera);
 	void explanation();
 	void setItemToBag(ITEMNAME name);
 
@@ -136,9 +149,9 @@ public:
 	void letterMacro(LETTERFONT font, float x, float y, char *str);
 	void letterMacro(LETTERFONT font, float x, float y, char *str, int alpha);
 	void setInputGuide();
-
+	void hitOutput(float x, float y, int damage, LETTERFONT font);
 	//맵에 아이템 출현~
-	void addItemOnMap(tagItemInfo item);
+	void addItemOnMap(tagItemInfo item, POINT position);
 
 	//맵에 돈 출현~ (위치정보만 가집니다~)
 	void addCoinOnMap(POINT coinPoint); 
@@ -148,7 +161,7 @@ public:
 
 	//설정자 접근자
 	bool getActive() { return _active; }
-	void setActive(bool active) { _active = active; }
+	void setActive(bool active) { _active = active; setInputGuide(); }
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }

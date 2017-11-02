@@ -2,6 +2,7 @@
 #include "FireBall.h"
 #include "Map.h"
 #include "Player.h"
+#include "UI.h"
 
 FireBall::FireBall() {}
 FireBall::~FireBall() {}

@@ -36,6 +36,7 @@ HRESULT Boss::init(POINT point)
 	_money = 10;															//몬스터 죽으면 나올 동전 갯수
 	//_isFindPlayer = false;													//플레이어를 발견한 상태인지
 	_fireball = new FireBall;
+	_fireball->setUIAddressLink(_ui);
 	_fireball->setMapAddressLink(_map);
 	_fireball->setPlayerAddressLink(_player);
 	_fireball->init(100, 1000, "fireball");
