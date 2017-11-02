@@ -36,7 +36,6 @@ HRESULT UI::init()
 	_skilNum = 0;
 	_statNum = 0;
 	_rankNum = 0;
-	_tmp = "";
 	_move = false;
 	_delay.coin = 0;
 	_delay.menu = 0;
@@ -277,6 +276,21 @@ void UI::draw()
 		break;
 	case 2:
 		IMAGEMANAGER->findImage("stat")->render(getMemDC(), _menuRect.left, _menuRect.top + 88);
+		letterMacro(LETTER_WHITE, _menuRect.left + 56, _menuRect.top + 98, itoa(_player->getStat().str, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 126, _menuRect.top + 98, itoa(_player->getStat().def, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 202, _menuRect.top + 98, itoa(_player->getStat().mel, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 56, _menuRect.top + 116, itoa(_player->getStat().dex, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 126, _menuRect.top + 116, itoa(_player->getStat().fir, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 202, _menuRect.top + 116, itoa(_player->getStat().rng, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 56, _menuRect.top + 134, itoa(_player->getStat().vit, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 126, _menuRect.top + 134, itoa(_player->getStat().ice, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 202, _menuRect.top + 134, itoa(_player->getStat().crit, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 56, _menuRect.top + 152, itoa(_player->getStat().inl, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 126, _menuRect.top + 152, itoa(_player->getStat().lgt, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 202, _menuRect.top + 152, itoa(_player->getStat().aspd, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 56, _menuRect.top + 170, itoa(_player->getStat().lck, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 126, _menuRect.top + 170, itoa(_player->getStat().psn, _tmp, 10));
+		letterMacro(LETTER_WHITE, _menuRect.left + 202, _menuRect.top + 170, itoa(_player->getStat().spd, _tmp, 10));
 		IMAGEMANAGER->findImage("cursor_idle")->frameRender(getMemDC(),
 			_menuRect.left - 15 + (_statNum % 3) * 78, _menuRect.top + 96 + (_statNum / 3) * 18);
 		if (!_delay.menu)
@@ -376,9 +390,8 @@ void UI::draw()
 	for ( _viHit = _vHit.begin(); _viHit != _vHit.end(); ++_viHit)
 	{
 		char str[10];
-		letterMacro(_viHit->font, _viHit->x, _viHit->y, itoa(_viHit->damage, str, 10), _viHit->alphaSource);
+		letterMacro2(_viHit->font, _viHit->x , _viHit->y, itoa(_viHit->damage, str, 10), _viHit->alphaSource);
 	}
-
 }
 
 void UI::hitOutput(float x, float y, int damage, LETTERFONT font)
@@ -1527,7 +1540,7 @@ void UI::keyControl()
 	//}
 	if (KEYMANAGER->isOnceKeyDown('U'))
 	{
-		hitOutput(WINSIZEX / 2, WINSIZEY / 2, 10, LETTER_WHITE);
+		hitOutput(WINSIZEX / 2, WINSIZEY / 2, 8, LETTER_RED);
 	}
 }
 
@@ -1701,6 +1714,38 @@ void UI::letterMacro(LETTERFONT font, float x, float y, char *str, int alpha)
 
 }
 
+void UI::letterMacro2(LETTERFONT font, float x, float y, char *str, int alpha)
+{
+
+	for (int i = 0; *(str + i) != NULL; i++)
+	{
+		int sour;
+		int dest = 0;
+		if (*(str + i) >= 65 && *(str + i) <= 90)
+		{
+			sour = *(str + i) - 65;
+			dest = 0;
+		}
+		else if (*(str + i) >= 97 && *(str + i) <= 122)
+		{
+			sour = *(str + i) - 97;
+			dest = 1;
+		}
+		else if (*(str + i) >= 33 && *(str + i) <= 57)
+		{
+			sour = *(str + i) - 33;
+			dest = 2;
+		}
+		else if (*(str + i) == 32)
+		{
+			sour = 26;
+		}
+		IMAGEMANAGER->findImage("letter2")->alphaFrameRender(getMemDC(), x + i * 8, y, sour, dest + font * 3, alpha);
+	}
+
+}
+
+
 void UI::repeatIndex(string keyName, int delay)
 {
 	if (_count % delay == 0)
@@ -1740,6 +1785,7 @@ void UI::addImg()
 	//========================= F O N T ========================================
 	IMAGEMANAGER->addFrameImage("coin_number", "Img/ui/font/number.bmp", 416, 96, 13, 3, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("letter", "Img/ui/font/letter_font.bmp", 270, 180, 27, 15, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("letter2", "Img/ui/font/letter_font_2size.bmp", 378, 240, 27, 15, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("inputImage", "Img/ui/font/inputImage.bmp", 320, 320, 10, 10, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("hpBarBottomNumber", "Img/ui/font/hpBarBottomNumber.bmp", 121, 14, 11, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("hpBarTopNumber", "Img/ui/font/hpBarTopNumber.bmp", 121, 14, 11, 1, true, RGB(255, 0, 255));
@@ -1748,6 +1794,7 @@ void UI::addImg()
 	IMAGEMANAGER->addImage("sword", "Img/ui/item/sword.bmp", 40, 40, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("heal", "Img/ui/item/heal.bmp", 40, 40, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("hand", "Img/ui/item/hand.bmp", 80, 40, 2, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("coin", "Img/ui/item/coin.bmp", 6, 6, true, RGB(255, 0, 255));
 }
 
 void UI::addItemOnMap(tagItemInfo item, POINT position)
@@ -1760,7 +1807,3 @@ void UI::addCoinOnMap(POINT coinPoint)
 	//해당 POINT에 동전 스폰
 }
 
-void UI::showNumber(int num, COLORREF color)
-{
-
-}
