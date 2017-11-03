@@ -23,7 +23,18 @@ HRESULT Map::init()
 	_mapImg->init("Img\\etc\\VaganteMap.bmp", 1856, 1280, true, RGB(255, 0, 255));
 	_trapImg = new image;
 	_trapImg->init("Img\\map\\Trap.bmp", 32, 32, true, RGB(255, 0, 255));
-	return S_OK;
+	miniMap.Image = new image;
+	miniMap.Image->init("Img\\map\\miniMap.bmp", 232, 160, true, RGB(255, 0, 255));
+	miniMap.X = 0;
+	miniMap.Y = 0;
+	miniMap.playerRc = RectMakeCenter(0,0, 4, 4);
+	/*
+	_SightImg = new image;
+	_SightImg->init("Img\\map\\SightMap.bmp", 1856, 1280, true, RGB(255, 0, 255),true);
+	_SightBackImg = new image;
+	_SightBackImg->init("Img\\map\\SightMap.bmp", 1856, 1280, true, RGB(255, 0, 255), true);*/
+
+		return S_OK;
 }
 void Map::release()
 {
@@ -33,12 +44,12 @@ void Map::update()
 {
 	for (int i = 0; i < 5; i++)
 	{
+		coinBox[i].FrameX++;
 		if (coinBox[i]._openBox && !coinBox[i]._eventChk)
 		{
-			coinBox[i].FrameX = coinBox[i].Image->getMaxFrameX();
 			for (int j = 0; j < RND->getFromIntTo(1, 3); j++)
 			{
-				_ui->addCoinOnMap(PointMake(coinBox[i].rc.bottom - 4, coinBox[i].rc.left + 5));
+				_ui->addCoinOnMap(PointMake(coinBox[i].rc.bottom - 4, RND->getFromIntTo(coinBox[i].rc.left, coinBox[i].rc.right)));
 			}
 
 			coinBox[i]._eventChk = true;
@@ -50,7 +61,7 @@ void Map::update()
 		if (itemBox[0].FrameX >= itemBox[0].Image->getMaxFrameX())
 		{
 			itemBox[0].FrameX = itemBox[0].Image->getMaxFrameX();
-
+			
 			itemBox[0]._eventChk = true;
 		}
 	}
@@ -154,22 +165,29 @@ void Map::draw(POINT camera)
 		}
 	}
 	_mapImg->render(getMemDC(), camera.x, camera.y);
-	for(int i = 0; i < 2; i++)
+	for(int i = 0; i < ITEMBOXMAX; i++)
 	{
 		Rectangle(getMemDC(), itemBox[i].rc.left + camera.x, itemBox[i].rc.top + camera.y, itemBox[i].rc.right + camera.x, itemBox[i].rc.bottom + camera.y);
 		itemBox[i].Image->frameRender(getMemDC(), itemBox[i].X+camera.x, itemBox[i].Y + camera.y, itemBox[i].FrameX, itemBox[i].FrameY);
 	}
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < COINBOXMAX; i++)
 	{
-		coinBox[i].Image->frameRender(getMemDC(), coinBox[i].X + camera.x, coinBox[i].Y + camera.y, coinBox[i].FrameX, coinBox[i].FrameY);
+		if (!coinBox[i]._eventChk)
+		{
+			Rectangle(getMemDC(), coinBox[i].rc.left + camera.x, coinBox[i].rc.top + camera.y, coinBox[i].rc.right + camera.x, coinBox[i].rc.bottom + camera.y);
+			coinBox[i].Image->frameRender(getMemDC(), coinBox[i].X + camera.x, coinBox[i].Y + camera.y, coinBox[i].FrameX, coinBox[i].FrameY);
+		}
 	}
+	miniMap.Image->render(getMemDC(), miniMap.X, miniMap.Y);
+	Rectangle(getMemDC(), miniMap.playerRc.left+_player->getPoint().x/8, miniMap.playerRc.top + _player->getPoint().y / 8, miniMap.playerRc.right+ _player->getPoint().x / 8, miniMap.playerRc.bottom + _player->getPoint().y / 8);
 	//~test
 }
 
 void Map::setTile()
 {
 
-	/* 	0 : MAPTILE_NULL
+	/* 
+		0 : MAPTILE_NULL
 		1 : MAPTILE_WALL,
 		2 : MAPTILE_WALL2,
 		3 : MAPTILE_LADDER,
@@ -209,13 +227,13 @@ void Map::setTile()
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 0,0,0,1,1, 0,0,0,1,1, 1,1,1,1,0, 0,0,0,1,1, 0,0,0,0,0, 0,0,0,1,0, 0,1,1,1,1, 1,1,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 0,3,0,0,0, 0,0,0,1,1, 1,0,0,0,0, 4,1,0,1,1, 0,0,1,4,0, 0,1,0,0,0, 0,1,1,1,1, 1,1,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 0,3,0,1,1, 1,1,1,1,1, 1,0,0,1,5, 5,1,0,1,1, 0,0,1,0,0, 0,0,0,0,0, 0,1,1,1,1, 1,1,1, 1,1,1,1,1 },
-
+																//24,26
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 0,0,0,1,1, 1,1,1,1,1, 1,0,0,1,1, 1,1,0,1,1, 0,0,1,4,0, 0,0,0,0,0, 0,1,1,1,1, 1,1,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 3,0,0,1,1, 1,1,1,1,1, 1,1,0,0,0, 0,0,0,1,1, 0,0,1,0,0, 1,1,1,1,1, 1,1,1,1,1, 1,1,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 3,0,0,1,1, 1,1,1,1,1, 1,1,1,0,0, 1,1,1,1,1, 1,1,1,4,4, 1,1,1,1,1, 1,1,1,1,1, 1,1,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,0, 0,0,0,0,1, 1,1,1,1,1, 1,0,0,0,0, 0,0,0,0,0, 0,0,0,3,0, 0,0,1,1,1, 1,1,1,1,1, 1,1,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,0, 1,1,0,1,1, 0,0,0,1,1, 1,1,1,0,0, 0,0,0,0,0, 1,1,0,3,0, 1,1,1,1,1, 1,1,1,1,1, 1,1,1, 1,1,1,1,1 },
-																							 
+														//21							//26,35		 
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,0, 0,0,0,1,0, 0,1,0,1,1, 0,0,1,0,0, 0,0,0,0,0, 0,0,0,3,0, 1,1,1,1,1, 1,1,1,1,1, 1,1,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,0, 0,0,1,1,0, 0,0,0,1,1, 0,4,1,4,0, 1,1,1,0,0, 0,0,0,3,0, 1,1,1,1,1, 1,1,1,1,1, 1,1,1, 1,1,1,1,1 },
 		{ 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,0, 0,0,0,0,0, 0,0,0,1,1, 0,0,0,0,0, 1,1,1,0,0, 0,0,0,3,0, 1,1,1,1,1, 1,1,1,1,1, 1,1,1, 1,1,1,1,1 },
@@ -252,7 +270,7 @@ void Map::setTile()
 }
 void Map::setObject()
 {
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < ITEMBOXMAX; i++)
 	{
 		itemBox[i].Image = new image;
 		itemBox[i].Image->init("Img\\map\\Box.bmp", 192, 32,6,1, true, RGB(255, 0, 255));
@@ -261,7 +279,7 @@ void Map::setObject()
 		itemBox[i]._openBox = false;
 		itemBox[i]._eventChk = false;
 	}
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < COINBOXMAX; i++)
 	{
 		coinBox[i].Image = new image;
 		coinBox[i].Image->init("Img\\map\\Box.bmp", 192, 32, 6, 1, true, RGB(255, 0, 255));
@@ -283,26 +301,21 @@ void Map::setObject()
 	coinBox[0].Y = _mapInfo[8][45].rc.top;
 	coinBox[0].rc = RectMake(coinBox[0].X, coinBox[0].Y, coinBox[0].Image->getFrameWidth(), coinBox[0].Image->getFrameHeight());
 
-	coinBox[1].X = 0;
-	coinBox[1].Y = 0;
-	coinBox[1].rc = RectMake(itemBox[0].X, itemBox[0].Y, itemBox[0].Image->getFrameWidth(), itemBox[0].Image->getFrameHeight());
+	coinBox[1].X = _mapInfo[26][35].rc.left;
+	coinBox[1].Y = _mapInfo[26][35].rc.top;
+	coinBox[1].rc = RectMake(coinBox[1].X, coinBox[1].Y, coinBox[1].Image->getFrameWidth(), coinBox[1].Image->getFrameHeight());
 
-	coinBox[2].X = 0;
-	coinBox[2].Y = 0;
-	coinBox[2].rc = RectMake(itemBox[0].X, itemBox[0].Y, itemBox[0].Image->getFrameWidth(), itemBox[0].Image->getFrameHeight());
+	coinBox[2].X = _mapInfo[29][21].rc.left;
+	coinBox[2].Y = _mapInfo[29][21].rc.top;
+	coinBox[2].rc = RectMake(coinBox[2].X, coinBox[2].Y, coinBox[2].Image->getFrameWidth(), coinBox[2].Image->getFrameHeight());
 
-	coinBox[3].X = 0;
-	coinBox[3].Y = 0;
-	coinBox[3].rc = RectMake(itemBox[0].X, itemBox[0].Y, itemBox[0].Image->getFrameWidth(), itemBox[0].Image->getFrameHeight());
+	coinBox[3].X = _mapInfo[23][21].rc.left;
+	coinBox[3].Y = _mapInfo[23][21].rc.top;
+	coinBox[3].rc = RectMake(coinBox[3].X, coinBox[3].Y, coinBox[3].Image->getFrameWidth(), coinBox[3].Image->getFrameHeight());
 
-	coinBox[4].X = 0;
-	coinBox[4].Y = 0;
-	coinBox[4].rc = RectMake(itemBox[0].X, itemBox[0].Y, itemBox[0].Image->getFrameWidth(), itemBox[0].Image->getFrameHeight());
-
-	coinBox[5].X = 0;
-	coinBox[5].Y = 0;
-	coinBox[5].rc = RectMake(itemBox[0].X, itemBox[0].Y, itemBox[0].Image->getFrameWidth(), itemBox[0].Image->getFrameHeight());
-
+	coinBox[4].X = _mapInfo[25][26].rc.left;
+	coinBox[4].Y = _mapInfo[25][26].rc.top;
+	coinBox[4].rc = RectMake(coinBox[4].X, coinBox[4].Y, coinBox[4].Image->getFrameWidth(), coinBox[4].Image->getFrameHeight());
 	//test
 
 }
