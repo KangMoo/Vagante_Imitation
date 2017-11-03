@@ -93,7 +93,7 @@ HRESULT worm::init(POINT point, float minCog, float maxCog)
 	//한번 설정한 방향은 죽을때까지 가지고 있는다
 	if (a == 0) _isLeft = true;
 	else _isLeft = false;
-	//_isLeft = true;
+	//_isLeft = false;
 	//프레임 끝까지 도달하면 다시 왔다갔다할거라 그거용
 	_reverseFrame = false;
 	//이동속도
@@ -127,7 +127,7 @@ HRESULT worm::init(POINT point, float minCog, float maxCog)
 
 	//죽었는지 확인용
 	_dead = false;
-	_deadAlpha = 255;
+	_deadAlpha = 0;
 	
 	return S_OK;
 }
@@ -141,15 +141,19 @@ void worm::update()
 	statusEffect();
 	//낙하 처리
 	falling();
+
+	//사망 후 투명도 변화
 	if (_state == ENEMYSTATE_DEAD)
 	{
-		_deadAlpha -= 5;
-		if (_deadAlpha < 0)
+		_deadAlpha += 5;
+		//완전히 투명해지면 매니저에서 지울 수 있도록 dead를 true
+		if (_deadAlpha >= 255)
 		{
 			_dead = true;
 		}
 	}
 
+	
 	if (_isFindPlayer && _state != ENEMYSTATE_DEAD)
 	{
 		//각자 움직이는 메커니즘이 다르므로 알아서 처리
@@ -221,6 +225,7 @@ void worm::move()
 	//일반적인 상태에서의 이동 처리, 타일판단등
 	if (_state == ENEMYSTATE_IDLE || _state == ENEMYSTATE_MOVING)
 	{
+		//worm은 플레이어를 발견 하든 안하든 움직여야하므로 계속 moving으로 바꿔준다
 		_state = ENEMYSTATE_MOVING;
 		//_whereIsWorm은 벽이 어디 붙어있는지 판단하는 변수입니다
 		//0은 바닥(이미지 wormMoveUp), 1은 왼쪽벽(이미지 wormMoveRight), 2는 윗쪽벽(이미지 wormMoveDown), 3은 오른쪽벽(이미지 wormMoveLeft)
@@ -256,12 +261,12 @@ void worm::move()
 }
 void worm::attack()
 {
-	//현재 상태가 움직이거나 일반적인 경우 데미지를 주지 않는다
+	//현재 상태가 움직이거나 일반적인 경우가 아니면 데미지를 주지 않는다
 	if (_state == ENEMYSTATE_IDLE || _state == ENEMYSTATE_MOVING)
 		_attackRect = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 	else
 		_attackRect = RectMakeCenter(_pointx, _pointy, 0, 0);
-	//혹시 맞았는지 체크
+	//플레이어랑 적 충돌 체크
 	RECT temp;
 	if (IntersectRect(&temp, &_player->getRect(), &_attackRect))
 	{
@@ -307,6 +312,7 @@ void worm::frameUpdate()
 		case 3:
 			//_image = IMAGEMANAGER->findImage("wormMoveLeft");
 			_image = _moveLeft;
+			//얘만 왼쪽이랑 오른쪽이 반대임
 			if (_isLeft)
 				_image->setFrameY(1);
 			else _image->setFrameY(0);
@@ -384,6 +390,19 @@ void worm::falling()
 				_yspeed = 0;
 				_angle = 0;
 				_gravity = 0;
+			}
+			else if (_yspeed < 0 && _map->getMapInfo((_pointy + -sinf(_angle)*_yspeed) / TILESIZE, (_pointx - cosf(_angle)*_xspeed) / TILESIZE).type == MAPTILE_SPIKE_TRAP)
+			{
+				//가시에 찔렸을 경우, 만약 죽은 경우만 아니면 데미지를 팍 준다
+				if(_state != ENEMYSTATE_DEAD)
+				{
+					getDamaged(999);
+					_whereIsWorm = 0;
+					_xspeed = 0;
+					_yspeed = 0;
+					_angle = 0;
+					_gravity = 0;
+				}
 			}
 			else if (_map->getMapInfo((_pointy + -sinf(_angle)*_yspeed) / TILESIZE, (_pointx - cosf(_angle)*_xspeed) / TILESIZE).point.y < _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).point.y)
 			{
@@ -594,7 +613,7 @@ void worm::isThereWall()
 					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.top + _moveSpeed;
 				}
 				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL &&
-					_map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).type != MAPTILE_WALL)
+					_map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL)
 				{
 					//만약 앞쪽에 벽이 없는데 그 아래에도 벽이 없을 경우 지금 자기 아래 타일을 타고 내려가야한다
 					//x는 그대로, y는 + 1 해준 자기 앞 아래의 타일 검사, 또 자기 바로 앞 타일 검사

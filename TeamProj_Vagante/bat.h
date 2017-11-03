@@ -17,6 +17,7 @@ private:
 	BATSTATE _batstate;
 	int _hittimer;
 	float _pointx, _pointy;	//좌표
+	float _timerForFrame;
 public:
 	//생성 위치, 최소인식범위, 최대인식범위
 	HRESULT init(POINT point, float minCog, float maxCog);

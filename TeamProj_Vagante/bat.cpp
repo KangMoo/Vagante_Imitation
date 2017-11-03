@@ -58,6 +58,7 @@ HRESULT bat::init(POINT point, float minCog, float maxCog)
 	_image = IMAGEMANAGER->findImage("batflying");
 	_currentFrameX = 0;
 	_currentFrameY = 0;
+	_timerForFrame = TIMEMANAGER->getWorldTime();
 	return S_OK;
 }
 
@@ -72,6 +73,11 @@ void bat::update() {
 	hitPlayer();
 	deadcheck();
 	imgHandleByState();
+	if (TIMEMANAGER->getWorldTime() - _timerForFrame > 0.1)
+	{
+		_timerForFrame = TIMEMANAGER->getWorldTime();
+		frameUpdate();
+	}
 	if (KEYMANAGER->isOnceKeyDown('Q')) getDamaged(1, PI, 2);
 
 	if (_dead) _alpha += 1;
