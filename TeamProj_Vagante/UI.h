@@ -87,12 +87,16 @@ private: // 인벤토리 벡터
 
 	vBag _vBag;
 	viBag _viBag;
+
 private: //  타격 수치 출력 벡터
 	typedef vector<tagHitOutput> vHit;
 	typedef vector<tagHitOutput>::iterator viHit;
 
 	vHit _vHit;
 	viHit _viHit;
+
+private: // 맵에 아이템 뿌리는용
+	
 private:
 	tagDelay _delay;
 	tagSave _save;
@@ -115,7 +119,7 @@ private:
 	int _inputAlphaSource;
 	int _plusAlphaSource;
 	int _inputGuide;
-	char* _tmp;
+	char _tmp[10];
 	bool _move;
 
 
@@ -148,17 +152,16 @@ public:
 	void hpBottomNumberMacro(float x, float y, int num);
 	void letterMacro(LETTERFONT font, float x, float y, char *str);
 	void letterMacro(LETTERFONT font, float x, float y, char *str, int alpha);
+	void letterMacro2(LETTERFONT font, float x, float y, char *str, int alpha);
 	void setInputGuide();
 	void hitOutput(float x, float y, int damage, LETTERFONT font);
+
 	//맵에 아이템 출현~
 	void addItemOnMap(tagItemInfo item, POINT position);
 
 	//맵에 돈 출현~ (위치정보만 가집니다~)
 	void addCoinOnMap(POINT coinPoint); 
-
-	//숫자 표시
-	void showNumber(int num, COLORREF color);
-
+	
 	//설정자 접근자
 	bool getActive() { return _active; }
 	void setActive(bool active) { _active = active; setInputGuide(); }

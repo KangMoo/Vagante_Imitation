@@ -1,7 +1,10 @@
 #pragma once
 #include "gameNode.h"
 #include "Enemy.h"
+#include "manEater.h"
 #include "Boss.h"
+#include "worm.h"
+#include "bat.h"
 #include "vaganteStructEnum.h"
 
 class Player;

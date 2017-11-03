@@ -135,9 +135,6 @@ void Player::draw(POINT camera)
 	TextOut(getMemDC(), 120, 150, str3, strlen(str3));
 	TextOut(getMemDC(), 120, 170, str4, strlen(str4));
 
-	for (int i = 0; i < _vAttackRange.size(); i++) {
-		Rectangle(getMemDC(), _vAttackRange[i].left + camera.x, _vAttackRange[i].top + camera.y, _vAttackRange[i].right + camera.x, _vAttackRange[i].bottom + camera.y);
-	}		
 }
 
 

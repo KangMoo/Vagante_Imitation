@@ -62,6 +62,7 @@ HRESULT Boss::init(POINT point)
 	_statistics.spd = 1;
 	_canfire = true;
 	_timerForFrameUpdate = TIMEMANAGER->getWorldTime();
+	_timerForAstar = TIMEMANAGER->getWorldTime();
 	_stampHitLand = false;
 	_totallydead = false;
 	upL = _map->getMapInfo(int(_pointy) / TILESIZE - 1, int(_pointx) / TILESIZE - 1);
@@ -74,11 +75,7 @@ HRESULT Boss::init(POINT point)
 	botM = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE);
 	botR = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE + 1);
 	_lookleft = true;
-	_rc = RectMakeCenter(_pointx, _pointy, 40, 40);
-	_curTileX = int(_pointx) / TILESIZE;
-	_curTileY = int(_pointy) / TILESIZE;
-	_goalTileX = int(_player->getPoint().x) / TILESIZE;
-	_goalTileY = int(_player->getPoint().y) / TILESIZE;
+	_rc = RectMakeCenter(_pointx, _pointy, 30, 30);
 	for (int i = 0; i < 40; i++)
 	{
 		for (int j = 0; j < 58; j++)
@@ -86,6 +83,11 @@ HRESULT Boss::init(POINT point)
 			_tileinfo[i][j] = _map->getMapInfo(i, j).type;
 		}
 	}
+
+	_curTileX = int(_pointx) / TILESIZE;
+	_curTileY = int(_pointy) / TILESIZE;
+	_goalTileX = int(_player->getPoint().x) / TILESIZE;
+	_goalTileY = int(_player->getPoint().y) / TILESIZE;
 	astar();
 
 	return S_OK;
@@ -107,27 +109,36 @@ void Boss::update()
 		frameUpdate();
 		_timerForFrameUpdate = TIMEMANAGER->getWorldTime();
 	}
+	if (TIMEMANAGER->getWorldTime() - _timerForAstar > 0.2)
+	{
+		_timerForAstar = TIMEMANAGER->getWorldTime();
+		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) > 150)
+		{
+			_curTileX = int(_pointx) / TILESIZE;
+			_curTileY = int(_pointy) / TILESIZE;
+			_goalTileX = int(_player->getPoint().x) / TILESIZE;
+			_goalTileY = int(_player->getPoint().y) / TILESIZE;
+			_openlist.clear();
+			_closelist.clear();
+			_wayToPlayer.clear();
+			astar();
+		}
+
+	}
 	_fireball->update();
 	deadCheck();
+
 }
 void Boss::render()
 {
 	_image->frameRender(getMemDC(), _rc.left, _rc.top);
+
 }
 
 //그릴 때	x좌표에 camera.x 만큼
 //			y좌표에 camera.y 만큼 더해주기!!!!
 void Boss::render(POINT camera)
 {
-	//test~
-	//char str[64];
-	//Rectangle(getMemDC(), 40, 50, 150, 250);
-	//for (int i = 0; i < 8; i++)
-	//{
-	//	wsprintf(str, "%d", _openlist[i].f);
-	//	TextOut(getMemDC(), 50, 50 + 30 * i, str, strlen(str));
-	//}
-	//~test
 	draw(camera);
 }
 void Boss::draw(POINT camera)
@@ -139,8 +150,6 @@ void Boss::draw(POINT camera)
 	Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
 	_fireball->render(camera);
 	_image->frameRender(getMemDC(), _pointx - _image->getFrameWidth() / 2 + camera.x, _pointy - _image->getFrameHeight() / 2 + camera.y, _currentFrameX, _currentFrameY);
-
-
 
 }
 void Boss::speedAdjust()
@@ -172,6 +181,98 @@ void Boss::mapCollisionHandle()
 	botL = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE - 1);
 	botM = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE);
 	botR = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE + 1);
+
+	if (_state != BOSSSTATE_SLEEP && _state != BOSSSTATE_DEAD)
+	{
+		mapInfo maptile;
+		RECT temp;
+		RECT smallrect;
+		smallrect = RectMakeCenter(_pointx, _pointy, 15, 15);
+		for (int i = -1; i < 2; i++)
+		{
+			for (int j = -1; j < 2; j++)
+			{
+				maptile = _map->getMapInfo(int(_pointy) / TILESIZE - i, int(_pointx) / TILESIZE - j);
+				if (maptile.type == MAPTILE_WALL || maptile.type == MAPTILE_WALL2)
+				{
+					if (IntersectRect(&temp, &maptile.rc, &smallrect))
+					{
+						_pointx += cosf(getAngle(maptile.point.x + TILESIZE / 2, maptile.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.right - temp.left + 1);
+						_pointy -= sinf(getAngle(maptile.point.x + TILESIZE / 2, maptile.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.bottom - temp.top + 1);
+						//스탬핑 체크!
+						if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		if ((upL.type == MAPTILE_WALL || upL.type == MAPTILE_WALL2) && isCollisionReaction(upL.rc, _rc))
+		{
+			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
+			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+			//스탬핑 체크!
+			if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
+		}
+		else if ((upM.type == MAPTILE_WALL || upM.type == MAPTILE_WALL2) && isCollisionReaction(upM.rc, _rc))
+		{
+			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
+			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+			//스탬핑 체크!
+			if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
+		}
+		else if ((upR.type == MAPTILE_WALL || upR.type == MAPTILE_WALL2) && isCollisionReaction(upR.rc, _rc))
+		{
+			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
+			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+			//스탬핑 체크!
+			if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
+		}
+		else if ((midL.type == MAPTILE_WALL || midL.type == MAPTILE_WALL2) && isCollisionReaction(midL.rc, _rc))
+		{
+			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
+			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+			//스탬핑 체크!
+			if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
+		}
+		else if ((midM.type == MAPTILE_WALL || midM.type == MAPTILE_WALL2) && isCollisionReaction(midM.rc, _rc))
+		{
+			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
+			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+			//스탬핑 체크!
+			if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
+		}
+		else if ((midR.type == MAPTILE_WALL || midR.type == MAPTILE_WALL2) && isCollisionReaction(midR.rc, _rc))
+		{
+			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
+			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+			//스탬핑 체크!
+			if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
+		}
+		else if ((botL.type == MAPTILE_WALL || botL.type == MAPTILE_WALL2) && isCollisionReaction(botL.rc, _rc))
+		{
+			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
+			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+			//스탬핑 체크!
+			if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
+		}
+		else if ((botM.type == MAPTILE_WALL || botM.type == MAPTILE_WALL2) && isCollisionReaction(botM.rc, _rc))
+		{
+			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
+			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+			//스탬핑 체크!
+			if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
+		}
+		else if ((botR.type == MAPTILE_WALL || botR.type == MAPTILE_WALL2) && isCollisionReaction(botR.rc, _rc))
+		{
+			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
+			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
+			//스탬핑 체크!
+			if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
+		}
+	}
+
 	/*
 	RECT temp;
 	if ((upL.type == MAPTILE_WALL || upL.type == MAPTILE_WALL2) && IntersectRect(&temp,&upL.rc,&_rc))
@@ -221,71 +322,71 @@ void Boss::mapCollisionHandle()
 		_pointy -= sinf(getAngle(botR.point.x + TILESIZE / 2, botR.point.y + TILESIZE / 2, _pointx, _pointy))*(temp.bottom - temp.top);
 	}
 	*/
-
+	/*
 	if ((upL.type == MAPTILE_WALL || upL.type == MAPTILE_WALL2) && isCollisionReaction(upL.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
 		//스탬핑 체크!
-		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
+		if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
 	}
 	else if ((upM.type == MAPTILE_WALL || upM.type == MAPTILE_WALL2) && isCollisionReaction(upM.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
 		//스탬핑 체크!
-		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
+		if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
 	}
 	else if ((upR.type == MAPTILE_WALL || upR.type == MAPTILE_WALL2) && isCollisionReaction(upR.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
 		//스탬핑 체크!
-		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
+		if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
 	}
 	else if ((midL.type == MAPTILE_WALL || midL.type == MAPTILE_WALL2) && isCollisionReaction(midL.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
 		//스탬핑 체크!
-		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
+		if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
 	}
 	else if ((midM.type == MAPTILE_WALL || midM.type == MAPTILE_WALL2) && isCollisionReaction(midM.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
 		//스탬핑 체크!
-		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
+		if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
 	}
 	else if ((midR.type == MAPTILE_WALL || midR.type == MAPTILE_WALL2) && isCollisionReaction(midR.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
 		//스탬핑 체크!
-		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
+		if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
 	}
 	else if ((botL.type == MAPTILE_WALL || botL.type == MAPTILE_WALL2) && isCollisionReaction(botL.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
 		//스탬핑 체크!
-		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
+		if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
 	}
 	else if ((botM.type == MAPTILE_WALL || botM.type == MAPTILE_WALL2) && isCollisionReaction(botM.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
 		//스탬핑 체크!
-		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
+		if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
 	}
 	else if ((botR.type == MAPTILE_WALL || botR.type == MAPTILE_WALL2) && isCollisionReaction(botR.rc, _rc))
 	{
 		_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
 		_pointx = _rc.left + (_rc.right - _rc.left) / 2;
 		//스탬핑 체크!
-		if (_state == BOSSSTATE_STAMPING) _stampHitLand = true;
+		if (_state == BOSSSTATE_STAMPING && _currentFrameX == _image->getMaxFrameX()) _stampHitLand = true;
 	}
-
+	*/
 	_rc = RectMakeCenter(_pointx, _pointy, 30, 30);
 }
 void Boss::addStatusEffect(tagStatusEffect statuseffect)
@@ -324,7 +425,7 @@ void Boss::statusEffect()
 
 void Boss::frameUpdate()
 {
-	if (_state != BOSSSTATE_SLEEP && _state != BOSSSTATE_DEAD && _state!= BOSSSTATE_STAMPING)
+	if (_state != BOSSSTATE_SLEEP && _state != BOSSSTATE_DEAD && _state != BOSSSTATE_STAMPING)
 	{
 		if (_player->getPoint().x > _pointx)
 		{
@@ -387,7 +488,6 @@ void Boss::imageChange()
 		break;
 	}
 	_currentFrameX = 0;
-	_currentFrameY = 0;
 }
 void Boss::stateHandle()
 {
@@ -422,7 +522,7 @@ void Boss::stateHandle()
 	case BOSSSTATE_FLYING:
 		//플레이어 방향으로 이동 후 일정 거리가 되면 BOSSSTATE_FIREING로 상태 변화
 		RECT temp;
-		if (TIMEMANAGER->getWorldTime() - _actTimer > 4 && getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 500)
+		if (TIMEMANAGER->getWorldTime() - _actTimer > 4 && getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 300)
 		{
 			if ((_player->getPoint().x - 50 < _pointx && _pointx < _player->getPoint().x + 50) && _player->getPoint().y > _pointy)
 			{
@@ -432,6 +532,8 @@ void Boss::stateHandle()
 			else
 			{
 				_state = BOSSSTATE_FIREING;
+				if (_statistics.hp <= 50) _fireballCount = 7;
+				else _fireballCount = 5;
 				_canfire = true;
 			}
 			//상태 변화에 따른 이미지 변화
@@ -441,17 +543,32 @@ void Boss::stateHandle()
 		else if (IntersectRect(&temp, &_rc, &_player->getRect()))
 		{
 			_state = BOSSSTATE_FIREING;
+			if (_statistics.hp <= 50) _fireballCount = 7;
+			else _fireballCount = 5;
 			imageChange();
 			_actTimer = TIMEMANAGER->getWorldTime();
 		}
 		else
 		{
-			_xspeed = cosf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y)) * _statistics.spd;
-			_yspeed = sinf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y)) * _statistics.spd;
+			if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) > 150)
+			{
+				if (!(_wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2 - 1 < _pointx && _pointx < _wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2 + 1)) {
+					_xspeed = cosf(getAngle(_pointx, _pointy, _wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2, _wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2)) * _statistics.spd;
+				}
+				if (!(_wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2 - 1 < _pointy && _pointy < _wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2 + 1)) {
+					_yspeed = sinf(getAngle(_pointx, _pointy, _wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2, _wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2)) * _statistics.spd;
+				}
+			}
+			else
+			{
+				_xspeed = cosf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y)) * _statistics.spd;
+				_yspeed = sinf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y)) * _statistics.spd;
+
+			}
 		}
 		break;
 	case BOSSSTATE_FIREING:
-		if (TIMEMANAGER->getWorldTime() - _actTimer > 5)
+		if (_fireballCount == 0 && _currentFrameX == _image->getMaxFrameX())
 		{
 			_state = BOSSSTATE_FLYING;
 			//상태 변화에 따른 이미지 변화
@@ -477,10 +594,11 @@ void Boss::stateHandle()
 
 void Boss::fireFireBall()
 {
-	if (_canfire && _currentFrameX >= 4)
+	if (_canfire && _currentFrameX >= 4 && _fireballCount > 0)
 	{
 		_fireball->fire(_pointx, _pointy, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), 4);
 		_canfire = false;
+		_fireballCount--;
 	}
 	if (_currentFrameX == 0) _canfire = true;
 }
@@ -490,11 +608,15 @@ void Boss::stamping()
 	{
 		_yspeed = -10;
 	}
+	else if (_currentFrameX < 2)
+	{
+		_yspeed = 3;
+	}
 	if (_stampHitLand)
 	{
 		if (_player->getState() != PLAYERSTATE_JUMPING && _player->getState() != PLAYERSTATE_FALLING)
 		{
-			_player->getDamaged(10);
+			_player->getDamaged(10,PI/2,-10);
 		}
 		_stampHitLand = false;
 		_state = BOSSSTATE_FLYING;
@@ -542,11 +664,12 @@ void Boss::add_openlist(vertex v)
 void Boss::add_closelist(vertex v)
 {
 	//예외처리
+	bool check = true;;
 	for (int i = 0; i < _closelist.size(); i++)
 	{
 		if (_closelist[i].vx == v.vx && _closelist[i].vy == v.vy)
 		{
-			return;
+			check = false;
 		}
 	}
 	//추가
@@ -556,42 +679,102 @@ vertex Boss::pop_openlist()
 {
 	vertex temp;
 	temp = _openlist[_openlist.size() - 1];
+	_openlist.pop_back();
 	return temp;
 }
 vertex Boss::pop_closelist()
 {
 	vertex temp;
 	temp = _closelist[_closelist.size() - 1];
+	_closelist.pop_back();
 	return temp;
 }
-vertex Boss::calc_vertex(vertex v)
+vertex Boss::pop_closelist(int vx, int vy)
 {
-	//이동비용 구하기
-	if (v.vx != v.p->vx && v.vy != v.p->vy)
+	for (int i = 0; i < _closelist.size(); i++)
 	{
-		v.h = v.p->h + 14;
+		if (_closelist[i].vx == vx, _closelist[i].vy == vy)
+		{
+			return _closelist[i];
+		}
 	}
-	else if (v.vx == v.p->vx && v.vy != v.p->vy)
+	vertex temp;
+	return temp;
+}
+vertex Boss::calc_vertex(vertex v, vertex p)
+{
+	//if (v.p == NULL)
+	if (v.px == _startpoint.vx || v.py == _startpoint.vy)
 	{
-		v.h = v.p->h + 10;
+		//이동비용 구하기
+		if (v.vx != _startpoint.vx && v.vy != _startpoint.vy)
+		{
+			v.h = _startpoint.h + 14;
+		}
+		else if (v.vx == _startpoint.vx && v.vy != _startpoint.vy)
+		{
+			v.h = _startpoint.h + 10;
+		}
+		else if (v.vx != _startpoint.vx && v.vy == _startpoint.vy)
+		{
+			v.h = _startpoint.h + 10;
+		}
+		//예상이동비용 구하기
+		v.g = 0;
+		if (v.vx != _goalTileX)
+		{
+			v.g += 10 * (abs(_goalTileX - v.vx));
+		}
+		if (v.vy != _goalTileY)
+		{
+			v.g += 10 * (abs(_goalTileY - v.vy));
+		}
+		//비용 구하기
+		v.f = v.g + v.h;
+		return v;
 	}
-	else if (v.vx != v.p->vx && v.vy == v.p->vy)
+	else
 	{
-		v.h = v.p->h + 10;
+		//이동비용 구하기
+		if (v.vx != v.px && v.vy != v.py)
+		{
+			v.h = p.h + 14;
+		}
+		else if (v.vx == v.px && v.vy != v.py)
+		{
+			v.h = p.h + 10;
+		}
+		else if (v.vx != v.px && v.vy == v.py)
+		{
+			v.h = p.h + 10;
+		}
+		//if (v.vx != v.p->vx && v.vy != v.p->vy)
+		//{
+		//	v.h = v.p->h + 14;
+		//}
+		//else if (v.vx == v.p->vx && v.vy != v.p->vy)
+		//{
+		//	v.h = v.p->h + 10;
+		//}
+		//else if (v.vx != v.p->vx && v.vy == v.p->vy)
+		//{
+		//	v.h = v.p->h + 10;
+		//}
+		//예상이동비용 구하기
+		v.g = 0;
+		if (v.vx != _goalTileX)
+		{
+			v.g += 10 * (abs(_goalTileX - v.vx));
+		}
+		if (v.vy != _goalTileY)
+		{
+			v.g += 10 * (abs(_goalTileY - v.vy));
+		}
+		//비용 구하기
+		v.f = v.g + v.h;
+		return v;
 	}
-	//예상이동비용 구하기
-	v.g = 0;
-	if (v.vx != _goalTileX)
-	{
-		v.g += 10 * (abs(_goalTileX - v.vx));
-	}
-	if (v.vy != _goalTileY)
-	{
-		v.g += 10 * (abs(_goalTileY - v.vy));
-	}
-	//비용 구하기
-	v.f = v.g + v.h;
-	return v;
+
 }
 
 void Boss::astar()
@@ -609,56 +792,138 @@ void Boss::astar()
 		_startpoint.g += 10 * (abs(_goalTileY - _startpoint.vy));
 	}
 	_startpoint.f = _startpoint.g + _startpoint.h;
+	//_startpoint.p = NULL;
+	_startpoint.px = _curTileX;
+	_startpoint.py = _curTileY;
+	_currentvertex = &_startpoint;
+	add_opelistEightWay(_currentvertex);
 
+	while (true)
+	{
+
+		if (checkGoal())
+		{
+			break;
+		}
+		else
+		{
+			_currentvertex = NULL;
+			_npcurrentvertex = pop_openlist();
+			//예외처리
+			bool check = true;;
+			for (int i = 0; i < _closelist.size(); i++)
+			{
+				if (_closelist[i].vx == _npcurrentvertex.vx && _closelist[i].vy == _npcurrentvertex.vy)
+				{
+					check = false;
+				}
+			}
+			if (check) _closelist.push_back(_npcurrentvertex);
+			add_opelistEightWay(&_npcurrentvertex);
+			int a = 5;
+		}
+	}
+	makeWay();
+}
+
+void Boss::add_opelistEightWay(vertex* v)
+{
 	vertex temp;
-	temp.p = &_startpoint;
-	temp.vx = _startpoint.vx;
-	temp.vy = _startpoint.vy;
-	temp.vx -= 1;
-	temp.vy -= 1;
-	temp = calc_vertex(temp);
-	add_openlist(temp);
-	temp.vx = _startpoint.vx;
-	temp.vy = _startpoint.vy;
-	temp.vx -= 1;
-	temp.vy -= 0;
-	temp = calc_vertex(temp);
-	add_openlist(temp);
-	temp.vx = _startpoint.vx;
-	temp.vy = _startpoint.vy;
-	temp.vx -= 1;
-	temp.vy -= -1;
-	temp = calc_vertex(temp);
-	add_openlist(temp);
-	temp.vx = _startpoint.vx;
-	temp.vy = _startpoint.vy;
-	temp.vx -= 0;
-	temp.vy -= 1;
-	temp = calc_vertex(temp);
-	add_openlist(temp);
-	temp.vx = _startpoint.vx;
-	temp.vy = _startpoint.vy;
-	temp.vx -= 0;
-	temp.vy -= -1;
-	temp = calc_vertex(temp);
-	add_openlist(temp);
-	temp.vx = _startpoint.vx;
-	temp.vy = _startpoint.vy;
-	temp.vx -= -1;
-	temp.vy -= 1;
-	temp = calc_vertex(temp);
-	add_openlist(temp);
-	temp.vx = _startpoint.vx;
-	temp.vy = _startpoint.vy;
-	temp.vx -= -1;
-	temp.vy -= 0;
-	temp = calc_vertex(temp);
-	add_openlist(temp);
-	temp.vx = _startpoint.vx;
-	temp.vy = _startpoint.vy;
-	temp.vx -= -1;
-	temp.vy -= -1;
-	temp = calc_vertex(temp);
-	add_openlist(temp);
+	//temp.p = v;
+	temp.px = (*v).vx;
+	temp.py = (*v).vy;
+	for (int i = -1; i < 2; i++)
+	{
+		for (int j = -1; j < 2; j++)
+		{
+			if (i == 0 && j == 0) continue;
 
+			temp.vx = i + (*v).vx;;
+			temp.vy = j + (*v).vy;;
+			if (0 <= temp.vx && temp.vx <= 58 && 0 <= temp.vy&&temp.vy <= 40)
+			{
+				if ((_map->getMapInfo(temp.vy, temp.vx).type != MAPTILE_WALL && _map->getMapInfo(temp.vy, temp.vx).type != MAPTILE_WALL2))
+				{
+					temp = calc_vertex(temp, *v);
+					bool check = true;
+					//예외처리
+					for (int i = 0; i < _openlist.size(); i++)
+					{
+						if (_openlist[i].vx == temp.vx && _openlist[i].vy == temp.vy)
+						{
+							check = false;
+						}
+					}
+					for (int i = 0; i < _closelist.size(); i++)
+					{
+						if (_closelist[i].vx == temp.vx && _closelist[i].vy == temp.vy)
+						{
+							check = false;
+						}
+					}
+					//추가
+					if (check)_openlist.push_back(temp);
+				}
+			}
+		}
+	}
+	//정렬
+	sort(_openlist.begin(), _openlist.end());
+
+}
+
+bool Boss::checkGoal()
+{
+	for (int i = 0; i < _openlist.size(); i++)
+	{
+		if (_openlist[i].vx == _goalTileX && _openlist[i].vy == _goalTileY)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void Boss::makeWay()
+{
+	vertex temp;
+	temp = pop_closelist();
+	_wayToPlayer.push_back(temp);
+
+	while (true)
+	{
+		if (_wayToPlayer[_wayToPlayer.size() - 1].px == _startpoint.vx && _wayToPlayer[_wayToPlayer.size() - 1].py == _startpoint.vy)
+		{
+			break;
+		}
+		else
+		{
+			temp = getcloselist(_wayToPlayer[_wayToPlayer.size() - 1].px, _wayToPlayer[_wayToPlayer.size() - 1].py);
+			_wayToPlayer.push_back(temp);
+		}
+	}
+}
+vertex Boss::getcloselist(int x, int y)
+{
+	vertex temp;
+	for (int i = 0; i < _closelist.size(); i++)
+	{
+		if (_closelist[i].vx == x && _closelist[i].vy == y)
+		{
+			return _closelist[i];
+		}
+	}
+	return temp;
+}
+vertex Boss::getopenlist(int x, int y)
+{
+	vertex temp;
+	for (int i = 0; i < _openlist.size(); i++)
+	{
+		if (_openlist[i].vx == x && _openlist[i].vy == y)
+		{
+			return _openlist[i];
+		}
+	}
+	return temp;
 }
