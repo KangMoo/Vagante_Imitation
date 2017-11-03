@@ -82,7 +82,7 @@ void bat::update() {
 	if (KEYMANAGER->isOnceKeyDown('Q')) getDamaged(1, PI, 2);
 
 	if (_dead) _alpha += 1;
-	_rc = RectMakeCenter(_pointx, _pointy, 10, 10);
+	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 }
 
 void bat::move()
@@ -212,6 +212,7 @@ void bat::render(POINT camera)
 
 void bat::draw(POINT camera)
 {
+
 	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
 	_image->alphaFrameRender(getMemDC(),
 		_pointx - _image->getFrameWidth() / 2 + camera.x,

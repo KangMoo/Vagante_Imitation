@@ -88,7 +88,11 @@ private:
 	int _curTileX, _curTileY; // 현재 타일 위치
 	int _prevTileX, _prevTileY; // 이전 타일 위치
 
-	vAttackRange _vAttackRange;	//공격범위렉트를 담을 벡터 (공격범위가 여러개가 생길경우를 대비)
+
+	tagItemInfo _equipWeapon;
+	MYRECT _equipWeaponRect;  //무기를 담을 렉트
+
+
 	vEnemyRange _vEnemyRange;
 	
 	animation* _playerMotion[2];
@@ -99,7 +103,10 @@ private:
 	int _frameX;
 	int _frameY;
 	int _frameYOffset;
+	int _animDelay;
 
+
+	int _test;
 
 	bool _invincible;
 	float _invincibleTime;
@@ -128,9 +135,13 @@ public:
 	void attackingNow();	// 공격중
 	void holdLadder();		// 사다리 매달리기
 	void canDown();			// 바닥 내려가기
+
 	void mapcollision();
 	void attackCollision();
+
 	void checkStatusEffect(); //상태이상 확인하기
+	void checkHitEnemy(); //공격 확인하기
+
 
 	//공격 받았을 시 (데미지만)
 	void getDamaged(int damage);
@@ -162,7 +173,7 @@ public:
 	inline float getYSpeed() { return _player.yspeed; }
 	inline void setYSpeed(float yspeed) { _player.yspeed = yspeed; }
 	inline tagStatusEffect* getStatusEffect() { return &_player.statusEffect[0]; }
-	inline void setEquipWeapon(tagItemInfo weapon) { _player.equipWeapon = weapon; }
+	inline void setEquipWeapon(tagItemInfo weapon) { _equipWeapon = weapon; }
 
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }

@@ -35,12 +35,12 @@ HRESULT EnemyManager::init()
 	temp->init(pt, 9999, 9999);
 	_vEnemy.push_back(temp);
 
-	temp = new bat;
-	temp->setMap(_map);
-	temp->setPlayerAddressLink(_player);
-	temp->setUiAddressLink(_ui);
-	temp->init(pt, 0, 0);
-	_vEnemy.push_back(temp);
+	Enemy* temp2 = new bat;
+	temp2->setMap(_map);
+	temp2->setPlayerAddressLink(_player);
+	temp2->setUiAddressLink(_ui);
+	temp2->init(pt, 0, 0);
+	_vEnemy.push_back(temp2);
 
 	_boss = new Boss();
 	//상호참조를 위한 address링크
@@ -50,12 +50,12 @@ HRESULT EnemyManager::init()
 	_boss->init(PointMake(TILESIZE * 35, TILESIZE * 6));
 
 	pt = PointMake(TILESIZE * 20 - TILESIZE, TILESIZE * 6 - TILESIZE);
-	temp = new manEater;
-	temp->setMap(_map);
-	temp->setPlayerAddressLink(_player);
-	temp->setUiAddressLink(_ui);
-	temp->init(pt, 50, 50);
-	_vEnemy.push_back(temp);
+	Enemy* temp3 = new manEater;
+	temp3->setMap(_map);
+	temp3->setPlayerAddressLink(_player);
+	temp3->setUiAddressLink(_ui);
+	temp3->init(pt, 50, 50);
+	_vEnemy.push_back(temp3);
 
 	return S_OK;
 }
