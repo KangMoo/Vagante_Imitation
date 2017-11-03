@@ -93,7 +93,7 @@ HRESULT worm::init(POINT point, float minCog, float maxCog)
 	//한번 설정한 방향은 죽을때까지 가지고 있는다
 	if (a == 0) _isLeft = true;
 	else _isLeft = false;
-	//_isLeft = true;
+	_isLeft = false;
 	//프레임 끝까지 도달하면 다시 왔다갔다할거라 그거용
 	_reverseFrame = false;
 	//이동속도
@@ -127,16 +127,16 @@ HRESULT worm::init(POINT point, float minCog, float maxCog)
 
 	//죽었는지 확인용
 	_dead = false;
-	_deadAlpha = 255;
+	_deadAlpha = 0;
 	
 	return S_OK;
 }
 void worm::update()
 {
-	if (KEYMANAGER->isOnceKeyDown('Z'))
-	{
-		getDamaged(10);
-	}
+	//if (KEYMANAGER->isOnceKeyDown('Z'))
+	//{
+	//	getDamaged(10);
+	//}
 
 	//공격용 렉트 정리해주는 함수, 만약 벌레같은 애들은 그냥 공격렉트가 똑같으니 그대로 처리
 	//헤더파일에 있으니까 보고 수정 필요하면 재수정할것
@@ -147,8 +147,8 @@ void worm::update()
 	falling();
 	if (_state == ENEMYSTATE_DEAD)
 	{
-		_deadAlpha -= 5;
-		if (_deadAlpha < 0)
+		_deadAlpha += 5;
+		if (_deadAlpha >= 255)
 		{
 			_dead = true;
 		}
@@ -598,7 +598,7 @@ void worm::isThereWall()
 					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE - 1).rc.top + _moveSpeed;
 				}
 				else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL &&
-					_map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx) / TILESIZE).type != MAPTILE_WALL)
+					_map->getMapInfo((_pointy) / TILESIZE - 1, (_pointx - _moveSpeed) / TILESIZE).type != MAPTILE_WALL)
 				{
 					//만약 앞쪽에 벽이 없는데 그 아래에도 벽이 없을 경우 지금 자기 아래 타일을 타고 내려가야한다
 					//x는 그대로, y는 + 1 해준 자기 앞 아래의 타일 검사, 또 자기 바로 앞 타일 검사

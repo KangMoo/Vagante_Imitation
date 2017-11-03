@@ -51,7 +51,7 @@ HRESULT Enemy::init(POINT point, float minCog, float maxCog)
 	_attackRect = RectMakeCenter(_pointx, _pointy, 1, 1);
 	_lastPlayerPoint = _player->getPoint();
 	_dead = false;
-	_deadAlpha = 255;
+	_deadAlpha = 0;
 
 	return S_OK;
 }
@@ -75,8 +75,8 @@ void Enemy::update()
 	falling();
 	if (_state == ENEMYSTATE_DEAD)
 	{
-		_deadAlpha -= 5;
-		if (_deadAlpha < 0)
+		_deadAlpha += 5;
+		if (_deadAlpha >= 255)
 		{
 			_dead = true;
 		}
