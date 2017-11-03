@@ -137,7 +137,7 @@ void manEater::attack()
 	{
 		_rc = RectMake(_pointx, _pointy, 0, 0);//공격 및 피격렉트 설정 // 맞지않고 때려야하니 피격렉트 해제
 		_attackRect = RectMake(_pointx, _pointy, TILESIZE, TILESIZE);	 //공격 및 피격렉트 설정
-		//_statistics.mel = RND->getFromIntTo(4, 15);			 //공격력
+		_statistics.mel = RND->getFromIntTo(4, 15);			 //공격력
 		_currentFrameX = 0;									 //프레임 초기화
 		_image = _attackAfteri;								 //이미지 재설정
 		_state = ENEMYSTATE_ATTACKING;						 //상태설정 
@@ -147,7 +147,7 @@ void manEater::attack()
 	{
 		_rc = RectMake(_pointx, _pointy, TILESIZE, TILESIZE);//공격 및 피격렉트 설정
 		_attackRect = RectMake(_pointx, _pointy, 0, 0);	 //공격 및 피격렉트 설정 // 줘맞아야 하니까 공격렉트 해제
-		_statistics.mel = RND->getFromIntTo(4, 15);			 //공격력
+		//_statistics.mel = RND->getFromIntTo(4, 15);			 //공격력
 		_currentFrameX = 0;									 //프레임 초기화
 		_image = _image = _attacki;					         //이미지 재설정
 		_state = ENEMYSTATE_IDLE;					      	 //상태설정 

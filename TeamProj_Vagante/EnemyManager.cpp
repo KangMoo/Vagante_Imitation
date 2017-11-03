@@ -49,7 +49,7 @@ HRESULT EnemyManager::init()
 	_boss->setMapAddressLink(_map);
 	_boss->init(PointMake(TILESIZE * 35, TILESIZE * 6));
 
-	pt = PointMake(TILESIZE * 35 - TILESIZE, TILESIZE * 6 - TILESIZE);
+	pt = PointMake(TILESIZE * 20 - TILESIZE, TILESIZE * 6 - TILESIZE);
 	temp = new manEater;
 	temp->setMap(_map);
 	temp->setPlayerAddressLink(_player);
