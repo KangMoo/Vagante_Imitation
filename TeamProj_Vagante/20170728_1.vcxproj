@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClInclude Include="action.h" />
     <ClInclude Include="animation.h" />
+    <ClInclude Include="bat.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="button.h" />
     <ClInclude Include="collision.h" />
@@ -114,10 +115,12 @@
     <ClInclude Include="UI.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vaganteStructEnum.h" />
+    <ClInclude Include="worm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="action.cpp" />
     <ClCompile Include="animation.cpp" />
+    <ClCompile Include="bat.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="button.cpp" />
     <ClCompile Include="collision.cpp" />
@@ -150,6 +153,7 @@
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="winMain.cpp" />
+    <ClCompile Include="worm.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
