@@ -70,6 +70,7 @@ void bat::update() {
 	actByState();
 	move();
 	mapCollisionCheck();
+
 	hitPlayer();
 	deadcheck();
 	imgHandleByState();
@@ -89,19 +90,19 @@ void bat::move()
 	_pointx += _xspeed;
 	_pointy += _yspeed;
 
-	if (_xspeed > 0) _xspeed -= 0.5;
-	else if (_xspeed < 0) _xspeed += 0.5;
-	if (_yspeed > 0) _yspeed -= 0.5;
-	else if (_yspeed < 0) _yspeed += 0.5;
+	if (_xspeed > 0) _xspeed -= 0.1;
+	else if (_xspeed < 0) _xspeed += 0.1;
+	if (_yspeed > 0) _yspeed -= 0.1;
+	else if (_yspeed < 0) _yspeed += 0.1;
 
 	if (abs(_xspeed) <= 0.5) _xspeed = 0;
 	if (abs(_yspeed) <= 0.5) _yspeed = 0;
 
 	//속도 한계치
-	if (_xspeed > 5) _xspeed = 5;
-	else if (_xspeed < -5) _xspeed = -5;
-	if (_yspeed > 5) _yspeed = 5;
-	else if (_yspeed < -5) _yspeed = -5;
+	if (_xspeed > 2) _xspeed = 2;
+	else if (_xspeed < -2) _xspeed = -2;
+	if (_yspeed > 2) _yspeed = 2;
+	else if (_yspeed < -2) _yspeed = -2;
 	
 }
 
@@ -119,12 +120,14 @@ void bat::actByState()
 		case BATSTATE_FLYING:
 			if (_isPlayerOnTarget)
 			{
-				_xspeed = cosf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y))*_statistics.spd;
-				_yspeed = -sinf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y))*_statistics.spd;
+				if(abs(_xspeed) < 1)
+				_xspeed += cosf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y))*_statistics.spd;
+				if(abs(_yspeed) < 1)
+				_yspeed += -sinf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y))*_statistics.spd;
 			}
 			else
 			{
-				_yspeed = -_statistics.spd;
+				_yspeed += -_statistics.spd;
 			}
 			break;
 		case BATSTATE_HIT:
@@ -144,6 +147,8 @@ void bat::hitPlayer()
 	if (IntersectRect(&temp, &_player->getRect(), &_rc))
 	{
 		_player->getDamaged(5, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), 3);
+		_xspeed = cosf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 10;
+		_yspeed = -sinf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 10;
 	}
 }
 void bat::mapCollisionCheck()
@@ -207,7 +212,7 @@ void bat::render(POINT camera)
 
 void bat::draw(POINT camera)
 {
-	Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
+	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
 	_image->alphaFrameRender(getMemDC(),
 		_pointx - _image->getFrameWidth() / 2 + camera.x,
 		_pointy - _image->getFrameHeight() / 2 + camera.y,
