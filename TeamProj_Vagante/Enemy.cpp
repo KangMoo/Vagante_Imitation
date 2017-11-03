@@ -133,6 +133,7 @@ void Enemy::render(POINT camera)
 }
 void Enemy::draw(POINT camera)
 {
+	/*
 	//Rectangle(getMemDC(), _pointx - _minCog / 2 + camera.x, _pointy - _minCog / 2 + camera.y, _pointx + _minCog / 2 + camera.x, _pointy + _minCog / 2 + camera.y);
 	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
 	if (_state != ENEMYSTATE_DEAD)
@@ -141,7 +142,7 @@ void Enemy::draw(POINT camera)
 		_image->alphaFrameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _deadAlpha);
 	//EllipseMakeCenter(getMemDC(), _pointx + camera.x, _pointy + camera.y, 5, 5);
 
-	/*
+	
 	char string[128];
 	sprintf(string, "x : %d, y : %d", _rc.left / TILESIZE, _rc.top / TILESIZE);
 	TextOut(getMemDC(), WINSIZEX / 2, WINSIZEY / 2, string, strlen(string));

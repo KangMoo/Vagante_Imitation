@@ -59,15 +59,16 @@ protected:
 	bool _dead;															//데드체크용
 	int _deadAlpha;														//데드체크용
 	RECT _attackRect;													//플레이어 공격용 렉트
+	bool _deleteForeEm;													//true시 em에서 삭제
 
 public:
-	HRESULT init();
-	virtual HRESULT init(POINT point, float minCog, float maxCog);
-	void release();
-	void update();
-	void render();
-	void render(POINT camera);
-	void draw(POINT camera);
+	virtual HRESULT init();
+	virtual virtual HRESULT init(POINT point, float minCog, float maxCog);
+	virtual void release();
+	virtual void update();
+	virtual void render();
+	virtual void render(POINT camera);
+	virtual void draw(POINT camera);
 
 	virtual void move();			// 이동관련함수
 	virtual void jump();			// 점프
@@ -78,11 +79,11 @@ public:
 	virtual void playerCog();		// 플레이어와 몬스터 사이의 벽 있는지 판단
 
 	//공격 받았을 시 (데미지만)
-	void getDamaged(int damage) { _statistics.hp -= damage; }
+	virtual void getDamaged(int damage) { _statistics.hp -= damage; }
 	//공격 받았을 시 (데미지&넉백)
-	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _angle = angle; _gravity = 0; _state = ENEMYSTATE_HIT; }
+	virtual void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _angle = angle; _gravity = 0; _state = ENEMYSTATE_HIT; }
 	//상태이상
-	void addStatusEffect(tagStatusEffect statuseffect);
+	virtual void addStatusEffect(tagStatusEffect statuseffect);
 
 	//설정자&접근자
 	//체력

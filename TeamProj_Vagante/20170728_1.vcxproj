@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClInclude Include="action.h" />
     <ClInclude Include="animation.h" />
+    <ClInclude Include="bat.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="button.h" />
     <ClInclude Include="collision.h" />
@@ -119,6 +120,7 @@
   <ItemGroup>
     <ClCompile Include="action.cpp" />
     <ClCompile Include="animation.cpp" />
+    <ClCompile Include="bat.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="button.cpp" />
     <ClCompile Include="collision.cpp" />

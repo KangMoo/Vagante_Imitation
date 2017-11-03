@@ -20,7 +20,9 @@ public:
 	HRESULT init(POINT point, float minCog, float maxCog);
 	void falling();			// 낙하 처리
 	void rectResize();		// 혹시 rect 사이즈 변경 필요시 여길 통해서
-
+	void update();
+	void render(POINT camera);
+	void draw(POINT camera);
 	void move();			// 이동관련함수
 	void attack();			// 공격
 	void frameUpdate();	// 프레임 업데이트

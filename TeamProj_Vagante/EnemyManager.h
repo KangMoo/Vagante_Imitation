@@ -3,6 +3,7 @@
 #include "Enemy.h"
 #include "Boss.h"
 #include "worm.h"
+#include "bat.h"
 #include "vaganteStructEnum.h"
 
 class Player;
