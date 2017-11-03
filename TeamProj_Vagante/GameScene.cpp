@@ -109,6 +109,8 @@ void GameScene::addImage()
 	IMAGEMANAGER->addImage("batsleep", "Img\\enemy\\bat_idle.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("batflying", "Img\\enemy\\bat_moving.bmp", 128, 32, 4, 1, true, RGB(255, 0, 255));
 
+
+
 }
 void GameScene::keyInput()
 {

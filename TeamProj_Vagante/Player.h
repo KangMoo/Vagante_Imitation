@@ -5,6 +5,7 @@
 class EnemyManager;
 class Map;
 class UI;
+class Enemy;
 
 #define JUMPPOWERSTART 5
 #define JUMPPOWERMAX 10
@@ -71,24 +72,33 @@ struct tagPlayerInfo {
 */
 class Player : public gameNode
 {
+
 private:
-	typedef vector<MYRECT> vRange;
-	typedef vector<MYRECT>::iterator viRange;
+	typedef vector<Enemy*> vEnemyRange;
+	typedef vector<Enemy*>::iterator viEnemyRange;
 
 	tagPlayerInfo _player;
 	EnemyManager* _em;
 	Map* _map;
 	UI* _ui;
 	bool _canCtrl;		//조작 가능 여부 판단
-
+	
 
 	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;// 위치 정보
 	int _curTileX, _curTileY; // 현재 타일 위치
 	int _prevTileX, _prevTileY; // 이전 타일 위치
 
-	vRange _vHitRange;		//피격 판정 렉트
-	vRange _vAttackRange;	//공격범위렉트를 담을 벡터 (공격범위가 여러개가 생길경우를 대비)
+	vAttackRange _vAttackRange;	//공격범위렉트를 담을 벡터 (공격범위가 여러개가 생길경우를 대비)
+	vEnemyRange _vEnemyRange;
+	
+	animation* _playerMotion[2];
 
+
+	int _animSpeed;
+	int _animCount;
+	int _frameX;
+	int _frameY;
+	int _frameYOffset;
 
 
 public:
@@ -99,19 +109,28 @@ public:
 	void render(POINT camera);
 	void draw(POINT camera);
 
+	//초기 설정
+	void firstSettingAni(); 
+	void firstSettingStat();
+
+
 	void move();			// 이동관련함수
 	void keyintput();		// 키 입력 함수
 	void setmaptileInfo();	// 타일값 얻어오기
+	void setStateImg(void); // 상태에 따라 이미지 변경	
+	void frameUpdate();
 
 	void jump();			// 점프
 	void attack();			// 공격
 	void holdLadder();			// 사다리 매달리기
-	void canDown();			// 사다리 매달리기
+	void canDown();			// 
+
+	void attackCollision();
 
 	//공격 받았을 시 (데미지만)
-	void getDamaged(int damage) { _player.stat.hp -= damage; }
+	void getDamaged(int damage);
 	//공격 받았을 시 (데미지&넉백)
-	void getDamaged(int damage, float angle, float knockbackpower) { _player.stat.hp -= damage; _player.xspeed += cosf(angle)*knockbackpower; _player.yspeed -= sinf(angle)*knockbackpower; }
+	void getDamaged(int damage, float angle, float knockbackpower);
 	//상태이상효과 추가
 	void addStatusEffect(tagStatusEffect statuseffect);
 
@@ -134,13 +153,13 @@ public:
 	inline float getYSpeed() { return _player.yspeed; }
 	inline void setYSpeed(float yspeed) { _player.yspeed = yspeed; }
 
-	inline vRange getVHitRange(void) { return _vHitRange; }
-	inline vRange getVAttackRange(void) { return _vAttackRange; }
+	inline void setEquipWeapon(tagItemInfo weapon) { _player.equipWeapon = weapon; }
 
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
+
 	Player();
 	~Player();
 };
