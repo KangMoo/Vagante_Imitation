@@ -100,7 +100,11 @@ void GameScene::addImage()
 	IMAGEMANAGER->addFrameImage("boss_dragon_fly", "Img/enemy/dragon_fly.bmp", 186 * 2, 76 * 2, 6, 2, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("boss_dragon_sleep", "Img/enemy/dragon_sleep.bmp", 37 * 2, 30 * 2, 1, 2, true, RGB(255, 0, 255));
 
+	//몬스터 이미지 추가
 
+	IMAGEMANAGER->addFrameImage("enemy_slime_idle", "Img/enemy/slime_idle.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("enemy_slime_dash", "Img/enemy/slime_dash.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("enemy_slime_jump", "Img/enemy/slime_jump.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
 }
 void GameScene::keyInput()
 {

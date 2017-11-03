@@ -58,6 +58,19 @@ protected:
 
 	RECT _attackRect;													//플레이어 공격용 렉트
 
+private:
+	float jumpTime; //추가변수 점프시간
+	bool isJumped; //추가변수
+	float jumpPower; //추가변수 얼마만큼 높이
+	float distance; //추가변수 높이 이동에 관한 거리
+	float saveY;
+
+	bool jumped;
+	bool stand;
+
+	float _actTimer; //추가변수 행동시간
+	float _timerForFrameUpdate; //추가변수
+
 public:
 	HRESULT init();
 	virtual HRESULT init(POINT point, float minCog, float maxCog);
@@ -70,9 +83,12 @@ public:
 	virtual void move();			// 이동관련함수
 	virtual void jump();			// 점프
 	virtual void attack();			// 공격
-	virtual void frameUpdate() {}	// 프레임 업데이트
+	virtual void frameUpdate();	// 프레임 업데이트
 	virtual void falling();			// 낙하 처리
 	virtual void rectResize();		// 혹시 rect 사이즈 변경 필요시 여길 통해서
+
+	void stateHandle(); //추가 함수
+	void imageChange(); //추가 함수2
 
 	//공격 받았을 시 (데미지만)
 	void getDamaged(int damage) { _statistics.hp -= damage; }
