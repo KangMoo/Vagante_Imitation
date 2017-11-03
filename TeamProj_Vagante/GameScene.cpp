@@ -101,6 +101,8 @@ void GameScene::addImage()
 	IMAGEMANAGER->addFrameImage("boss_dragon_sleep", "Img/enemy/dragon_sleep.bmp", 37 * 2, 30 * 2, 1, 2, true, RGB(255, 0, 255));
 
 
+
+
 }
 void GameScene::keyInput()
 {

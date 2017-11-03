@@ -16,28 +16,29 @@ Player::~Player()
 }
 HRESULT Player::init(POINT point)
 {
-	//임의 설정이니 수정해주세요~
+	//이미지 추가 (나중에 main으로 옮길 예정)
+	
+	IMAGEMANAGER->addFrameImage("player_idle","Img/player/player_idle.bmp", 96, 96, 2, 2, true, RGB(255,0,255));
+	IMAGEMANAGER->addFrameImage("player_jumping", "Img/player/player_jumping.bmp", 192, 96, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("player_moving", "Img/player/player_moving.bmp", 384, 96, 8, 2, true, RGB(255, 0, 255));
+
+
+	//애니메이션과 스테이터스 초기 설정
+	firstSettingStat();
+	_player.image = IMAGEMANAGER->findImage("player_idle");
+	_animSpeed = 5;
+
+
+	//플레이어 위치 및 RECT
 	_player.pointx = point.x;
 	_player.pointy = point.y;
-	_player.rc = RectMakeCenter(_player.pointx, _player.pointy, 15, 20);
+	_player.rc = RectMakeCenter(_player.pointx, _player.pointy, 24, 24);
 
-	_player.jumppower = 0;
-	_player.lookingLeft = true;
-	_player.lookingRight = false;
-	_player.xspeed = 0;
-	_player.yspeed = 0;
-	_player.money = 0;
-	_player.gravity = 0.3;
 
-	_player.state = PLAYERSTATE_FALLING;
-
+	//맵 정보 설정
 	_curTileX = _prevTileX = int(_player.pointx) / TILESIZE;
 	_curTileY = _prevTileY = int(_player.pointy) / TILESIZE;
-
-	MYRECT _weapon;
-	_weapon.set(_player.pointx, _player.pointy, _player.pointx + 20, _player.pointy + 10);
-	_vAttackRange.push_back(_weapon);
-
+	
 	upL = _map->getMapInfo(_curTileY - 1, _curTileX - 1);
 	upM = _map->getMapInfo(_curTileY - 1, _curTileX);
 	upR = _map->getMapInfo(_curTileY - 1, _curTileX + 1);
@@ -48,25 +49,11 @@ HRESULT Player::init(POINT point)
 	botM = _map->getMapInfo(_curTileY + 1, _curTileX);
 	botR = _map->getMapInfo(_curTileY + 1, _curTileX + 1);
 
-	for (int i = 0; i < 5; i++)_player.statusEffect[i].type = STATUSEFFECT_NULL;
-	
-	_player.stat.hp = 100;
-	_player.stat.str = 0;
-	_player.stat.dex = 0;
-	_player.stat.vit = 0;
-	_player.stat.inl = 0;
-	_player.stat.lck = 0;
-	_player.stat.def = 0;
-	_player.stat.fir = 0;
-	_player.stat.ice = 0;
-	_player.stat.lgt = 0;
-	_player.stat.psn = 0;
-	_player.stat.mel = 0;
-	_player.stat.rng = 0;
-	_player.stat.crit = 0;
-	_player.stat.aspd = 0;
-	_player.stat.spd = 0;
-	_canCtrl = true;
+	//무기 초기 설정
+	MYRECT _weapon;
+	_weapon.set(_player.pointx, _player.pointy, _player.pointx + 20, _player.pointy + 10);
+	_vAttackRange.push_back(_weapon);
+
 	return S_OK;
 }
 void Player::release()
@@ -78,8 +65,10 @@ void Player::update()
 	
 
 	//test~
-	_player.rc = RectMakeCenter(_player.pointx, _player.pointy, TILESIZE / 2, TILESIZE * 3 / 4);
+	_player.rc = RectMakeCenter(_player.pointx, _player.pointy, 24, 24);
 
+
+	//공격 임시
 	for (int i = 0; i < _vAttackRange.size(); i++) {
 		float _offset;
 		if (_player.lookingRight)
@@ -89,7 +78,15 @@ void Player::update()
 		_vAttackRange[i].setCenterPos(_player.pointx + _offset, _player.pointy);
 	}
 
-	//~test
+	
+
+	
+
+
+
+	
+	//프레임 업데이트
+	frameUpdate();
 
 	//움직임
 	move();
@@ -98,20 +95,30 @@ void Player::update()
 	//조작 가능하면 키 입력 받기 (ui에게 조작이 넘어갈 경우 _canCtrl값 false)
 	if (_canCtrl) keyintput();
 }
+
+
 void Player::render()
 {
 
 }
+
+
 //그릴 때	x좌표에 camera.x 만큼
 //			y좌표에 camera.y 만큼 더해주기!!!!
 void Player::render(POINT camera)
 {
 	draw(camera);
 }
+
 void Player::draw(POINT camera)
 {
 	//test
 	Rectangle(getMemDC(), _player.rc.left + camera.x, _player.rc.top + camera.y, _player.rc.right + camera.x, _player.rc.bottom + camera.y);
+
+	_player.image->frameRender(getMemDC(), _player.rc.left - 12 + camera.x, _player.rc.top - 24 + camera.y, _player.currentFrameX, _player.curretFrameY);
+
+	//_player.image->frameRender(getMemDC(), WINSIZEX / 2, WINSIZEY / 2, _player.image->getFrameX(), _player.image->getFrameY());
+
 
 	Rectangle(getMemDC(), 100, 100, 200, 200);
 	char str1[256];
@@ -121,7 +128,7 @@ void Player::draw(POINT camera)
 	sprintf(str1, "%d %d %d", upL.type, upM.type, upR.type);
 	sprintf(str2, "%d %d %d", midL.type, midM.type, midR.type);
 	sprintf(str3, "%d %d %d", botL.type, botM.type, botR.type);
-	sprintf(str4, "%d", _player.stat.hp);
+	sprintf(str4, "%d", _player.currentFrameX);
 	TextOut(getMemDC(), 120, 110, str1, strlen(str1));
 	TextOut(getMemDC(), 120, 130, str2, strlen(str2)); 
 	TextOut(getMemDC(), 120, 150, str3, strlen(str3));
@@ -129,10 +136,118 @@ void Player::draw(POINT camera)
 
 	for (int i = 0; i < _vAttackRange.size(); i++) {
 		Rectangle(getMemDC(), _vAttackRange[i].left + camera.x, _vAttackRange[i].top + camera.y, _vAttackRange[i].right + camera.x, _vAttackRange[i].bottom + camera.y);
+	}		
+}
+
+
+void Player::setStateImg() {
+
+	_player.currentFrameX = 0;
+
+	switch (_player.state)
+	{
+	case PLAYERSTATE_IDLE:
+		_player.image = IMAGEMANAGER->findImage("player_idle");
+		break;
+	case PLAYERSTATE_LOOKING_DOWN:
+		_player.image = IMAGEMANAGER->findImage("player_lookingdown");
+		break;
+	case PLAYERSTATE_MOVING:
+		_player.image = IMAGEMANAGER->findImage("player_moving");
+		break;
+	case PLAYERSTATE_JUMPING:
+	case PLAYERSTATE_FALLING:
+		_player.image = IMAGEMANAGER->findImage("player_jumping");
+		break;
+	case PLAYERSTATE_ATTACKING_1:
+	case PLAYERSTATE_ATTACKING_2:
+	case PLAYERSTATE_ATTACKING_3:
+		_player.image = IMAGEMANAGER->findImage("player_idle");
+		break;
+	case PLAYERSTATE_HIT:
+		_player.image = IMAGEMANAGER->findImage("player_idle");
+		break;
+	case PLAYERSTATE_HOLDING_WALL:
+		_player.image = IMAGEMANAGER->findImage("player_idle");
+		break;
+	case PLAYERSTATE_HOLDING_LADDER:
+		_player.image = IMAGEMANAGER->findImage("player_idle");
+		break;
+	case PLAYERSTATE_CHEKINGINVENTORY:
+		_player.image = IMAGEMANAGER->findImage("player_idle");
+		break;
+	}
+}
+
+void Player::frameUpdate() {
+	_animCount += TIMEMANAGER->getElapsedTime() * 75;
+
+	if (_player.lookingRight)
+		_player.curretFrameY = 0;
+	else
+		_player.curretFrameY = 1;
+
+
+	if (_animCount % _animSpeed == 0)
+	{
+		_animCount = 0;
+		
+		switch (_player.state)
+		{
+		case PLAYERSTATE_IDLE:			
+		case PLAYERSTATE_LOOKING_UP:
+			break;
+		case PLAYERSTATE_LOOKING_DOWN:
+			break;
+
+		case PLAYERSTATE_MOVING:
+			_animSpeed = 3;
+			_player.currentFrameX++;
+
+			if (_player.currentFrameX >= _player.image->getMaxFrameX()) _player.currentFrameX = 0;
+
+
+			break;
+		case PLAYERSTATE_JUMPING:
+			_animSpeed = 15;
+
+			_player.currentFrameX++;
+			if (_player.currentFrameX >= 1) _player.currentFrameX = 1;
+			break;
+		case PLAYERSTATE_FALLING:
+			_animSpeed = 5;
+
+			if (_player.currentFrameX >= _player.image->getMaxFrameX()) _player.currentFrameX = _player.image->getMaxFrameX();
+			else _player.currentFrameX++;
+			break;
+		case PLAYERSTATE_ATTACKING_1:
+			break;
+		case PLAYERSTATE_ATTACKING_2:
+			break;
+		case PLAYERSTATE_ATTACKING_3:
+			break;
+		case PLAYERSTATE_HIT:
+			break;
+		case PLAYERSTATE_HOLDING_WALL:
+			break;
+		case PLAYERSTATE_HOLDING_LADDER:
+			break;
+		case PLAYERSTATE_CHEKINGINVENTORY:
+			break;
+		default:
+			break;
+		}
 	}
 
-		
+
+	if (_animCount >= 1000) {
+		_animCount = 0;
+	}
+
+	_player.image->setX(_player.rc.left);
+	_player.image->setY(_player.rc.top);
 }
+
 void Player::move()
 {
 
@@ -225,11 +340,13 @@ void Player::keyintput()
 				_player.currentFrameX = 0;
 				_player.xspeed = RUNPOWERSTART;
 				_player.state = PLAYERSTATE_MOVING;
+				setStateImg();
 			}
 			if (KEYMANAGER->isStayKeyDown(VK_LEFT)) {
 				_player.currentFrameX = 0;
 				_player.xspeed = -RUNPOWERSTART;
 				_player.state = PLAYERSTATE_MOVING;
+				setStateImg();
 			}
 
 
@@ -250,11 +367,13 @@ void Player::keyintput()
 				_player.currentFrameX = 0;
 				_player.xspeed = 0;
 				_player.state = PLAYERSTATE_IDLE;
+				setStateImg();
 			}
 			if (KEYMANAGER->isOnceKeyUp(VK_RIGHT) && _player.lookingRight) {
 				_player.currentFrameX = 0;
 				_player.xspeed = 0;
 				_player.state = PLAYERSTATE_IDLE;
+				setStateImg();
 			}
 			
 			// 가속
@@ -296,9 +415,10 @@ void Player::keyintput()
 			}
 
 			//FALLING 상태로 변경
-			if (_player.yspeed < 0)
+			if (_player.yspeed < 0) {
 				_player.state = PLAYERSTATE_FALLING;
-			
+				setStateImg();
+			}
 
 			holdLadder();
 			
@@ -359,6 +479,7 @@ void Player::keyintput()
 					_player.xspeed = -RUNPOWERSTART;
 				}
 				_player.state = PLAYERSTATE_JUMPING;
+				setStateImg();
 			}
 
 
@@ -493,6 +614,7 @@ void Player::jump()
 		_player.yspeed = JUMPPOWERSTART;
 		_player.state = PLAYERSTATE_JUMPING;
 		_player.gravity = 0.4;
+		setStateImg();
 	}
 }
 void Player::attack()
@@ -503,6 +625,7 @@ void Player::attack()
 			_offset = 5;
 		else
 			_offset = -5;
+
 		_vAttackRange[0].move(_offset, 0);
 	}
 }
@@ -521,6 +644,7 @@ void Player::holdLadder()
 		_player.xspeed = 0;
 		_player.yspeed = 0;
 		_player.currentFrameX = 0;
+		setStateImg();
 	}
 
 }
@@ -532,6 +656,7 @@ void Player::canDown()
 		_player.state = PLAYERSTATE_FALLING;
 		_player.yspeed = 0;
 		_player.pointy = botM.rc.top + (_player.rc.bottom - _player.rc.top) * 0.25;
+		setStateImg();
 	}
 
 
@@ -603,6 +728,7 @@ void Player::setmaptileInfo()
 			_player.xspeed = 0;
 			_player.yspeed = 0;
 			_player.state = PLAYERSTATE_IDLE;
+			setStateImg();
 		}
 
 		//jump라면 위로 부딪힌 상황일테니 밑으로 튕겨낸다
@@ -610,6 +736,7 @@ void Player::setmaptileInfo()
 			_player.state = PLAYERSTATE_FALLING;
 			_player.yspeed = -3;	
 			_player.pointy = midM.rc.bottom + (_player.rc.bottom - _player.rc.top) * 0.5 + 1;
+			setStateImg();
 		}
 
 		//사다리 타고 올라가는 상태라면 더 못올라가게만 막는다
@@ -631,6 +758,7 @@ void Player::setmaptileInfo()
 			_player.xspeed = 0;
 			_player.yspeed = 0;
 			_player.state = PLAYERSTATE_IDLE;
+			setStateImg();
 		}
 	break;
 	}
@@ -648,6 +776,7 @@ void Player::setmaptileInfo()
 		//가만히 있거나 움직이는 상황이라면 떨어진다
 		if (_player.state == PLAYERSTATE_IDLE || _player.state == PLAYERSTATE_MOVING) {
 			_player.state = PLAYERSTATE_FALLING;
+			setStateImg();
 			_player.yspeed = -3;
 		}
 
@@ -664,6 +793,7 @@ void Player::setmaptileInfo()
 		//가만히 있거나 움직이는 상황이라면 떨어진다
 		if (_player.state == PLAYERSTATE_IDLE || _player.state == PLAYERSTATE_MOVING) {
 			_player.state = PLAYERSTATE_FALLING;
+			setStateImg();
 			_player.yspeed = -3;
 		}
 	break;
@@ -680,6 +810,7 @@ void Player::setmaptileInfo()
 				_player.xspeed = 0;
 				_player.yspeed = 0;
 				_player.state = PLAYERSTATE_IDLE;
+				setStateImg();
 			}
 			//추가			
 		}
@@ -769,6 +900,7 @@ void Player::setmaptileInfo()
 				_player.state = PLAYERSTATE_HOLDING_WALL;
 				_player.xspeed = 0;
 				_player.yspeed = 0;
+				setStateImg();
 			}
 		}
 		break;
@@ -790,6 +922,7 @@ void Player::setmaptileInfo()
 				_player.state = PLAYERSTATE_HOLDING_WALL;
 				_player.xspeed = 0;
 				_player.yspeed = 0;
+				setStateImg();
 			}
 		}
 		break;	
@@ -812,6 +945,7 @@ void Player::setmaptileInfo()
 				_player.state = PLAYERSTATE_FALLING;
 				_player.yspeed = 0;
 				_player.pointy = upM.rc.bottom + (_player.rc.bottom - _player.rc.top) * 0.5 + 1;
+				setStateImg();
 			}
 
 			if (_player.state == PLAYERSTATE_HOLDING_LADDER) {
@@ -857,4 +991,40 @@ void Player::getDamaged(int damage) {
 //공격 받았을 시 (데미지&넉백)
 void Player::getDamaged(int damage, float angle, float knockbackpower) {
 	_player.stat.hp -= damage; _player.xspeed += cosf(angle)*knockbackpower; _player.yspeed -= sinf(angle)*knockbackpower; 
+}
+
+
+
+void Player::firstSettingStat() {
+	for (int i = 0; i < 5; i++)_player.statusEffect[i].type = STATUSEFFECT_NULL;
+
+	_player.stat.hp = 100;
+	_player.stat.str = 0;
+	_player.stat.dex = 0;
+	_player.stat.vit = 0;
+	_player.stat.inl = 0;
+	_player.stat.lck = 0;
+	_player.stat.def = 0;
+	_player.stat.fir = 0;
+	_player.stat.ice = 0;
+	_player.stat.lgt = 0;
+	_player.stat.psn = 0;
+	_player.stat.mel = 0;
+	_player.stat.rng = 0;
+	_player.stat.crit = 0;
+	_player.stat.aspd = 0;
+	_player.stat.spd = 0;
+	_canCtrl = true;
+
+
+	_player.jumppower = 0;
+	_player.lookingLeft = true;
+	_player.lookingRight = false;
+	_player.xspeed = 0;
+	_player.yspeed = 0;
+	_player.money = 0;
+	_player.gravity = 0.3;
+
+	_player.state = PLAYERSTATE_FALLING;
+
 }

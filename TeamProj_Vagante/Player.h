@@ -82,7 +82,7 @@ private:
 	Map* _map;
 	UI* _ui;
 	bool _canCtrl;		//조작 가능 여부 판단
-
+	
 
 	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;// 위치 정보
 	int _curTileX, _curTileY; // 현재 타일 위치
@@ -91,6 +91,15 @@ private:
 	vAttackRange _vAttackRange;	//공격범위렉트를 담을 벡터 (공격범위가 여러개가 생길경우를 대비)
 	vEnemyRange _vEnemyRange;
 	
+	animation* _playerMotion[2];
+
+
+	int _animSpeed;
+	int _animCount;
+	int _frameX;
+	int _frameY;
+	int _frameYOffset;
+
 
 public:
 	HRESULT init(POINT point);
@@ -100,9 +109,16 @@ public:
 	void render(POINT camera);
 	void draw(POINT camera);
 
+	//초기 설정
+	void firstSettingAni(); 
+	void firstSettingStat();
+
+
 	void move();			// 이동관련함수
 	void keyintput();		// 키 입력 함수
 	void setmaptileInfo();	// 타일값 얻어오기
+	void setStateImg(void); // 상태에 따라 이미지 변경	
+	void frameUpdate();
 
 	void jump();			// 점프
 	void attack();			// 공격
