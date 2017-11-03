@@ -110,7 +110,6 @@ public:
 	void draw(POINT camera);
 
 	//초기 설정
-	void firstSettingAni(); 
 	void firstSettingStat();
 
 
@@ -122,10 +121,13 @@ public:
 
 	void jump();			// 점프
 	void attack();			// 공격
-	void holdLadder();			// 사다리 매달리기
-	void canDown();			// 
+	void attackjump();		// 점프중 공격
+	void attackingNow();	// 공격중
+	void holdLadder();		// 사다리 매달리기
+	void canDown();			// 바닥 내려가기
 
 	void attackCollision();
+	void checkStatusEffect(); //상태이상 확인하기
 
 	//공격 받았을 시 (데미지만)
 	void getDamaged(int damage);
@@ -133,6 +135,10 @@ public:
 	void getDamaged(int damage, float angle, float knockbackpower);
 	//상태이상효과 추가
 	void addStatusEffect(tagStatusEffect statuseffect);
+
+	void enemyCollision(void);
+
+
 
 	//설정&접근자
 	inline int getHP() { return _player.stat.hp; }
@@ -155,6 +161,7 @@ public:
 
 	inline void setEquipWeapon(tagItemInfo weapon) { _player.equipWeapon = weapon; }
 
+	
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
