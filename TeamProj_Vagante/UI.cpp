@@ -15,6 +15,8 @@ UI::~UI()
 
 HRESULT UI::init()
 {
+	//_player->init(PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+
 	_active = false;
 	
 	tagItemInfo _item[5];
@@ -59,8 +61,10 @@ HRESULT UI::init()
 	setItemToBag(NAME_SWORD);
 	setItemToBag(NAME_HEAL);
 	setItemToBag(NAME_SWORD);
-
-
+	
+	addItemOnMap(NAME_SWORD, PointMake(WINSIZEX/2,WINSIZEY/2));
+	addItemOnMap(NAME_COIN, PointMake(WINSIZEX / 2- 100, WINSIZEY / 2));
+	addItemOnMap(NAME_HEAL, PointMake(WINSIZEX / 2 + 300, WINSIZEY / 2+200));
 	return S_OK;
 }
 void UI::release()
@@ -133,30 +137,60 @@ void UI::update()
 		else ++_viHit;
 	}
 
+	//===================== I T E M   O N   M A P =====================
+	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
+	{
+		//_viItem->point.y += 3;
+		mapInfo cen = _map->getMapInfo(
+			((int)_viItem->point.y / TILESIZE),
+			(int)_viItem->point.x / TILESIZE);
+
+		mapInfo bot = _map->getMapInfo(
+			((int)_viItem->point.y / TILESIZE)+1,
+			(int)_viItem->point.x / TILESIZE);
+		if(cen.type != MAPTILE_WALL && cen.type != MAPTILE_WALL2 && cen.type != MAPTILE_GROUND_CAN_GO_DOWN_1)
+		{
+			_viItem->point.y += 3;
+
+		}
+		
+		//else if (isCollision(bot.rc, _viItem->rc) && (
+		//	bot.type == MAPTILE_LADDER ||
+		//	bot.type == MAPTILE_GROUND_CAN_GO_DOWN_1 ||
+		//	bot.type == MAPTILE_SPIKE_TRAP))
+		//{
+		//
+		//}
+		_viItem->rc = RectMakeCenter(_viItem->point.x, _viItem->point.y,
+			_viItem->img0->getWidth(), _viItem->img0->getHeight());
+
+		//isCollisionReaction(_map->getMapInfo(
+		//	(int)_viItem->point.x / TILESIZE,
+		//	(int)_viItem->point.y / TILESIZE).rc,
+		//	_viItem->rc);
+
+	}
 
 	//======================== F U N C T I O N ========================
 	rectMove();
 	if (_active) keyControl();
 
 }
-void UI::render()
-{
 
-}
-void UI::draw()
-{
-
-}
+void UI::render(){}
+void UI::draw(){}
 void UI::render(POINT camera)
 {
-	draw(camera);
+	draw();
+	showStatus();
+	itemDraw();
 	if(_active) explanation();
 
 }
 void UI::draw(POINT camera)
 {
 	IMAGEMANAGER->findImage("equip_slot")->render(getMemDC(), _menuRect.left + 52, _menuRect.top);
-	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 	{
 		if (_viBag->equip)
 		{
@@ -165,11 +199,11 @@ void UI::draw(POINT camera)
 		}
 		if (_viBag == --_vBag.end() && !_viBag->equip) IMAGEMANAGER->findImage("hand")->frameRender(getMemDC(),
 			_menuRect.left + 52, _menuRect.top, 0, 0);
-
+		
 	}
 	IMAGEMANAGER->findImage("hpBarBottom")->render(getMemDC(), _menuRect.left + 2, _menuRect.top + 44);
-	hpBottomNumberMacro(_menuRect.left + 90, _menuRect.top + 50, _currentHp);
-	IMAGEMANAGER->findImage("hpBarTop")->render(getMemDC(), _menuRect.left + 38, _menuRect.top + 50, 0, 0, 184 * _currentHp / _maxHp, 14);
+	hpBottomNumberMacro(_menuRect.left + 90, _menuRect.top + 50,_currentHp);
+	IMAGEMANAGER->findImage("hpBarTop")->render(getMemDC(), _menuRect.left +38, _menuRect.top + 50, 0,0,184* _currentHp / _maxHp, 14);
 	hpTopNumberMacro(_menuRect.left + 90, _menuRect.top + 50, _currentHp);
 
 	if (!_active)
@@ -184,16 +218,16 @@ void UI::draw(POINT camera)
 		{
 			_viBag->img->render(getMemDC(), _menuRect.left + 5 + (_viBag->position % 6) * 36,
 				_menuRect.top + 90 + (_viBag->position / 6) * 36);
-			if (_viBag->equip == true)
+			if(_viBag->equip == true)
 				IMAGEMANAGER->findImage("equip_icon")->frameRender(getMemDC(), _menuRect.left + 32 + (_viBag->position % 6) * 36,
-					_menuRect.top + 115 + (_viBag->position / 6) * 36, 1, 0);
+					_menuRect.top + 115 + (_viBag->position / 6) * 36,1,0);
 		}
 
 		if (!_move)IMAGEMANAGER->findImage("cursor_idle")->frameRender(getMemDC(),
 			_menuRect.left - 13 + (_bagNum % 6) * 36, _menuRect.top + 113 + (_bagNum / 6) * 36);
 		else
 		{
-			for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+			for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 			{
 				if (_viBag->position == _save.position0)
 				{
@@ -213,8 +247,8 @@ void UI::draw(POINT camera)
 				{
 				case 0:
 					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
-						_menuRect.right + 10, _menuRect.top + 100, 8, 3, _inputAlphaSource);
-					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Next Tab", _inputAlphaSource);
+						_menuRect.right + 10, _menuRect.top + 100,8,3,_inputAlphaSource);
+					letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 110, "Next Tab",_inputAlphaSource);
 					break;
 				case 1:
 					IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
@@ -263,7 +297,7 @@ void UI::draw(POINT camera)
 			}
 
 		}
-
+		
 
 		break;
 	case 1:
@@ -365,7 +399,7 @@ void UI::draw(POINT camera)
 			itoa(_lvlPoint, tmp, 10);
 			IMAGEMANAGER->findImage("plus")->alphaFrameRender(getMemDC(),
 				_menuRect.left + 10, _menuRect.bottom - 28, _plusAlphaSource);
-			letterMacro(LETTER_WHITE, _menuRect.left + 40, _menuRect.bottom - 26, tmp, _plusAlphaSource);
+			letterMacro(LETTER_WHITE, _menuRect.left + 40, _menuRect.bottom - 26, tmp,_plusAlphaSource);
 			letterMacro(LETTER_WHITE, _menuRect.left + 50, _menuRect.bottom - 26, " point available", _plusAlphaSource);
 		}
 		IMAGEMANAGER->findImage("inputImage")->alphaFrameRender(getMemDC(),
@@ -398,80 +432,22 @@ void UI::draw(POINT camera)
 	for ( _viHit = _vHit.begin(); _viHit != _vHit.end(); ++_viHit)
 	{
 		char str[10];
-
 		letterMacro2(_viHit->font, _viHit->x , _viHit->y, itoa(_viHit->damage, str, 10), _viHit->alphaSource);
-
 	}
 }
 
-void UI::hitOutput(float x, float y, int damage, LETTERFONT font)
-{
-	tagHitOutput hit;
-	ZeroMemory(&hit, sizeof(tagHitOutput));
-	hit.x = x;
-	hit.y = y;
-	hit.damage = damage;
-	hit.alphaSource = 0;
-	hit.font = font;
 
-	_vHit.push_back(hit);
+void UI::showStatus()
+{
 }
 
-
-
-
-
-void UI::setItemToBag(ITEMNAME name)
+void UI::itemDraw()
 {
-	int count = 0;
-	bool end = false;
-
-	tagItem item;
-	ZeroMemory(&item, sizeof(item));
-	item.name = name;
-	switch (item.name)
+	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
 	{
-	case NAME_SWORD:
-		item.img = IMAGEMANAGER->findImage("sword");
-		item.type = TYPE_WEAPON;
-		break;
-	case NAME_HEAL:
-		item.img = IMAGEMANAGER->findImage("heal");
-		item.type = TYPE_POTION;
-		break;
+		_viItem->img0->render(getMemDC(), _viItem->point.x, _viItem->point.y);
+		
 	}
-	item.alphaSource = 255;
-	item.equip = false;
-	while (true)
-	{
-		if (_vBag.size() == 0)
-		{
-			item.position = 0;
-			end = true;
-
-		}
-		else
-		{
-			for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
-			{
-				if (_viBag->position == count)
-				{
-					count++;
-					end = false;
-					break;
-				}
-				end = true;
-			}
-
-		}
-		if (end)
-		{
-			item.position = count;
-			break;
-		}
-
-	}
-	_vBag.push_back(item);
 }
 
 void UI::explanation()
@@ -1309,6 +1285,76 @@ void UI::explanation()
 	}
 }
 
+void UI::hitOutput(float x, float y, int damage, LETTERFONT font)
+{
+	tagHitOutput hit;
+	ZeroMemory(&hit, sizeof(tagHitOutput));
+	hit.x = x;
+	hit.y = y;
+	hit.damage = damage;
+	hit.alphaSource = 0;
+	hit.font = font;
+
+	_vHit.push_back(hit);
+}
+
+void UI::setItemToBag(ITEMNAME name)
+{
+	int count = 0;
+	bool end = false;
+
+	tagItem item;
+	ZeroMemory(&item, sizeof(item));
+	item.name = name;
+	switch (item.name)
+	{
+	case NAME_SWORD:
+		item.img = IMAGEMANAGER->findImage("sword");
+		item.img0 = IMAGEMANAGER->findImage("sword0");
+		item.minDmg = 2;
+		item.maxDmg = 5;
+		item.type = TYPE_WEAPON;
+		break;
+	case NAME_HEAL:
+		item.img = IMAGEMANAGER->findImage("heal");
+		item.img = IMAGEMANAGER->findImage("heal0");
+		item.itemStat.hp = 10;
+		item.type = TYPE_POTION;
+		break;
+	}
+	item.alphaSource = 255;
+	item.equip = false;
+	while (true)
+	{
+		if (_vBag.size() == 0)
+		{
+			item.position = 0;
+			end = true;
+
+		}
+		else
+		{
+			for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+			{
+				if (_viBag->position == count)
+				{
+					count++;
+					end = false;
+					break;
+				}
+				end = true;
+			}
+
+		}
+		if (end)
+		{
+			item.position = count;
+			break;
+		}
+
+	}
+	_vBag.push_back(item);
+}
 void UI::rectMove()
 {
 	if (_active)
@@ -1796,6 +1842,7 @@ void UI::addImg()
 	IMAGEMANAGER->addFrameImage("plus", "Img/ui/plus.bmp", 48, 48, 3, 3, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("equip_icon", "Img/ui/equip_icon.bmp", 48, 16, 3, 1, true, RGB(255, 0, 255)); 
 	IMAGEMANAGER->addImage("hpBarTop", "Img/ui/hpBarTop.bmp", 184, 14, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("effect", "Img/ui/status_effect.bmp", 128, 256, 4, 8, true, RGB(255, 0, 255));
 	//========================= F O N T ========================================
 	IMAGEMANAGER->addFrameImage("coin_number", "Img/ui/font/number.bmp", 416, 96, 13, 3, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("letter", "Img/ui/font/letter_font.bmp", 270, 180, 27, 15, true, RGB(255, 0, 255));
@@ -1809,15 +1856,50 @@ void UI::addImg()
 	IMAGEMANAGER->addImage("heal", "Img/ui/item/heal.bmp", 40, 40, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("hand", "Img/ui/item/hand.bmp", 80, 40, 2, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("coin", "Img/ui/item/coin.bmp", 6, 6, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("sword0", "Img/ui/item/sword0.bmp", 32, 14, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("heal0", "Img/ui/item/potion0.bmp", 18, 18, true, RGB(255, 0, 255));
 }
 
-void UI::addItemOnMap(tagItemInfo item, POINT position)
+void UI::addItemOnMap(ITEMNAME name, POINT point)
+{
+	tagItem item;
+	ZeroMemory(&item, sizeof(item));
+	item.name = name;
+	item.point = point;
+	switch (item.name)
+	{
+	case NAME_SWORD:
+		item.img = IMAGEMANAGER->findImage("sword");
+		item.img0 = IMAGEMANAGER->findImage("sword0");
+		item.minDmg = 2;
+		item.maxDmg = 5;
+		item.rc = RectMakeCenter(item.point.x, item.point.y, 32, 14);
+		item.type = TYPE_WEAPON;
+		break;
+	case NAME_HEAL:
+		item.img = IMAGEMANAGER->findImage("heal");
+		item.img0 = IMAGEMANAGER->findImage("heal0");
+		item.itemStat.hp = 10;
+		item.rc = RectMakeCenter(item.point.x, item.point.y, 18, 18);
+		item.type = TYPE_POTION;
+		break;
+	case NAME_COIN:
+		item.img0 = IMAGEMANAGER->findImage("coin");
+	}
+	item.alphaSource = 255;
+	item.equip = false;
+
+	_vItem.push_back(item);
+
+
+}
+
+void UI::deleteItemOnMap(int arrNum)
+{
+	_vItem.erase(_vItem.begin() + arrNum);
+}
+
+void UI::addCoinOnMap(POINT point)
 {
 
 }
-
-void UI::addCoinOnMap(POINT coinPoint)
-{
-	//해당 POINT에 동전 스폰
-}
-

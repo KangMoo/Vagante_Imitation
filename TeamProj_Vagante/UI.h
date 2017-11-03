@@ -33,6 +33,7 @@ enum ITEMNAME
 {
 	NAME_SWORD,
 	NAME_HEAL,
+	NAME_COIN,
 	NAME_END
 };
 
@@ -45,8 +46,14 @@ struct tagDelay
 struct tagItem
 {
 	image* img;
+	image* img0;
 	ITEMTYPE type;
 	ITEMNAME name;
+	POINT point;
+	RECT rc;
+	tagStat itemStat;
+	int minDmg;
+	int maxDmg;
 	bool equip;
 	int position;
 	int alphaSource;
@@ -96,7 +103,12 @@ private: //  타격 수치 출력 벡터
 	viHit _viHit;
 
 private: // 맵에 아이템 뿌리는용
-	
+	typedef vector<tagItem> vItem;
+	typedef vector<tagItem>::iterator viItem;
+
+	vItem _vItem;
+	viItem _viItem;
+
 private:
 	tagDelay _delay;
 	tagSave _save;
@@ -140,8 +152,10 @@ public:
 	void render(POINT camera);
 	void draw(POINT camera);
 	void explanation();
-	void setItemToBag(ITEMNAME name);
+	void showStatus();
+	void itemDraw();
 
+	void setItemToBag(ITEMNAME name);
 	void addImg();
 	void keyControl();
 	void rectMove();
@@ -157,11 +171,11 @@ public:
 	void hitOutput(float x, float y, int damage, LETTERFONT font);
 
 	//맵에 아이템 출현~
-	void addItemOnMap(tagItemInfo item, POINT position);
-
-	//맵에 돈 출현~ (위치정보만 가집니다~)
-	void addCoinOnMap(POINT coinPoint); 
+	void addItemOnMap(ITEMNAME name, POINT point);
+	void deleteItemOnMap(int arrNum);
 	
+	void addCoinOnMap(POINT point);
+
 	//설정자 접근자
 	bool getActive() { return _active; }
 	void setActive(bool active) { _active = active; setInputGuide(); }
