@@ -46,9 +46,10 @@ HRESULT Enemy::init(POINT point, float minCog, float maxCog)
 	memset(&_statistics, 0, sizeof(tagStat));
 
 	_state = ENEMYSTATE_IDLE;
-	
+
 	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 	_attackRect = RectMakeCenter(_pointx, _pointy, 1, 1);
+	_lastPlayerPoint = _player->getPoint();
 
 	return S_OK;
 }
@@ -56,8 +57,13 @@ void Enemy::release()
 {
 
 }
-void Enemy::update() 
+void Enemy::update()
 {
+	if (KEYMANAGER->isOnceKeyDown('Z'))
+	{
+		getDamaged(1, PI / 4, 3);
+	}
+
 	//공격용 렉트 정리해주는 함수, 만약 벌레같은 애들은 그냥 공격렉트가 똑같으니 그대로 처리
 	//헤더파일에 있으니까 보고 수정 필요하면 재수정할것
 	attRectClear();
@@ -74,10 +80,10 @@ void Enemy::update()
 		jump();
 		attack();
 
-
 		//만약 둘 사이의 거리가 한계 인식범위 이상으로 벌어지면 쫓는걸 포기한다
 		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) > _maxCog)
 			_isFindPlayer = false;
+
 	}
 	else
 	{
@@ -96,30 +102,7 @@ void Enemy::update()
 			}
 			else
 			{
-				int count = 0;
-				float x = 0;
-				float y = 0;
-				float dist = getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
-				float angle = getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
-				//적과 나 사이에 벽이 있는지 판별한다
-				for (int i = 0; i < dist; i+=TILESIZE)
-				{
-					//만약 지금 검사할 타일이 이미 검사할 타일과 같다면 다음으로 넘어간다
-					float ox = (_pointx + i*cosf(angle)) / TILESIZE;
-					float oy = (_pointy + i*-sinf(angle)) / TILESIZE;
-					
-					if (ox == x && oy == y) continue;
-
-					//다르다면 x, y를 바꿔주고 그 타일을 검사한다
-					x = ox;
-					y = oy;
-						
-					if (static_cast<int>(_map->getMapInfo(y, x).type == 1))
-						count++;
-				}
-				//만약 벽이 하나라도 검출되었다면 인식 못함으로 처리
-				if (count >= 1) _isFindPlayer = false;
-				else _isFindPlayer = true;
+				playerCog();
 			}
 		}
 	}
@@ -140,22 +123,38 @@ void Enemy::render(POINT camera)
 }
 void Enemy::draw(POINT camera)
 {
-	//적이 시야에 들어올 때만 렌더링
-	if ((_pointx > camera.x && _pointx < camera.x + WINSIZEX) &&
-		_pointy > camera.y && _pointy < camera.y + WINSIZEY)
+	//Rectangle(getMemDC(), _pointx - _minCog / 2 + camera.x, _pointy - _minCog / 2 + camera.y, _pointx + _minCog / 2 + camera.x, _pointy + _minCog / 2 + camera.y);
+	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
+	Rectangle(getMemDC(), _attackRect.left + camera.x, _attackRect.top + camera.y, _attackRect.right + camera.x, _attackRect.bottom + camera.y);
+	_image->frameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _currentFrameX, _currentFrameY);
+
+	//EllipseMakeCenter(getMemDC(), _pointx + camera.x, _pointy + camera.y, 5, 5);
+
+	/*
+	char string[128];
+	sprintf(string, "x : %d, y : %d", _rc.left / TILESIZE, _rc.top / TILESIZE);
+	TextOut(getMemDC(), WINSIZEX / 2, WINSIZEY / 2, string, strlen(string));
+	if (_isFindPlayer)
 	{
-		_image->frameRender(getMemDC(), _rc.left - camera.x, _rc.top - camera.y);
+	sprintf(string, "ㅇㅇ");
+	TextOut(getMemDC(), 300, 300, string, strlen(string));
 	}
+	else
+	{
+	sprintf(string, "ㄴㄴ");
+	TextOut(getMemDC(), 300, 300, string, strlen(string));
+	}
+	*/
 }
 void Enemy::move()
 {
 
 }
-void Enemy::jump()			
+void Enemy::jump()
 {
 
 }
-void Enemy::attack()		
+void Enemy::attack()
 {
 
 }
@@ -201,61 +200,61 @@ void Enemy::falling()
 	각 몹마다 다른 처리가 필요할 것으로 요망
 	if (_xspeed != 0)
 	{
-		_state = ENEMYSTATE_FALLING;
-		_pointx -= cosf(_angle) * _xspeed;
-		_gravity -= 0.4f;
-		if (_gravity > 10) _gravity = 10;
-		_yspeed += _gravity;
-		_pointy += -sinf(_angle) * _yspeed;
+	_state = ENEMYSTATE_FALLING;
+	_pointx -= cosf(_angle) * _xspeed;
+	_gravity -= 0.4f;
+	if (_gravity > 10) _gravity = 10;
+	_yspeed += _gravity;
+	_pointy += -sinf(_angle) * _yspeed;
 
-		if (static_cast<int>(_pointy + _yspeed) % TILESIZE > 16)
-		{
-			if (static_cast<int>(_pointx - cosf(_angle)*_xspeed) == static_cast<int>(_pointx))
-			{
-				if (_botM.type == 1)
-				{
-					_state = ENEMYSTATE_IDLE;
-					_pointx -= cosf(_angle) * _xspeed;
-					_xspeed = 0;
-					_yspeed = 0;
-					_gravity = 0;
-					_angle = 0;
+	if (static_cast<int>(_pointy + _yspeed) % TILESIZE > 16)
+	{
+	if (static_cast<int>(_pointx - cosf(_angle)*_xspeed) == static_cast<int>(_pointx))
+	{
+	if (_botM.type == 1)
+	{
+	_state = ENEMYSTATE_IDLE;
+	_pointx -= cosf(_angle) * _xspeed;
+	_xspeed = 0;
+	_yspeed = 0;
+	_gravity = 0;
+	_angle = 0;
 
-					_pointy = _botM.rc.top - _image->getFrameHeight() / 2;
-				}
-			}
-			else
-			{
-				if (cosf(_angle)*_xspeed > 0)
-				{
-					if (_botR.type == 1)
-					{
-						_state = ENEMYSTATE_IDLE;
-						_pointx -= cosf(_angle) * _xspeed;
-						_xspeed = 0;
-						_yspeed = 0;
-						_gravity = 0;
-						_angle = 0;
+	_pointy = _botM.rc.top - _image->getFrameHeight() / 2;
+	}
+	}
+	else
+	{
+	if (cosf(_angle)*_xspeed > 0)
+	{
+	if (_botR.type == 1)
+	{
+	_state = ENEMYSTATE_IDLE;
+	_pointx -= cosf(_angle) * _xspeed;
+	_xspeed = 0;
+	_yspeed = 0;
+	_gravity = 0;
+	_angle = 0;
 
-						_pointy = _botM.rc.top - _image->getFrameHeight() / 2;
-					}
-				}
-				else
-				{
-					if (_botL.type == 1)
-					{
-						_state = ENEMYSTATE_IDLE;
-						_pointx -= cosf(_angle) * _xspeed;
-						_xspeed = 0;
-						_yspeed = 0;
-						_gravity = 0;
-						_angle = 0;
+	_pointy = _botM.rc.top - _image->getFrameHeight() / 2;
+	}
+	}
+	else
+	{
+	if (_botL.type == 1)
+	{
+	_state = ENEMYSTATE_IDLE;
+	_pointx -= cosf(_angle) * _xspeed;
+	_xspeed = 0;
+	_yspeed = 0;
+	_gravity = 0;
+	_angle = 0;
 
-						_pointy = _botM.rc.top - _image->getFrameHeight() / 2;
-					}
-				}
-			}
-		}
+	_pointy = _botM.rc.top - _image->getFrameHeight() / 2;
+	}
+	}
+	}
+	}
 	}
 	*/
 }
@@ -263,4 +262,40 @@ void Enemy::falling()
 void Enemy::rectResize()
 {
 	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
+}
+
+void Enemy::playerCog()
+{
+
+	if (_lastPlayerPoint.x != _player->getPoint().x && _lastPlayerPoint.y != _player->getPoint().y)
+	{
+		_lastPlayerPoint = _player->getPoint();
+		int count = 0;
+		float x = 0;
+		float y = 0;
+		float dist = getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
+		float angle = getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
+		//적과 나 사이에 벽이 있는지 판별한다
+		for (int i = 0; i < dist; i += TILESIZE)
+		{
+			//만약 지금 검사할 타일이 이미 검사할 타일과 같다면 다음으로 넘어간다
+			float ox = (_pointx + i*cosf(angle)) / TILESIZE;
+			float oy = (_pointy + i*-sinf(angle)) / TILESIZE;
+
+			if (ox == x && oy == y) continue;
+
+			//다르다면 x, y를 바꿔주고 그 타일을 검사한다
+			x = ox;
+			y = oy;
+
+			if (static_cast<int>(_map->getMapInfo(y, x).type == MAPTILE_WALL))
+			{
+				count++;
+				break;
+			}
+		}
+		//만약 벽이 하나라도 검출되었다면 인식 못함으로 처리
+		if (count >= 1) _isFindPlayer = false;
+		else _isFindPlayer = true;
+	}
 }

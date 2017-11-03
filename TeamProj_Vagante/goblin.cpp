@@ -82,32 +82,21 @@ void goblin::jump()	//플레이어 발견한 상태여야 하고 플레이어가 자신보다 위에 있�
 
 void goblin::attack()											
 {
-
-	if (_isFindPlayer == true)
+	if (_isFindPlayer && _statistics.hp >= 0)
 	{
+		if (_right == true && _player->getPoint().x <= _pointx + 32)
+		{
+			_attackRect = RectMake(_pointx + 32, _pointy + 8, 32, 16);
+		}
 
+		if (_right == false && _player->getPoint().x >= _pointx - 32)
+		{
+			_attackRect = RectMake(_pointx, _pointy + 8, 32, 16);
+		}
 	}
 }
 
 void goblin::falling()
 {
 
-}
-
-bool goblin::attackAble()
-{
-	//고블린이 공격을 하기 위해 자신과 플레이어의 위치를 비교함, 하지만 단지 플레이어와 자신의 위치만 비교해서 공격을 함
-	//단 플레이어가 오른쪽에 있을때랑 왼쪽에 있을땐 연산자가 달라져야 함
-	//그것을 위해 만든 함수가 attackAble 함수
-	int _attackRange;
-
-	if (_right == true)
-	{
-		
-		return false;
-	}
-	else
-	{
-		return false;
-	}
 }

@@ -21,9 +21,7 @@ public:
 	void move();		
 	void jump();		
 	void attack();
-	void falling();	
-
-	bool attackAble();
+	void falling();
 
 	goblin();
 	~goblin();

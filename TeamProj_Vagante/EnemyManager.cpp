@@ -33,6 +33,17 @@ HRESULT EnemyManager::init()
 	_boss->setMapAddressLink(_map);
 	_boss->init(PointMake(TILESIZE*35,TILESIZE*6));
 
+	for (int i = 0; i < 1; i++)
+	{
+		POINT pt = PointMake(TILESIZE * 20 - TILESIZE, TILESIZE * 10 - TILESIZE);
+		Enemy* temp = new manEater;
+		temp->init(pt,999, 999);
+		temp->setMap(_map);
+		temp->setPlayerAddressLink(_player);
+		temp->setUiAddressLink(_ui);
+		_vEnemy.push_back(temp);
+	}
+
 	return S_OK;
 }
 
@@ -74,6 +85,7 @@ void EnemyManager::render(POINT camera)
 	_boss->render(camera);
 
 	draw(camera);
+
 }
 void EnemyManager::draw(POINT camera)
 {

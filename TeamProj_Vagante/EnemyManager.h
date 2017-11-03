@@ -1,6 +1,7 @@
 #pragma once
 #include "gameNode.h"
 #include "Enemy.h"
+#include "manEater.h"
 #include "Boss.h"
 #include "vaganteStructEnum.h"
 
