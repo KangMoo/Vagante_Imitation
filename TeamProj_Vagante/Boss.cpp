@@ -83,7 +83,7 @@ HRESULT Boss::init(POINT point)
 			_tileinfo[i][j] = _map->getMapInfo(i, j).type;
 		}
 	}
-	
+
 	_curTileX = int(_pointx) / TILESIZE;
 	_curTileY = int(_pointy) / TILESIZE;
 	_goalTileX = int(_player->getPoint().x) / TILESIZE;
@@ -112,7 +112,7 @@ void Boss::update()
 	if (TIMEMANAGER->getWorldTime() - _timerForAstar > 0.2)
 	{
 		_timerForAstar = TIMEMANAGER->getWorldTime();
-		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) >150)
+		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) > 150)
 		{
 			_curTileX = int(_pointx) / TILESIZE;
 			_curTileY = int(_pointy) / TILESIZE;
@@ -123,7 +123,7 @@ void Boss::update()
 			_wayToPlayer.clear();
 			astar();
 		}
-		
+
 	}
 	_fireball->update();
 	deadCheck();
@@ -181,7 +181,7 @@ void Boss::mapCollisionHandle()
 	botL = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE - 1);
 	botM = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE);
 	botR = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE + 1);
-	
+
 	if (_state != BOSSSTATE_SLEEP && _state != BOSSSTATE_DEAD)
 	{
 		mapInfo maptile;
@@ -550,14 +550,21 @@ void Boss::stateHandle()
 		}
 		else
 		{
-			if (!(_wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2 - 1 < _pointx && _pointx < _wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2 + 1)) {
-				_xspeed = cosf(getAngle(_pointx, _pointy, _wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2, _wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2)) * _statistics.spd;
+			if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) > 150)
+			{
+				if (!(_wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2 - 1 < _pointx && _pointx < _wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2 + 1)) {
+					_xspeed = cosf(getAngle(_pointx, _pointy, _wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2, _wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2)) * _statistics.spd;
+				}
+				if (!(_wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2 - 1 < _pointy && _pointy < _wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2 + 1)) {
+					_yspeed = sinf(getAngle(_pointx, _pointy, _wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2, _wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2)) * _statistics.spd;
+				}
 			}
-			if (!(_wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2 - 1 < _pointy && _pointy < _wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2 + 1)) {
-				_yspeed = sinf(getAngle(_pointx, _pointy, _wayToPlayer[_wayToPlayer.size() - 1].vx*TILESIZE + TILESIZE / 2, _wayToPlayer[_wayToPlayer.size() - 1].vy*TILESIZE + TILESIZE / 2)) * _statistics.spd;
+			else
+			{
+				_xspeed = cosf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y)) * _statistics.spd;
+				_yspeed = sinf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y)) * _statistics.spd;
+
 			}
-			//_xspeed = cosf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y)) * _statistics.spd;
-			//_yspeed = sinf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y)) * _statistics.spd;
 		}
 		break;
 	case BOSSSTATE_FIREING:
@@ -609,7 +616,7 @@ void Boss::stamping()
 	{
 		if (_player->getState() != PLAYERSTATE_JUMPING && _player->getState() != PLAYERSTATE_FALLING)
 		{
-			_player->getDamaged(10);
+			_player->getDamaged(10,PI/2,-10);
 		}
 		_stampHitLand = false;
 		_state = BOSSSTATE_FLYING;
@@ -697,7 +704,7 @@ vertex Boss::pop_closelist(int vx, int vy)
 vertex Boss::calc_vertex(vertex v, vertex p)
 {
 	//if (v.p == NULL)
-	if(v.px == _startpoint.vx || v.py == _startpoint.vy)
+	if (v.px == _startpoint.vx || v.py == _startpoint.vy)
 	{
 		//이동비용 구하기
 		if (v.vx != _startpoint.vx && v.vy != _startpoint.vy)
@@ -883,7 +890,7 @@ void Boss::makeWay()
 	temp = pop_closelist();
 	_wayToPlayer.push_back(temp);
 
-	while(true)
+	while (true)
 	{
 		if (_wayToPlayer[_wayToPlayer.size() - 1].px == _startpoint.vx && _wayToPlayer[_wayToPlayer.size() - 1].py == _startpoint.vy)
 		{
