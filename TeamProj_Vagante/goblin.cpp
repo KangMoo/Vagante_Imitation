@@ -100,3 +100,8 @@ void goblin::falling()
 {
 
 }
+
+void goblin::frameUpdate()
+{
+
+}
