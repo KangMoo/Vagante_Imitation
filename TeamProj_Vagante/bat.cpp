@@ -31,7 +31,7 @@ HRESULT bat::init(POINT point, float minCog, float maxCog)
 
 	//박쥐 스탯 임의로 때려박기
 	_statistics.hp = 20;
-	_statistics.str = 2;
+	_statistics.str = 5;
 	_statistics.dex = 2;
 	_statistics.vit = 2;
 	_statistics.inl = 2;
@@ -51,7 +51,6 @@ HRESULT bat::init(POINT point, float minCog, float maxCog)
 	_dead = false;
 	_deadAlpha = 255;
 	_rc = RectMakeCenter(_pointx, _pointy, 10, 10);
-	_isdead = false;			//사망여부
 	_isPlayerOnTarget = true;	//플레이어 탐지여부
 	_isOnTop = false;			//천장에 닿았는지 여부
 	_alpha = 0;
@@ -79,7 +78,6 @@ void bat::update() {
 		_timerForFrame = TIMEMANAGER->getWorldTime();
 		frameUpdate();
 	}
-	if (KEYMANAGER->isOnceKeyDown('Q')) getDamaged(1, PI, 2);
 
 	if (_dead) _alpha += 1;
 	_rc = RectMakeCenter(_pointx, _pointy, 10, 10);
@@ -146,7 +144,7 @@ void bat::hitPlayer()
 	RECT temp;
 	if (IntersectRect(&temp, &_player->getRect(), &_rc))
 	{
-		_player->getDamaged(5, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), 3);
+		_player->getDamaged(5, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), _statistics.str);
 		_xspeed = cosf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 10;
 		_yspeed = -sinf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 10;
 	}
