@@ -46,7 +46,7 @@ HRESULT Enemy::init(POINT point, float minCog, float maxCog)
 	memset(&_statistics, 0, sizeof(tagStat));
 
 	_state = ENEMYSTATE_IDLE;
-	
+
 	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 	_attackRect = RectMakeCenter(_pointx, _pointy, 1, 1);
 	_lastPlayerPoint = _player->getPoint();
@@ -59,13 +59,8 @@ void Enemy::release()
 {
 
 }
-void Enemy::update() 
+void Enemy::update()
 {
-	if (KEYMANAGER->isOnceKeyDown('Z'))
-	{
-		getDamaged(10);
-	}
-
 	//공격용 렉트 정리해주는 함수, 만약 벌레같은 애들은 그냥 공격렉트가 똑같으니 그대로 처리
 	//헤더파일에 있으니까 보고 수정 필요하면 재수정할것
 	attRectClear();
@@ -133,40 +128,17 @@ void Enemy::render(POINT camera)
 }
 void Enemy::draw(POINT camera)
 {
-	/*
-	//Rectangle(getMemDC(), _pointx - _minCog / 2 + camera.x, _pointy - _minCog / 2 + camera.y, _pointx + _minCog / 2 + camera.x, _pointy + _minCog / 2 + camera.y);
-	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
-	if (_state != ENEMYSTATE_DEAD)
-		_image->frameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y);
-	else
-		_image->alphaFrameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _deadAlpha);
-	//EllipseMakeCenter(getMemDC(), _pointx + camera.x, _pointy + camera.y, 5, 5);
 
-	
-	char string[128];
-	sprintf(string, "x : %d, y : %d", _rc.left / TILESIZE, _rc.top / TILESIZE);
-	TextOut(getMemDC(), WINSIZEX / 2, WINSIZEY / 2, string, strlen(string));
-	if (_isFindPlayer)
-	{
-		sprintf(string, "ㅇㅇ");
-		TextOut(getMemDC(), 300, 300, string, strlen(string));
-	}
-	else
-	{
-		sprintf(string, "ㄴㄴ");
-		TextOut(getMemDC(), 300, 300, string, strlen(string));
-	}
-	*/
 }
 void Enemy::move()
 {
 
 }
-void Enemy::jump()			
+void Enemy::jump()
 {
 
 }
-void Enemy::attack()		
+void Enemy::attack()
 {
 
 }
@@ -219,6 +191,7 @@ void Enemy::playerCog()
 
 	if (_lastPlayerPoint.x != _player->getPoint().x && _lastPlayerPoint.y != _player->getPoint().y)
 	{
+
 		_lastPlayerPoint = _player->getPoint();
 		int count = 0;
 		float x = 0;

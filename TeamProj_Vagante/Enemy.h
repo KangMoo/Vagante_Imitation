@@ -5,13 +5,13 @@
 /*
 !vaganteStructEnum.h에서 선언했으니 참조만 할 것!
 enum ENEMYSTATE {
-	ENEMYSTATE_IDLE,
-	ENEMYSTATE_MOVING,
-	ENEMYSTATE_ATTACKING,
-	ENEMYSTATE_HIT,
-	ENEMYSTATE_JUMPING,
-	ENEMYSTATE_FALLING,
-	ENEMYSTATE_DEAD
+ENEMYSTATE_IDLE,
+ENEMYSTATE_MOVING,
+ENEMYSTATE_ATTACKING,
+ENEMYSTATE_HIT,
+ENEMYSTATE_JUMPING,
+ENEMYSTATE_FALLING,
+ENEMYSTATE_DEAD
 };
 
 struct tagStat {
@@ -77,11 +77,11 @@ public:
 	virtual void falling();			// 낙하 처리
 	virtual void rectResize();		// 혹시 rect 사이즈 변경 필요시 여길 통해서
 	virtual void playerCog();		// 플레이어와 몬스터 사이의 벽 있는지 판단
-
 	//공격 받았을 시 (데미지만)
 	virtual void getDamaged(int damage) { _statistics.hp -= damage; }
 	//공격 받았을 시 (데미지&넉백)
 	virtual void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _angle = angle; _gravity = 0; _state = ENEMYSTATE_HIT; }
+
 	//상태이상
 	virtual void addStatusEffect(tagStatusEffect statuseffect);
 

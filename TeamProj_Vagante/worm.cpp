@@ -133,10 +133,6 @@ HRESULT worm::init(POINT point, float minCog, float maxCog)
 }
 void worm::update()
 {
-	if (KEYMANAGER->isOnceKeyDown('Z'))
-	{
-		getDamaged(10);
-	}
 
 	//공격용 렉트 정리해주는 함수, 만약 벌레같은 애들은 그냥 공격렉트가 똑같으니 그대로 처리
 	//헤더파일에 있으니까 보고 수정 필요하면 재수정할것
