@@ -274,8 +274,8 @@ void worm::attack()
 	RECT temp;
 	if (IntersectRect(&temp, &_player->getRect(), &_attackRect))
 	{
-		_player->getDamaged(_statistics.mel);
-		tagStatusEffect tse;
+		_player->getDamaged(_statistics.str, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), 1);
+		tagStatusEffect tse; 
 		tse.type = STATUSEFFECT_POISON;
 		tse.damage = 1;
 		tse.leftTime = 20;
