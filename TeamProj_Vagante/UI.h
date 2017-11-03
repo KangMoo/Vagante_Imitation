@@ -153,7 +153,7 @@ public:
 	void draw(POINT camera);
 	void explanation();
 	void showStatus();
-	void itemDraw();
+	void itemDraw(POINT camera);
 
 	void setItemToBag(ITEMNAME name);
 	void addImg();

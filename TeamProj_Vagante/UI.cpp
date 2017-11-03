@@ -62,9 +62,11 @@ HRESULT UI::init()
 	setItemToBag(NAME_HEAL);
 	setItemToBag(NAME_SWORD);
 	
-	addItemOnMap(NAME_SWORD, PointMake(WINSIZEX/2,WINSIZEY/2));
-	addItemOnMap(NAME_COIN, PointMake(WINSIZEX / 2- 100, WINSIZEY / 2));
-	addItemOnMap(NAME_HEAL, PointMake(WINSIZEX / 2 + 300, WINSIZEY / 2+200));
+	addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36), TILESIZE*(4)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(40), TILESIZE*(4)));
+	addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(44), TILESIZE*(4)));
+
+	//_player->getStatusEffect()->type == STATUSEFFECT_POISON;
 	return S_OK;
 }
 void UI::release()
@@ -140,35 +142,21 @@ void UI::update()
 	//===================== I T E M   O N   M A P =====================
 	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
 	{
-		//_viItem->point.y += 3;
-		mapInfo cen = _map->getMapInfo(
-			((int)_viItem->point.y / TILESIZE),
-			(int)_viItem->point.x / TILESIZE);
-
 		mapInfo bot = _map->getMapInfo(
 			((int)_viItem->point.y / TILESIZE)+1,
 			(int)_viItem->point.x / TILESIZE);
-		if(cen.type != MAPTILE_WALL && cen.type != MAPTILE_WALL2 && cen.type != MAPTILE_GROUND_CAN_GO_DOWN_1)
-		{
-			_viItem->point.y += 3;
 
+		_viItem->point.y += 3;
+		if (isCollision(bot.rc, _viItem->rc))
+		{
+			if (bot.type == MAPTILE_WALL || bot.type == MAPTILE_GROUND_CAN_GO_DOWN_1 || bot.type == MAPTILE_WALL2)
+			{
+				_viItem->point.y = bot.rc.top - _viItem->img0->getHeight() / 2;
+			}
 		}
-		
-		//else if (isCollision(bot.rc, _viItem->rc) && (
-		//	bot.type == MAPTILE_LADDER ||
-		//	bot.type == MAPTILE_GROUND_CAN_GO_DOWN_1 ||
-		//	bot.type == MAPTILE_SPIKE_TRAP))
-		//{
-		//
-		//}
+
 		_viItem->rc = RectMakeCenter(_viItem->point.x, _viItem->point.y,
 			_viItem->img0->getWidth(), _viItem->img0->getHeight());
-
-		//isCollisionReaction(_map->getMapInfo(
-		//	(int)_viItem->point.x / TILESIZE,
-		//	(int)_viItem->point.y / TILESIZE).rc,
-		//	_viItem->rc);
-
 	}
 
 	//======================== F U N C T I O N ========================
@@ -181,9 +169,9 @@ void UI::render(){}
 void UI::draw(){}
 void UI::render(POINT camera)
 {
-	draw();
+	draw(camera);
 	showStatus();
-	itemDraw();
+	itemDraw(camera);
 	if(_active) explanation();
 
 }
@@ -432,20 +420,29 @@ void UI::draw(POINT camera)
 	for ( _viHit = _vHit.begin(); _viHit != _vHit.end(); ++_viHit)
 	{
 		char str[10];
-		letterMacro2(_viHit->font, _viHit->x , _viHit->y, itoa(_viHit->damage, str, 10), _viHit->alphaSource);
+		letterMacro2(_viHit->font, _viHit->x + camera.x, _viHit->y + camera.y, itoa(_viHit->damage, str, 10), _viHit->alphaSource);
 	}
 }
 
 
 void UI::showStatus()
-{
+{	
+	if (_player->getStatusEffect()->type ==STATUSEFFECT_POISON)
+	{
+		IMAGEMANAGER->findImage("effect")->frameRender(getMemDC(), _menuRect.left + 30, _menuRect.top - 20, 2, 0);
+	}
+	
+	if ((_player->getStatusEffect() + 1)->type == STATUSEFFECT_FIRE)
+	{
+		IMAGEMANAGER->findImage("effect")->frameRender(getMemDC(), _menuRect.left + 50, _menuRect.top - 20, 2, 1);
+	}
 }
 
-void UI::itemDraw()
+void UI::itemDraw(POINT camera)
 {
 	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
 	{
-		_viItem->img0->render(getMemDC(), _viItem->point.x, _viItem->point.y);
+		_viItem->img0->render(getMemDC(), _viItem->point.x + camera.x, _viItem->point.y + camera.y);
 		
 	}
 }
@@ -1317,7 +1314,7 @@ void UI::setItemToBag(ITEMNAME name)
 		break;
 	case NAME_HEAL:
 		item.img = IMAGEMANAGER->findImage("heal");
-		item.img = IMAGEMANAGER->findImage("heal0");
+		item.img0 = IMAGEMANAGER->findImage("heal0");
 		item.itemStat.hp = 10;
 		item.type = TYPE_POTION;
 		break;
