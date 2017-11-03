@@ -1,6 +1,5 @@
 #pragma once
 #include "gameNode.h"
-#include"destroyMap.h"
 #include "vaganteStructEnum.h"
 class EnemyManager;
 class Player;
@@ -76,7 +75,6 @@ private:
 
 
 
-	destroyMap DesMap;
 	mapInfo _mapInfo[40][58];
 	EnemyManager* _em;
 	Player* _player;
