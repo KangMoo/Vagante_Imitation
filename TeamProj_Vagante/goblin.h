@@ -23,6 +23,8 @@ public:
 	void attack();
 	void falling();
 
+	void frameUpdate();
+
 	goblin();
 	~goblin();
 };
