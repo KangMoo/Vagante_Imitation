@@ -93,7 +93,7 @@ HRESULT worm::init(POINT point, float minCog, float maxCog)
 	//한번 설정한 방향은 죽을때까지 가지고 있는다
 	if (a == 0) _isLeft = true;
 	else _isLeft = false;
-	_isLeft = false;
+	//_isLeft = false;
 	//프레임 끝까지 도달하면 다시 왔다갔다할거라 그거용
 	_reverseFrame = false;
 	//이동속도
