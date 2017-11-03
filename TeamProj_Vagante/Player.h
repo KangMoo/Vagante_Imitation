@@ -158,10 +158,9 @@ public:
 	inline void setXSpeed(float xspeed) { _player.xspeed = xspeed; }
 	inline float getYSpeed() { return _player.yspeed; }
 	inline void setYSpeed(float yspeed) { _player.yspeed = yspeed; }
-
+	inline tagStatusEffect* getStatusEffect() { return &_player.statusEffect[0]; }
 	inline void setEquipWeapon(tagItemInfo weapon) { _player.equipWeapon = weapon; }
 
-	
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
