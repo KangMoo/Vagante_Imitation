@@ -51,20 +51,20 @@ HRESULT UI::init()
 	_currentHp = _player->getStat().hp;
 	//================================================================
 
-	setItemToBag(NAME_HEAL);
-	setItemToBag(NAME_SWORD);
-	setItemToBag(NAME_HEAL);
-	setItemToBag(NAME_SWORD);
-	setItemToBag(NAME_HEAL);
-	setItemToBag(NAME_SWORD);
-	setItemToBag(NAME_HEAL);
-	setItemToBag(NAME_SWORD);
-	setItemToBag(NAME_HEAL);
-	setItemToBag(NAME_SWORD);
-	
-	addItemOnMap(NAME_SWORD, PointMake(WINSIZEX/2,WINSIZEY/2));
-	addItemOnMap(NAME_COIN, PointMake(WINSIZEX / 2- 100, WINSIZEY / 2));
-	addItemOnMap(NAME_HEAL, PointMake(WINSIZEX / 2 + 300, WINSIZEY / 2+200));
+	//setItemToBag(NAME_HEAL);
+	//setItemToBag(NAME_SWORD);
+	//setItemToBag(NAME_HEAL);
+	//setItemToBag(NAME_SWORD);
+	//setItemToBag(NAME_HEAL);
+	//setItemToBag(NAME_SWORD);
+	//setItemToBag(NAME_HEAL);
+	//setItemToBag(NAME_SWORD);
+	//setItemToBag(NAME_HEAL);
+	//setItemToBag(NAME_SWORD);
+	//
+	//addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36 ), TILESIZE*(4)));
+	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	//addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(36 - 5), TILESIZE*(4 + 5)));
 	return S_OK;
 }
 void UI::release()
@@ -140,34 +140,22 @@ void UI::update()
 	//===================== I T E M   O N   M A P =====================
 	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
 	{
-		//_viItem->point.y += 3;
-		mapInfo cen = _map->getMapInfo(
-			((int)_viItem->point.y / TILESIZE),
-			(int)_viItem->point.x / TILESIZE);
 
 		mapInfo bot = _map->getMapInfo(
 			((int)_viItem->point.y / TILESIZE)+1,
 			(int)_viItem->point.x / TILESIZE);
-		if(cen.type != MAPTILE_WALL && cen.type != MAPTILE_WALL2 && cen.type != MAPTILE_GROUND_CAN_GO_DOWN_1)
+		_viItem->point.y += 3;
+		if (isCollision(bot.rc, _viItem->rc))
 		{
-			_viItem->point.y += 3;
-
+			if (bot.type == MAPTILE_WALL || bot.type == MAPTILE_WALL2 || bot.type == MAPTILE_GROUND_CAN_GO_DOWN_1)
+			{
+				_viItem->point.y = bot.rc.top - _viItem->img0->getHeight() / 2;
+			}
 		}
 		
-		//else if (isCollision(bot.rc, _viItem->rc) && (
-		//	bot.type == MAPTILE_LADDER ||
-		//	bot.type == MAPTILE_GROUND_CAN_GO_DOWN_1 ||
-		//	bot.type == MAPTILE_SPIKE_TRAP))
-		//{
-		//
-		//}
 		_viItem->rc = RectMakeCenter(_viItem->point.x, _viItem->point.y,
 			_viItem->img0->getWidth(), _viItem->img0->getHeight());
 
-		//isCollisionReaction(_map->getMapInfo(
-		//	(int)_viItem->point.x / TILESIZE,
-		//	(int)_viItem->point.y / TILESIZE).rc,
-		//	_viItem->rc);
 
 	}
 
@@ -181,9 +169,9 @@ void UI::render(){}
 void UI::draw(){}
 void UI::render(POINT camera)
 {
-	draw();
+	draw(camera);
 	showStatus();
-	itemDraw();
+	itemDraw(camera);
 	if(_active) explanation();
 
 }
@@ -432,7 +420,7 @@ void UI::draw(POINT camera)
 	for ( _viHit = _vHit.begin(); _viHit != _vHit.end(); ++_viHit)
 	{
 		char str[10];
-		letterMacro2(_viHit->font, _viHit->x , _viHit->y, itoa(_viHit->damage, str, 10), _viHit->alphaSource);
+		letterMacro2(_viHit->font, _viHit->x + camera.x , _viHit->y + camera.y, itoa(_viHit->damage, str, 10), _viHit->alphaSource);
 	}
 }
 
@@ -441,11 +429,11 @@ void UI::showStatus()
 {
 }
 
-void UI::itemDraw()
+void UI::itemDraw(POINT camera)
 {
 	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
 	{
-		_viItem->img0->render(getMemDC(), _viItem->point.x, _viItem->point.y);
+		_viItem->img0->render(getMemDC(), _viItem->point.x + camera.x, _viItem->point.y + camera.y);
 		
 	}
 }
@@ -1317,7 +1305,7 @@ void UI::setItemToBag(ITEMNAME name)
 		break;
 	case NAME_HEAL:
 		item.img = IMAGEMANAGER->findImage("heal");
-		item.img = IMAGEMANAGER->findImage("heal0");
+		item.img0 = IMAGEMANAGER->findImage("heal0");
 		item.itemStat.hp = 10;
 		item.type = TYPE_POTION;
 		break;

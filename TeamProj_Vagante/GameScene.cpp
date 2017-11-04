@@ -109,6 +109,12 @@ void GameScene::addImage()
 	IMAGEMANAGER->addImage("batsleep", "Img\\enemy\\bat_idle.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("batflying", "Img\\enemy\\bat_moving.bmp", 128, 32, 4, 1, true, RGB(255, 0, 255));
 
+	IMAGEMANAGER->addFrameImage("slime_Idle", "Img\\enemy\\slime_idle.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("slime_Move", "Img\\enemy\\slime_dash.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("slime_Dash_Cast", "Img\\enemy\\slime_dashCast.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("slime_Dash", "Img\\enemy\\slime_dash.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("slime_Jump", "Img\\enemy\\slime_jump.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("slime_Falling", "Img\\enemy\\slime_fall.bmp", 32, 64, 1, 2, true, RGB(255, 0, 255));
 
 	//============================================================== ManEater ====================================================================
 

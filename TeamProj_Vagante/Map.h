@@ -1,10 +1,12 @@
 #pragma once
 #include "gameNode.h"
 #include "vaganteStructEnum.h"
-
 class EnemyManager;
 class Player;
 class UI;
+
+#define COINBOXMAX 5
+#define ITEMBOXMAX 2
 
 /*
 !vaganteStructEnum.h에서 선언했으니 참조만 할 것!
@@ -45,19 +47,31 @@ struct tagObj
 	// 상자가 열렸었는지 확인하기 위한 불값
 	bool _eventChk;
 };
+struct tagMiniMap
+{
+	image* Image;
+	RECT playerRc;
+	float X, Y;
+};
 
-
+struct tagSight
+{
+	image* Image;
+	float X, Y;
+	float alpha;
+};
 class Map : public gameNode
 {
 private:
 	image* _trapImg;
 	image* _mapImg;
 	image* _BgImg;
-	tagObj itemBox[2];
-	tagObj coinBox[5];
+	image* _SightImg;
+	image* _SightBackImg;
+	tagObj itemBox[ITEMBOXMAX];
+	tagObj coinBox[COINBOXMAX];
 	tagObj Door;
-	
-
+	tagMiniMap miniMap;
 
 
 

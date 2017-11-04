@@ -42,12 +42,20 @@ HRESULT EnemyManager::init()
 	temp->init(pt, 0, 0);
 	_vEnemy.push_back(temp);
 
-	_boss = new Boss();
-	//상호참조를 위한 address링크
-	_boss->setPlayerAddressLink(_player);
-	_boss->setUiAddressLink(_ui);
-	_boss->setMapAddressLink(_map);
-	_boss->init(PointMake(TILESIZE * 35, TILESIZE * 6));
+	//_boss = new Boss();
+	////상호참조를 위한 address링크
+	//_boss->setPlayerAddressLink(_player);
+	//_boss->setUiAddressLink(_ui);
+	//_boss->setMapAddressLink(_map);
+	//_boss->init(PointMake(TILESIZE * 35, TILESIZE * 6));
+
+	temp = new slime;
+	pt = PointMake(TILESIZE * 35, TILESIZE * 6);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
 
 	pt = PointMake(TILESIZE * 20 - TILESIZE, TILESIZE * 6 - TILESIZE);
 	temp = new manEater;
@@ -77,7 +85,7 @@ void EnemyManager::update()
 	//보스 체크
 
 	//업데이트
-	_boss->update();
+	//_boss->update();
 
 	//enemy가 죽었는지 체크
 	deadEnemyCheck();
@@ -95,7 +103,7 @@ void EnemyManager::render(POINT camera)
 	{
 		(*_viEnemy)->render(camera);
 	}
-	_boss->render(camera);
+	//_boss->render(camera);
 
 	draw(camera);
 
