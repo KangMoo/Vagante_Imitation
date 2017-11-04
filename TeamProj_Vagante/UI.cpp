@@ -49,22 +49,33 @@ HRESULT UI::init()
 	_inputGuide = 0;
 	_maxHp = 50 + _player->getStat().vit * 10;
 	_currentHp = _player->getStat().hp;
+
+	//====================== H A N D ================================
+
+	ZeroMemory(&_hand, sizeof(tagItem));
+	_hand.equip = false;
+	_hand.img = IMAGEMANAGER->findImage("hand");
+	_hand.minDmg = 1;
+	_hand.maxDmg = 1;
+	_hand.name = NAME_HAND;
+	_hand.type = TYPE_WEAPON;
+
 	//================================================================
 
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
 	//
-	//addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36 ), TILESIZE*(4)));
-	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
-	//addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(36 - 5), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36 ), TILESIZE*(4)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(36 - 5), TILESIZE*(4 + 5)));
 	return S_OK;
 }
 void UI::release()
@@ -81,7 +92,7 @@ void UI::update()
 	//=================== P L A Y E R   U P D A T E ===================
 	_currentHp = _player->getHP();
 	_maxHp = 50 + _player->getStat().vit * 10;
-
+	if (_currentHp > _maxHp) _player->setHP(_maxHp);
 
 	//=================== M E N U   R E C T ===========================
 	_lvlRect = RectMake(_menuRect.left + 18, _menuRect.top + 157, 192, 224);
@@ -89,6 +100,7 @@ void UI::update()
 	//================= F R A M E   C O N T R O L =====================
 	repeatIndex("cursor_idle", 6);
 	repeatIndex("cursor_move", 6);
+
 	//================= I N C O M E   U P D A T E =====================
 	if (!_delay.coin && _income > 0)
 	{
@@ -170,9 +182,9 @@ void UI::draw(){}
 void UI::render(POINT camera)
 {
 	draw(camera);
-	showStatus();
 	itemDraw(camera);
 	if(_active) explanation();
+	showStatus();
 
 }
 void UI::draw(POINT camera)
@@ -427,14 +439,35 @@ void UI::draw(POINT camera)
 
 void UI::showStatus()
 {
+	for (int i = 0; i < 5; i++)
+	{
+		switch ((*(_player->getStatusEffect()+i)).type)
+		{
+		case STATUSEFFECT_POISON:
+			IMAGEMANAGER->findImage("effect")->frameRender(getMemDC(), _menuRect.left + 30 + 30 * i, _menuRect.top - 25, 2, 0);
+			break;
+		case STATUSEFFECT_FIRE:
+			IMAGEMANAGER->findImage("effect")->frameRender(getMemDC(), _menuRect.left + 30 + 30 * i, _menuRect.top - 25, 2, 1);
+			break;
+		case STATUSEFFECT_STUN:
+			IMAGEMANAGER->findImage("effect")->frameRender(getMemDC(), _menuRect.left + 30 + 30 * i, _menuRect.top - 25, 0, 3);
+			break;
+		case STATUSEFFECT_HEAL:
+			IMAGEMANAGER->findImage("effect")->frameRender(getMemDC(), _menuRect.left + 30 + 30 * i, _menuRect.top - 25, 0, 0);
+			break;
+		}
+	}
+
 }
 
 void UI::itemDraw(POINT camera)
 {
 	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
 	{
-		_viItem->img0->render(getMemDC(), _viItem->point.x + camera.x, _viItem->point.y + camera.y);
-		
+		if (_viItem->type != TYPE_WEAPON)
+			_viItem->img0->render(getMemDC(), _viItem->rc.left + camera.x, _viItem->rc.top + camera.y);
+		else
+			_viItem->img0->frameRender(getMemDC(), _viItem->rc.left + camera.x, _viItem->rc.top + camera.y, 0, 0);
 	}
 }
 
@@ -1561,6 +1594,8 @@ void UI::keyControl()
 					{
 						_vBag.erase(_viBag);
 						_player->setHP(_player->getHP() + 10);
+						hitOutput(_player->getPoint().x, _player->getPoint().y, 10, LETTER_GREEN);
+
 						break;
 					}
 				}
@@ -1586,9 +1621,13 @@ void UI::keyControl()
 	//{
 	//	setCoin(1);
 	//}
-	if (KEYMANAGER->isOnceKeyDown('U'))
+	//if (KEYMANAGER->isOnceKeyDown('U'))
+	//{
+	//	hitOutput(WINSIZEX / 2, WINSIZEY / 2, 8, LETTER_RED);
+	//}
+	if (KEYMANAGER->isOnceKeyDown('I'))
 	{
-		hitOutput(WINSIZEX / 2, WINSIZEY / 2, 8, LETTER_RED);
+		(*_player->getStatusEffect()).type == STATUSEFFECT_FIRE;
 	}
 }
 
@@ -1844,7 +1883,7 @@ void UI::addImg()
 	IMAGEMANAGER->addImage("heal", "Img/ui/item/heal.bmp", 40, 40, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("hand", "Img/ui/item/hand.bmp", 80, 40, 2, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("coin", "Img/ui/item/coin.bmp", 6, 6, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("sword0", "Img/ui/item/sword0.bmp", 32, 14, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("sword0", "Img/ui/item/sword0.bmp", 64, 14, 2, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("heal0", "Img/ui/item/potion0.bmp", 18, 18, true, RGB(255, 0, 255));
 }
 
