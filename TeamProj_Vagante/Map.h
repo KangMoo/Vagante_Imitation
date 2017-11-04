@@ -68,8 +68,8 @@ private:
 	image* _BgImg;
 	image* _SightImg;
 	image* _SightBackImg;
-	tagObj itemBox[ITEMBOXMAX];
-	tagObj coinBox[COINBOXMAX];
+	tagObj* itemBox[ITEMBOXMAX];
+	tagObj* coinBox[COINBOXMAX];
 	tagObj Door;
 	tagMiniMap miniMap;
 
@@ -92,10 +92,10 @@ public:
 	void setObject();
 	
 	
-	tagObj getCoinBox(int i) { return coinBox[i]; }// 코인박스의 정보
-	tagObj getitemBox(int i) { return itemBox[i]; }// 아이템박스의 정보
-	tagObj setCoinBox(int i, bool isOpen) { coinBox[i]._openBox = isOpen; }// 코인박스의 상태변화
-	tagObj setItemBox(int i, bool isOpen) { itemBox[i]._openBox = isOpen; }// 아이템박스의 상태변화
+	tagObj* getCoinBox(int i) { return coinBox[i]; }// 코인박스의 정보
+	tagObj* getitemBox(int i) { return itemBox[i]; }// 아이템박스의 정보
+	void setCoinBox(int i, bool isOpen) { coinBox[i]->_openBox = isOpen; }// 코인박스의 상태변화
+	void setItemBox(int i, bool isOpen) { itemBox[i]->_openBox = isOpen; }// 아이템박스의 상태변화
 
 	mapInfo getMapInfo(int i, int j) { return _mapInfo[i][j]; }
 

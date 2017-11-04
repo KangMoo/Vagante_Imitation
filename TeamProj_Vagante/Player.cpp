@@ -75,17 +75,18 @@ void Player::update()
 
 	//공격 임시
 
-
 	
-	if (_invincible)
-		_invincibleTime -= TIMEMANAGER->getElapsedTime();
-	if (_invincibleTime < 0) {
-		_invincible = false;
-		_invincibleTime = 0;
-	}
+	checkInvincible();
+	checkStatusEffect();
+	checkHitEnemy();
+	checkItemBox();
+
+
+	//무적 체크
+	
 	
 	//mapcollision();	
-
+	//enemyCollision
 
 
 	//조작 가능하면 키 입력 받기 (ui에게 조작이 넘어갈 경우 _canCtrl값 false)
@@ -97,8 +98,7 @@ void Player::update()
 
 	//프레임 업데이트
 	frameUpdate();
-	enemyCollision();
-}
+	}
 
 
 void Player::render()
@@ -138,7 +138,7 @@ void Player::draw(POINT camera)
 	sprintf(str1, "%d %d %d", upL.type, upM.type, upR.type);
 	sprintf(str2, "%d %d %d", midL.type, midM.type, midR.type);
 	sprintf(str3, "%d %d %d", botL.type, botM.type, botR.type);
-	sprintf(str4, "%d", _animDelay);
+	sprintf(str4, "%ld", _map->getCoinBox(1)->rc.top);
 	TextOut(getMemDC(), 120, 110, str1, strlen(str1));
 	TextOut(getMemDC(), 120, 130, str2, strlen(str2));
 	TextOut(getMemDC(), 120, 150, str3, strlen(str3));
@@ -250,7 +250,7 @@ void Player::frameUpdate() {
 			if (_player.currentFrameX == 3) _player.currentFrameX++;
 			if (_player.currentFrameX == 2) _player.currentFrameX++;
 			if (_player.currentFrameX == 1) _player.currentFrameX++;
-			if (_player.currentFrameX == 0 && _animDelay > 4) _player.currentFrameX++;
+			if (_player.currentFrameX == 0 && _animDelay > 2) _player.currentFrameX++;
 				
 
 
@@ -876,19 +876,16 @@ void Player::addStatusEffect(tagStatusEffect statuseffect)
 	//상태이상 추가!
 	for (int i = 0; i < 5; i++)
 	{
-		if (_player.statusEffect[i].type == NULL)
+		if (_player.statusEffect[i].type == statuseffect.type)
 		{
-			if (_player.statusEffect[i].type == statuseffect.type)
-			{
-				if (_player.statusEffect[i].leftTime < statuseffect.leftTime)
-			
-					_player.statusEffect[i] = statuseffect;
-
-
-			}
-			else
+			if (_player.statusEffect[i].leftTime < statuseffect.leftTime)
 				_player.statusEffect[i] = statuseffect;
 			break;
+		}
+		if (_player.statusEffect[i].type == NULL)
+		{			
+			_player.statusEffect[i] = statuseffect;
+			break;			
 		}
 	}
 }
@@ -1176,8 +1173,7 @@ void Player::setmaptileInfo()
 	}
 
 
-	//upL
-
+	//upM
 	switch (upM.type) {
 	case MAPTILE_NULL: case MAPTILE_GROUND_CAN_GO_DOWN_1:
 		if (isCollision(_player.rc, upM.rc) && _player.state == PLAYERSTATE_HOLDING_LADDERUP) {
@@ -1198,6 +1194,12 @@ void Player::setmaptileInfo()
 			if (_player.state == PLAYERSTATE_HOLDING_LADDERUP) {
 				_player.pointy = upM.rc.bottom + (_player.rc.bottom - _player.rc.top) * 0.5;
 			}
+
+			if (_player.state == PLAYERSTATE_ATTACKING_JUMP) {
+				_player.yspeed = 0;
+				_player.pointy = upM.rc.bottom + (_player.rc.bottom - _player.rc.top) * 0.5 + 1;
+			}
+
 		}
 		break;
 	}
@@ -1231,28 +1233,6 @@ void Player::setmaptileInfo()
 }
 
 void Player::enemyCollision() {
-	_vEnemyRange = _em->getEnemyVector();
-
-	for (int i = 0; i < _vEnemyRange.size() + 1; i++) {
-		MYRECT enemyRect;
-		RECT temp;
-		if (i < _vEnemyRange.size()) {
-			temp = _vEnemyRange[i]->getRect();
-			enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
-
-			if (isCollision(enemyRect, _equipWeaponRect) && _player.currentFrameX == 2) {
-				_vEnemyRange[i]->getDamaged(10, getAngle(_player.pointx, _player.pointy, _vEnemyRange[i]->getPoint().x, _vEnemyRange[i]->getPoint().y), 3);
-			}
-		}
-		else {
-			temp = _em->getBoss()->getRect();
-			enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
-			if (isCollision(enemyRect, _equipWeaponRect) && _player.currentFrameX == 2) {
-				_em->getBoss()->getDamaged(10, getAngle(_player.pointx, _player.pointy, _em->getBoss()->getPoint().x, _em->getBoss()->getPoint().y), 3);
-			}
-		}
-		
-	}
 }
 
 
@@ -1302,6 +1282,56 @@ void Player::checkStatusEffect() {
 	}
 }
 
+void Player::checkItemBox() {
+	for (int i = 0; i < ITEMBOXMAX; i++) {
+		tagObj* box = _map->getitemBox(i);
+		if (isCollision(_player.rc, box->rc))
+		{
+			_map->setItemBox(i, true);
+		}
+	}
+	for (int i = 0; i < COINBOXMAX; i++) {
+		tagObj* box = _map->getCoinBox(i);
+		if (isCollision(_player.rc, box->rc))
+		{
+			_map->setCoinBox(i, true);
+		}
+	}
+}
+
+void Player::checkHitEnemy() {
+	_vEnemyRange = _em->getEnemyVector();
+
+	for (int i = 0; i < _vEnemyRange.size() + 1; i++) {
+		MYRECT enemyRect;
+		RECT temp;
+		if (i < _vEnemyRange.size()) {
+			temp = _vEnemyRange[i]->getRect();
+			enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
+
+			if (isCollision(enemyRect, _equipWeaponRect) && _player.currentFrameX == 2) {
+				_vEnemyRange[i]->getDamaged(10, getAngle(_player.pointx, _player.pointy, _vEnemyRange[i]->getPoint().x, _vEnemyRange[i]->getPoint().y), 3);
+			}
+		}
+		else {
+			temp = _em->getBoss()->getRect();
+			enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
+			if (isCollision(enemyRect, _equipWeaponRect) && _player.currentFrameX == 2) {
+				_em->getBoss()->getDamaged(10, getAngle(_player.pointx, _player.pointy, _em->getBoss()->getPoint().x, _em->getBoss()->getPoint().y), 3);
+			}
+		}
+	}
+}
+
+
+void Player::checkInvincible() {
+	if (_invincible)
+		_invincibleTime -= TIMEMANAGER->getElapsedTime();
+	if (_invincibleTime < 0) {
+		_invincible = false;
+		_invincibleTime = 0;
+	}
+}
 
 
 void Player::firstSettingStat() {
