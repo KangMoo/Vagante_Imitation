@@ -50,13 +50,14 @@ HRESULT bat::init(POINT point, float minCog, float maxCog)
 	//죽었는지 확인용
 	_dead = false;
 	_deadAlpha = 0;
-	_rc = RectMakeCenter(_pointx, _pointy, 10, 10);
 	_isFindPlayer = true;	//플레이어 탐지여부
 	_isOnTop = false;			//천장에 닿았는지 여부
 	_image = IMAGEMANAGER->findImage("batflying");
 	_currentFrameX = 0;
 	_currentFrameY = 0;
 	_timerForFrame = TIMEMANAGER->getWorldTime();
+	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth()+ 10, _image->getFrameHeight() + 10);
+	_rcHit = RectMakeCenter(_pointx, _pointy, 5, 5);
 	return S_OK;
 }
 
@@ -79,7 +80,9 @@ void bat::update() {
 	}
 
 	//if (_dead) _alpha += 1;
-	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
+	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth() + 10, _image->getFrameHeight() + 10);
+	_rcHit = RectMakeCenter(_pointx, _pointy, 5, 5);
+
 }
 
 void bat::move()
@@ -141,7 +144,7 @@ void bat::actByState()
 void bat::hitPlayer()
 {
 	RECT temp;
-	if (IntersectRect(&temp, &_player->getRect(), &_rc))
+	if (IntersectRect(&temp, &_player->getRect(), &_rcHit))
 	{
 		_player->getDamaged(5, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), _statistics.str);
 		_xspeed = cosf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 10;
@@ -210,11 +213,13 @@ void bat::render(POINT camera)
 void bat::draw(POINT camera)
 {
 
-	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
+	Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
 	_image->alphaFrameRender(getMemDC(),
 		_pointx - _image->getFrameWidth() / 2 + camera.x,
 		_pointy - _image->getFrameHeight() / 2 + camera.y,
 		_currentFrameX, _currentFrameY, _deadAlpha);
+
+
 }
 
 void bat::frameUpdate()

@@ -77,6 +77,9 @@ class Player : public gameNode
 private:
 	typedef vector<Enemy*> vEnemyRange;
 	typedef vector<Enemy*>::iterator viEnemyRange;
+	typedef vector<tagItem> vItem;
+	typedef vector<tagItem>::iterator viItem;
+
 
 	tagPlayerInfo _player;
 	EnemyManager* _em;
@@ -91,9 +94,11 @@ private:
 
 	tagItem _equipWeapon;
 	MYRECT _equipWeaponRect;  //무기를 담을 렉트
-
+	float _attackDelay;
 	
-	vEnemyRange _vEnemyRange;
+	vEnemyRange _vEnemyRange;	
+	vItem _vItem;
+	
 	
 	animation* _playerMotion[2];
 
@@ -142,8 +147,8 @@ public:
 	void checkStatusEffect(); //상태이상 확인하기
 	void checkHitEnemy(); //공격 확인하기
 	void checkInvincible(); //무적 확인하기
-	void checkItemBox(); //무적 확인하기
-
+	void checkItemBox(); //박스 위치 확인하기
+	void checkDropItem(); //드랍 아이템 확인
 
 	//공격 받았을 시 (데미지만)
 	void getDamaged(int damage);
