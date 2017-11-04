@@ -44,6 +44,7 @@ struct tagDelay
 	int menu;
 };
 
+
 struct tagItem
 {
 	image* img;

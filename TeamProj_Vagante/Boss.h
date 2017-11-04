@@ -5,6 +5,7 @@
 #include "Map.h"
 #include "vaganteStructEnum.h"
 #include "FireBall.h"
+#include "UI.h"
 
 /*
 !vaganteStructEnum.h에서 선언했으니 참조만 할 것!
@@ -73,7 +74,8 @@ private:
 	tagStatusEffect _statusEffect[5];									//상태이상
 	tagStat _statistics;												//스탯
 	int _currentFrameX, _currentFrameY;									//프레임
-	RECT _rc;															//피격범위
+	RECT _rc;															//이동충돌범위
+	RECT _rcHit;														//공격충돌범위 add by JW
 	float _pointx, _pointy;												//좌표
 	float _xspeed, _yspeed;												//x,y축 이동 속도
 	int _money;															//몬스터 죽으면 나올 동전 갯수
@@ -140,7 +142,7 @@ public:
 									//공격 받았을 시 (데미지만)
 	void getDamaged(int damage) { _statistics.hp -= damage; }
 	//공격 받았을 시 (데미지&넉백)
-	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; }
+	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE); }
 	//상태이상
 	void addStatusEffect(tagStatusEffect statuseffect);
 
@@ -150,7 +152,7 @@ public:
 	void setHP(int hp) { _statistics.hp = hp; }
 	tagStat getStat() { return _statistics; }
 	void setStat(tagStat stat) { _statistics = stat; }
-	RECT getRect() { return _rc; }
+	RECT getRect() { return _rcHit; }
 	POINT getPoint() { return PointMake(_pointx, _pointy); }
 	void setPoint(POINT point) { _pointx = point.x; _pointy = point.y; }
 	int getMoney() { return _money; }

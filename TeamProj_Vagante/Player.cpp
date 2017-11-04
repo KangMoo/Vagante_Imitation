@@ -801,7 +801,7 @@ void Player::attack()
 	if (KEYMANAGER->isOnceKeyDown('X')) {
 		float _offsetX, _offsetY;
 
-		//수치는 임시
+		//수치는 임시 나중에 이미지 사이즈로 변경
 		_offsetY = 10;
 		_offsetX = (_player.lookingRight) ? 30 : -30;
 		
@@ -838,7 +838,6 @@ void Player::attackingNow() {
 	
 
 	_equipWeaponRect.setCenterPos(_player.pointx + _offsetX, _player.pointy + _offsetY);
-
 }
 
 void Player::attackCollision() {
@@ -879,7 +878,16 @@ void Player::addStatusEffect(tagStatusEffect statuseffect)
 	{
 		if (_player.statusEffect[i].type == NULL)
 		{
-			_player.statusEffect[i] = statuseffect;
+			if (_player.statusEffect[i].type == statuseffect.type)
+			{
+				if (_player.statusEffect[i].leftTime < statuseffect.leftTime)
+			
+					_player.statusEffect[i] = statuseffect;
+
+
+			}
+			else
+				_player.statusEffect[i] = statuseffect;
 			break;
 		}
 	}
@@ -1225,15 +1233,25 @@ void Player::setmaptileInfo()
 void Player::enemyCollision() {
 	_vEnemyRange = _em->getEnemyVector();
 
-	for (int i = 0; i < _vEnemyRange.size(); i++) {
+	for (int i = 0; i < _vEnemyRange.size() + 1; i++) {
 		MYRECT enemyRect;
+		RECT temp;
+		if (i < _vEnemyRange.size()) {
+			temp = _vEnemyRange[i]->getRect();
+			enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
+
+			if (isCollision(enemyRect, _equipWeaponRect) && _player.currentFrameX == 2) {
+				_vEnemyRange[i]->getDamaged(10, getAngle(_player.pointx, _player.pointy, _vEnemyRange[i]->getPoint().x, _vEnemyRange[i]->getPoint().y), 3);
+			}
+		}
+		else {
+			temp = _em->getBoss()->getRect();
+			enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
+			if (isCollision(enemyRect, _equipWeaponRect) && _player.currentFrameX == 2) {
+				_em->getBoss()->getDamaged(10, getAngle(_player.pointx, _player.pointy, _em->getBoss()->getPoint().x, _em->getBoss()->getPoint().y), 3);
+			}
+		}
 		
-		RECT temp = _vEnemyRange[i]->getRect();
-		enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
-		
-		if (isCollision(enemyRect, _equipWeaponRect) && _player.currentFrameX == 2) {
-			_vEnemyRange[i]->getDamaged(10, getAngle(_player.pointx, _player.pointy, _vEnemyRange[i]->getPoint().x, _vEnemyRange[i]->getPoint().y), 3);
-		}		
 	}
 }
 

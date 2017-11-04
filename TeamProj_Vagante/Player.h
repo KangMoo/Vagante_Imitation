@@ -1,6 +1,7 @@
 #pragma once
 #include "gameNode.h"
 #include "vaganteStructEnum.h"
+#include "UI.h"
 
 class EnemyManager;
 class Map;
@@ -88,11 +89,10 @@ private:
 	int _curTileX, _curTileY; // 현재 타일 위치
 	int _prevTileX, _prevTileY; // 이전 타일 위치
 
-
-	tagItemInfo _equipWeapon;
+	tagItem _equipWeapon;
 	MYRECT _equipWeaponRect;  //무기를 담을 렉트
 
-
+	
 	vEnemyRange _vEnemyRange;
 	
 	animation* _playerMotion[2];
@@ -173,7 +173,7 @@ public:
 	inline float getYSpeed() { return _player.yspeed; }
 	inline void setYSpeed(float yspeed) { _player.yspeed = yspeed; }
 	inline tagStatusEffect* getStatusEffect() { return &_player.statusEffect[0]; }
-	inline void setEquipWeapon(tagItemInfo weapon) { _equipWeapon = weapon; }
+	inline void setEquipWeapon(tagItem weapon) { _equipWeapon = weapon; }
 
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
