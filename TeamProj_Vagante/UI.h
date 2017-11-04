@@ -155,6 +155,7 @@ public:
 	void explanation();
 	void showStatus();
 	void itemDraw(POINT camera);
+	void collision();
 
 	void setItemToBag(ITEMNAME name);
 	void addImg();

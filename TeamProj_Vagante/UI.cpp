@@ -62,18 +62,19 @@ HRESULT UI::init()
 	_player->setEquipWeapon(_hand);
 
 
+
 	//================================================================
 
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
 	//
 	//addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36 ), TILESIZE*(4)));
 	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
@@ -175,6 +176,7 @@ void UI::update()
 
 	//======================== F U N C T I O N ========================
 	rectMove();
+	collision();
 	if (_active) keyControl();
 
 }
@@ -438,6 +440,37 @@ void UI::draw(POINT camera)
 	}
 }
 
+void UI::collision()
+{
+	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); )
+	{
+		if (isCollision(_player->getRect(), _viItem->rc))
+		{
+			if (_viItem->name == NAME_COIN)
+			{
+				if (_viItem->point.x > _player->getPoint().x) _viItem->point.x -= 3;
+				if (_viItem->point.x < _player->getPoint().x) _viItem->point.x += 3;
+				if (_viItem->point.y > _player->getPoint().y) _viItem->point.y -= 3;
+				if (_viItem->point.y < _player->getPoint().y) _viItem->point.y += 3;
+				if (isCollision(RectMakeCenter(_player->getPoint().x, _player->getPoint().y, 5, 5), _viItem->rc))
+				{
+					_vItem.erase(_viItem);
+					setCoin(1);
+					break;
+				}
+				else
+				{
+					++_viItem;
+				}
+			}
+			else
+			{
+				++_viItem;
+			}
+		}
+		else ++_viItem;
+	}
+}
 
 void UI::showStatus()
 {
