@@ -49,11 +49,10 @@ HRESULT bat::init(POINT point, float minCog, float maxCog)
 
 	//죽었는지 확인용
 	_dead = false;
-	_deadAlpha = 255;
+	_deadAlpha = 0;
 	_rc = RectMakeCenter(_pointx, _pointy, 10, 10);
-	_isPlayerOnTarget = true;	//플레이어 탐지여부
+	_isFindPlayer = true;	//플레이어 탐지여부
 	_isOnTop = false;			//천장에 닿았는지 여부
-	_alpha = 0;
 	_image = IMAGEMANAGER->findImage("batflying");
 	_currentFrameX = 0;
 	_currentFrameY = 0;
@@ -64,8 +63,8 @@ HRESULT bat::init(POINT point, float minCog, float maxCog)
 void bat::update() {
 
 	//인식범위 내에 플레이어가 있으면 활성화, 아닐 시 비활성화
-	if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 200) _isPlayerOnTarget = true;
-	else _isPlayerOnTarget = false;
+	if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 200) _isFindPlayer = true;
+	else _isFindPlayer = false;
 	actByState();
 	move();
 	mapCollisionCheck();
@@ -79,7 +78,7 @@ void bat::update() {
 		frameUpdate();
 	}
 
-	if (_dead) _alpha += 1;
+	//if (_dead) _alpha += 1;
 	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 }
 
@@ -106,7 +105,7 @@ void bat::move()
 
 void bat::actByState()
 {
-	if (_dead)
+	if (_state == ENEMYSTATE_DEAD)
 	{
 		_xspeed = 0;
 		_yspeed = 3;
@@ -116,7 +115,7 @@ void bat::actByState()
 		switch (_batstate)
 		{
 		case BATSTATE_FLYING:
-			if (_isPlayerOnTarget)
+			if (_isFindPlayer)
 			{
 				if(abs(_xspeed) < 1)
 				_xspeed += cosf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y))*_statistics.spd;
@@ -132,7 +131,7 @@ void bat::actByState()
 			if (TIMEMANAGER->getWorldTime() - _hittimer > 0.7) _batstate = BATSTATE_FLYING;
 			break;
 		case BATSTATE_SLEEP:
-			if (_isPlayerOnTarget) _batstate = BATSTATE_FLYING;
+			if (_isFindPlayer) _batstate = BATSTATE_FLYING;
 			break;
 		}
 	}
@@ -166,7 +165,7 @@ void bat::mapCollisionCheck()
 				{
 					_pointx += cosf(getAngle(maptile.point.x + TILESIZE / 2, maptile.point.y + TILESIZE / 2, _pointx, _pointy)) * 1;//(temp.right - temp.left + 2);
 					_pointy -= sinf(getAngle(maptile.point.x + TILESIZE / 2, maptile.point.y + TILESIZE / 2, _pointx, _pointy)) * 1;//(temp.bottom - temp.top + 2);
-					if (!_isPlayerOnTarget && _batstate != BATSTATE_SLEEP)
+					if (!_isFindPlayer && _batstate != BATSTATE_SLEEP)
 					{
 						_batstate = BATSTATE_SLEEP;
 					}
@@ -181,10 +180,10 @@ void bat::deadcheck()
 {
 	if (_statistics.hp <= 0)
 	{
-		_dead = true;
-		if (_alpha >= 255)
+		_deadAlpha += 5;
+		if (_deadAlpha >= 255)
 		{
-			_deleteForeEm = true;
+			_dead = true;
 		}
 	}
 }
@@ -215,7 +214,7 @@ void bat::draw(POINT camera)
 	_image->alphaFrameRender(getMemDC(),
 		_pointx - _image->getFrameWidth() / 2 + camera.x,
 		_pointy - _image->getFrameHeight() / 2 + camera.y,
-		_currentFrameX, _currentFrameY, 0);
+		_currentFrameX, _currentFrameY, _deadAlpha);
 }
 
 void bat::frameUpdate()

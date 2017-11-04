@@ -12,14 +12,10 @@ enum SLIMESTATE {
 class slime : public Enemy
 {
 private:
-	image* _image;			//이미지
-	bool _isPlayerOnTarget;	//플레이어 탐지여부
 	bool _isOnTop;			//천장에 닿았는지 여부 체크
-	float _alpha;			//
 	SLIMESTATE _slimeState;	//
 	int _hittimer;			//
 	float _jumptimer;		//점프 타이머
-	float _pointx, _pointy;	//좌표
 	float _timerForFrame;
 	bool _isOnLand;			//땅 위에 있는지 여부 체크
 	mapInfo upL, upM, upR, midL, midM, midR, botL, botM, botR;			// 

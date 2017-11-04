@@ -8,13 +8,10 @@ enum BATSTATE {
 class bat : public Enemy
 {
 private:
-	image* _image;			//이미지
 	bool _isPlayerOnTarget;	//플레이어 탐지여부
 	bool _isOnTop;			//천장에 닿았는지 여부 체크
-	float _alpha;
 	BATSTATE _batstate;
 	int _hittimer;
-	float _pointx, _pointy;	//좌표
 	float _timerForFrame;
 public:
 	//생성 위치, 최소인식범위, 최대인식범위

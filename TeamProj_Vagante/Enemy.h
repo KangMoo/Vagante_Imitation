@@ -119,6 +119,8 @@ public:
 	//상태이상 효과 받을때
 	virtual void statusEffect();
 
+	ENEMYSTATE getState() { return _state; }
+
 	//플레이어, ui랑 연결
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }

@@ -458,15 +458,9 @@ void UI::collision()
 					setCoin(1);
 					break;
 				}
-				else
-				{
-					++_viItem;
-				}
+				else ++_viItem;
 			}
-			else
-			{
-				++_viItem;
-			}
+			else ++_viItem;
 		}
 		else ++_viItem;
 	}
