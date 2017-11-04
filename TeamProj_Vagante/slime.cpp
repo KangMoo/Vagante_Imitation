@@ -47,11 +47,10 @@ HRESULT slime::init(POINT point, float minCog, float maxCog)
 
 	//죽었는지 확인용
 	_dead = false;
-	_deadAlpha = 255;
+	_deadAlpha = 0;
 	_rc = RectMakeCenter(_pointx, _pointy, 25, 25);
-	_isPlayerOnTarget = true;	//플레이어 탐지여부
+	_isFindPlayer = false;	//플레이어 탐지여부
 	_isOnTop = false;			//천장에 닿았는지 여부
-	_alpha = 0;
 	_image = IMAGEMANAGER->findImage("slime_Idle");
 	_currentFrameX = 0;
 	_currentFrameY = 0;
@@ -65,8 +64,8 @@ HRESULT slime::init(POINT point, float minCog, float maxCog)
 void slime::update()
 {
 	//인식범위 내에 플레이어가 있으면 활성화, 아닐 시 비활성화
-	if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 400) _isPlayerOnTarget = true;
-	else _isPlayerOnTarget = false;
+	if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 400) _isFindPlayer = true;
+	else _isFindPlayer = false;
 	actByState();
 
 
@@ -90,7 +89,7 @@ void slime::actByState()
 	{
 	case SLIMESTATE_IDLE:
 		//플레이어 포착시
-		if (_isPlayerOnTarget)
+		if (_isFindPlayer)
 		{
 			//움직임
 			_slimeState = SLIMESTATE_MOVING;
@@ -98,7 +97,7 @@ void slime::actByState()
 		break;
 	case SLIMESTATE_MOVING:
 		//플레이어 포착 시
-		if (_isPlayerOnTarget)
+		if (_isFindPlayer)
 		{
 			//플레이어 방향으로 움직임(x축 무빙)
 			if (_player->getPoint().x > _pointx)
@@ -128,7 +127,7 @@ void slime::actByState()
 	case SLIMESTATE_JUMPING:
 		if (_yspeed > 0) _slimeState = SLIMESTATE_FALLING;
 		//플레이어 포착 시
-		if (_isPlayerOnTarget)
+		if (_isFindPlayer)
 		{
 			//플레이어 방향으로 움직임(x축 무빙)
 			if (_player->getPoint().x > _pointx)
@@ -146,7 +145,7 @@ void slime::actByState()
 		break;
 	case SLIMESTATE_FALLING:
 		//플레이어 포착 시
-		if (_isPlayerOnTarget)
+		if (_isFindPlayer)
 		{
 			//플레이어 방향으로 움직임(x축 무빙)
 			if (_player->getPoint().x > _pointx)
@@ -178,7 +177,7 @@ void slime::draw(POINT camera)
 	_image->alphaFrameRender(getMemDC(),
 		_pointx - _image->getFrameWidth() / 2 + camera.x,
 		_pointy - _image->getFrameHeight() / 2 + camera.y,
-		_currentFrameX, _currentFrameY, 0);
+		_currentFrameX, _currentFrameY, _deadAlpha);
 }
 void slime::move()
 {
@@ -250,7 +249,14 @@ void slime::mapCollisionCheck()
 }
 void slime::deadcheck()
 {
-
+	if (_state == ENEMYSTATE_DEAD)
+	{
+		_deadAlpha += 5;
+		if (_deadAlpha >= 255)
+		{
+			_dead = true;
+		}
+	}
 }
 void slime::imgHandleByState()
 {

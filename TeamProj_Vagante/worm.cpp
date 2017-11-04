@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "worm.h"
 #include "Player.h"
-#include "UI.h"
 
 worm::worm()
 {
