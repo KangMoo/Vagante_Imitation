@@ -141,6 +141,8 @@ public:
 
 	void checkStatusEffect(); //상태이상 확인하기
 	void checkHitEnemy(); //공격 확인하기
+	void checkInvincible(); //무적 확인하기
+	void checkItemBox(); //무적 확인하기
 
 
 	//공격 받았을 시 (데미지만)

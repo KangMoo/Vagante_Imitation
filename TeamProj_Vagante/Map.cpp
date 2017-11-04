@@ -44,15 +44,20 @@ void Map::update()
 {
 	for (int i = 0; i < 5; i++)
 	{
-		coinBox[i].FrameX++;
 		if (coinBox[i]._openBox && !coinBox[i]._eventChk)
 		{
+			coinBox[i].FrameX++;
+
 			for (int j = 0; j < RND->getFromIntTo(1, 3); j++)
 			{
 				_ui->addCoinOnMap(PointMake(coinBox[i].rc.bottom - 4, RND->getFromIntTo(coinBox[i].rc.left, coinBox[i].rc.right)));
 			}
+			if (coinBox[i].FrameX >= coinBox[i].Image->getMaxFrameX())
+			{
+				coinBox[i].FrameX = coinBox[i].Image->getMaxFrameX();
+				coinBox[i]._eventChk = true;
+			}
 
-			coinBox[i]._eventChk = true;
 		}
 	}
 	if (itemBox[0]._openBox && !itemBox[0]._eventChk)
@@ -61,7 +66,6 @@ void Map::update()
 		if (itemBox[0].FrameX >= itemBox[0].Image->getMaxFrameX())
 		{
 			itemBox[0].FrameX = itemBox[0].Image->getMaxFrameX();
-			
 			itemBox[0]._eventChk = true;
 		}
 	}

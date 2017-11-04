@@ -54,6 +54,7 @@ void GameScene::update()
 	_em->update();
 	_player->update();
 	_ui->update();
+	_map->update();
 	keyInput();
 
 	//카메라 위치 재조정
