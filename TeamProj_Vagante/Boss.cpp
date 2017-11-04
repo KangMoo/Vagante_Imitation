@@ -103,6 +103,8 @@ void Boss::update()
 	stateHandle();
 	speedAdjust();
 	_rc = RectMakeCenter(_pointx, _pointy, 30, 30);
+	_rcHit = RectMakeCenter(_pointx, _pointy, 50, 50);
+
 	move();
 	if (TIMEMANAGER->getWorldTime() - _timerForFrameUpdate > 0.2)
 	{
@@ -148,6 +150,7 @@ void Boss::draw(POINT camera)
 	//	(_pointy > camera.y && _pointy < camera.y + WINSIZEY))
 	//	_image->frameRender(getMemDC(), _rc.left - camera.x, _rc.top - camera.y);
 	Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
+	Rectangle(getMemDC(), _rcHit.left + camera.x, _rcHit.top + camera.y, _rcHit.right + camera.x, _rcHit.bottom + camera.y);
 	_fireball->render(camera);
 	_image->frameRender(getMemDC(), _pointx - _image->getFrameWidth() / 2 + camera.x, _pointy - _image->getFrameHeight() / 2 + camera.y, _currentFrameX, _currentFrameY);
 
