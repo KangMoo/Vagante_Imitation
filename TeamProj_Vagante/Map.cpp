@@ -49,7 +49,7 @@ void Map::update()
 		{
 			for (int j = 0; j < RND->getFromIntTo(1, 3); j++)
 			{
-				_ui->addCoinOnMap(PointMake(coinBox[i].rc.bottom - 4, RND->getFromIntTo(coinBox[i].rc.left, coinBox[i].rc.right)));
+				_ui->addItemOnMap(NAME_COIN,PointMake(coinBox[i].rc.bottom - 4, RND->getFromIntTo(coinBox[i].rc.left, coinBox[i].rc.right)));
 			}
 
 			coinBox[i]._eventChk = true;
@@ -61,7 +61,7 @@ void Map::update()
 		if (itemBox[0].FrameX >= itemBox[0].Image->getMaxFrameX())
 		{
 			itemBox[0].FrameX = itemBox[0].Image->getMaxFrameX();
-			
+			_ui->addItemOnMap(NAME_SWORD, PointMake(itemBox[0].rc.left,itemBox[0].rc.bottom+4));
 			itemBox[0]._eventChk = true;
 		}
 	}
@@ -72,6 +72,8 @@ void Map::update()
 		if (itemBox[1].FrameX >= itemBox[1].Image->getMaxFrameX())
 		{
 			itemBox[1].FrameX = itemBox[1].Image->getMaxFrameX();
+			_ui->addItemOnMap(NAME_HEAL, PointMake(itemBox[1].rc.left, itemBox[1].rc.bottom + 4));
+
 			itemBox[1]._eventChk = true;
 		}
 	}
@@ -167,14 +169,14 @@ void Map::draw(POINT camera)
 	_mapImg->render(getMemDC(), camera.x, camera.y);
 	for(int i = 0; i < ITEMBOXMAX; i++)
 	{
-		Rectangle(getMemDC(), itemBox[i].rc.left + camera.x, itemBox[i].rc.top + camera.y, itemBox[i].rc.right + camera.x, itemBox[i].rc.bottom + camera.y);
+	//	Rectangle(getMemDC(), itemBox[i].rc.left + camera.x, itemBox[i].rc.top + camera.y, itemBox[i].rc.right + camera.x, itemBox[i].rc.bottom + camera.y);
 		itemBox[i].Image->frameRender(getMemDC(), itemBox[i].X+camera.x, itemBox[i].Y + camera.y, itemBox[i].FrameX, itemBox[i].FrameY);
 	}
 	for (int i = 0; i < COINBOXMAX; i++)
 	{
 		if (!coinBox[i]._eventChk)
 		{
-			Rectangle(getMemDC(), coinBox[i].rc.left + camera.x, coinBox[i].rc.top + camera.y, coinBox[i].rc.right + camera.x, coinBox[i].rc.bottom + camera.y);
+	//		Rectangle(getMemDC(), coinBox[i].rc.left + camera.x, coinBox[i].rc.top + camera.y, coinBox[i].rc.right + camera.x, coinBox[i].rc.bottom + camera.y);
 			coinBox[i].Image->frameRender(getMemDC(), coinBox[i].X + camera.x, coinBox[i].Y + camera.y, coinBox[i].FrameX, coinBox[i].FrameY);
 		}
 	}
