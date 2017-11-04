@@ -231,6 +231,7 @@ void goblin::jump()
 		}
 	}
 	if (_isOnLand)  _state = ENEMYSTATE_IDLE;
+	//
 }
 
 void goblin::attack()
