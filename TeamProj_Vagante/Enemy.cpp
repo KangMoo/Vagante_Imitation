@@ -20,38 +20,43 @@ HRESULT Enemy::init()
 HRESULT Enemy::init(POINT point, float minCog, float maxCog)
 {
 	//자식클래스에서 각자 초기화하기
+	//최소 인식범위, 최대 인식범위
 	_minCog = minCog;
 	_maxCog = maxCog;
-
+	//현재 위치
 	_pointx = point.x;
 	_pointy = point.y;
 
+	//프레임 변경용
 	_frameFPS = 0;
 	_frameTime = 0;
 	_currentFrameX = _currentFrameY = 0;
 
+	//날라갈때용
 	_xspeed = _yspeed = _angle = _gravity = 0;
-
+	//죽을때 뿌릴 돈
 	_money = 0;
-
+	//플레이어 찾았는지 여부
 	_isFindPlayer = false;
 	//_statusEffect[5]
+	//상태이상 클리어
 	for (int i = 0; i < 5; i++)
 	{
 		_statusEffect[i].damage = 0;
 		_statusEffect[i].leftTime = 0;
 		_statusEffect[i].type = STATUSEFFECT_NULL;
 	}
-
+	//스탯 클리어
 	memset(&_statistics, 0, sizeof(tagStat));
-
+	//현재 상태 설정(idle)
 	_state = ENEMYSTATE_IDLE;
-
+	//이미지 그릴떄 쓸 rect, 공격렉트, 마지막에 플레이어가 있던 좌표
 	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 	_attackRect = RectMakeCenter(_pointx, _pointy, 1, 1);
 	_lastPlayerPoint = _player->getPoint();
+	//죽었는지 여부 확인 및 투명처리용
 	_dead = false;
-	_deadAlpha = 255;
+	_deadAlpha = 0;
 
 	return S_OK;
 }
@@ -68,21 +73,27 @@ void Enemy::update()
 	statusEffect();
 	//낙하 처리
 	falling();
+	//죽었으면 투명도 증가시키기
 	if (_state == ENEMYSTATE_DEAD)
 	{
-		_deadAlpha -= 5;
-		if (_deadAlpha < 0)
+		_deadAlpha += 5;
+		if (_deadAlpha >= 255)
 		{
 			_dead = true;
 		}
 	}
-
+	//죽지 않았을때만 적 확인등을 한다
 	if (_isFindPlayer && _state != ENEMYSTATE_DEAD)
 	{
 		//각자 움직이는 메커니즘이 다르므로 알아서 처리
+		//일단 적 발견은 계속 true로
 		_isFindPlayer = true;
+		//이동
 		move();
+		//점프
 		jump();
+
+		//공격
 		attack();
 
 		//만약 둘 사이의 거리가 한계 인식범위 이상으로 벌어지면 쫓는걸 포기한다
@@ -107,6 +118,7 @@ void Enemy::update()
 			}
 			else
 			{
+				//인식범위 너무 길기도 하고 몹마다 달라서 virtual 함수로 빼놨습니다(제일 아래쪽)
 				playerCog();
 			}
 		}
@@ -188,14 +200,18 @@ void Enemy::rectResize()
 
 void Enemy::playerCog()
 {
-
+	//그냥 적과 플레이어 사이에 선 하나 찍 그어놓고 선이 벽을 지나치는지 체크하는 정도
+	//플레이어가 움직이지 않을때는 속도를 조금이라도 높이고자 바뀌었을때만 체크
 	if (_lastPlayerPoint.x != _player->getPoint().x && _lastPlayerPoint.y != _player->getPoint().y)
 	{
-
+		//움직였다면 마지막 위치를 갱신해줍니다
 		_lastPlayerPoint = _player->getPoint();
+		//만약 벽이 있었으면 이걸 ++
 		int count = 0;
+		//몬스터와 플레이어 사이의 타일 x, y좌표를 위함
 		float x = 0;
 		float y = 0;
+		//플레이어와 적 사이의 거리, 각도 체크용
 		float dist = getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
 		float angle = getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y);
 		//적과 나 사이에 벽이 있는지 판별한다
@@ -211,6 +227,7 @@ void Enemy::playerCog()
 			x = ox;
 			y = oy;
 
+			//해당 타일이 벽이라면 인식을 못했다고 처리해주고 연산 속도를 위해 바로 빠져나옵니다
 			if (static_cast<int>(_map->getMapInfo(y, x).type == MAPTILE_WALL))
 			{
 				count++;

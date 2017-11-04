@@ -31,7 +31,7 @@ HRESULT bat::init(POINT point, float minCog, float maxCog)
 
 	//박쥐 스탯 임의로 때려박기
 	_statistics.hp = 20;
-	_statistics.str = 2;
+	_statistics.str = 5;
 	_statistics.dex = 2;
 	_statistics.vit = 2;
 	_statistics.inl = 2;
@@ -51,13 +51,13 @@ HRESULT bat::init(POINT point, float minCog, float maxCog)
 	_dead = false;
 	_deadAlpha = 255;
 	_rc = RectMakeCenter(_pointx, _pointy, 10, 10);
-	_isdead = false;			//사망여부
 	_isPlayerOnTarget = true;	//플레이어 탐지여부
 	_isOnTop = false;			//천장에 닿았는지 여부
 	_alpha = 0;
 	_image = IMAGEMANAGER->findImage("batflying");
 	_currentFrameX = 0;
 	_currentFrameY = 0;
+	_timerForFrame = TIMEMANAGER->getWorldTime();
 	return S_OK;
 }
 
@@ -69,10 +69,15 @@ void bat::update() {
 	actByState();
 	move();
 	mapCollisionCheck();
+
 	hitPlayer();
 	deadcheck();
 	imgHandleByState();
-	if (KEYMANAGER->isOnceKeyDown('Q')) getDamaged(1, PI, 2);
+	if (TIMEMANAGER->getWorldTime() - _timerForFrame > 0.1)
+	{
+		_timerForFrame = TIMEMANAGER->getWorldTime();
+		frameUpdate();
+	}
 
 	if (_dead) _alpha += 1;
 	_rc = RectMakeCenter(_pointx, _pointy, 10, 10);
@@ -83,19 +88,19 @@ void bat::move()
 	_pointx += _xspeed;
 	_pointy += _yspeed;
 
-	if (_xspeed > 0) _xspeed -= 0.5;
-	else if (_xspeed < 0) _xspeed += 0.5;
-	if (_yspeed > 0) _yspeed -= 0.5;
-	else if (_yspeed < 0) _yspeed += 0.5;
+	if (_xspeed > 0) _xspeed -= 0.1;
+	else if (_xspeed < 0) _xspeed += 0.1;
+	if (_yspeed > 0) _yspeed -= 0.1;
+	else if (_yspeed < 0) _yspeed += 0.1;
 
 	if (abs(_xspeed) <= 0.5) _xspeed = 0;
 	if (abs(_yspeed) <= 0.5) _yspeed = 0;
 
 	//속도 한계치
-	if (_xspeed > 5) _xspeed = 5;
-	else if (_xspeed < -5) _xspeed = -5;
-	if (_yspeed > 5) _yspeed = 5;
-	else if (_yspeed < -5) _yspeed = -5;
+	if (_xspeed > 2) _xspeed = 2;
+	else if (_xspeed < -2) _xspeed = -2;
+	if (_yspeed > 2) _yspeed = 2;
+	else if (_yspeed < -2) _yspeed = -2;
 	
 }
 
@@ -113,12 +118,14 @@ void bat::actByState()
 		case BATSTATE_FLYING:
 			if (_isPlayerOnTarget)
 			{
-				_xspeed = cosf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y))*_statistics.spd;
-				_yspeed = -sinf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y))*_statistics.spd;
+				if(abs(_xspeed) < 1)
+				_xspeed += cosf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y))*_statistics.spd;
+				if(abs(_yspeed) < 1)
+				_yspeed += -sinf(getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y))*_statistics.spd;
 			}
 			else
 			{
-				_yspeed = -_statistics.spd;
+				_yspeed += -_statistics.spd;
 			}
 			break;
 		case BATSTATE_HIT:
@@ -137,7 +144,9 @@ void bat::hitPlayer()
 	RECT temp;
 	if (IntersectRect(&temp, &_player->getRect(), &_rc))
 	{
-		_player->getDamaged(5, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), 3);
+		_player->getDamaged(5, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), _statistics.str);
+		_xspeed = cosf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 10;
+		_yspeed = -sinf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 10;
 	}
 }
 void bat::mapCollisionCheck()
@@ -201,7 +210,7 @@ void bat::render(POINT camera)
 
 void bat::draw(POINT camera)
 {
-	Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
+	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
 	_image->alphaFrameRender(getMemDC(),
 		_pointx - _image->getFrameWidth() / 2 + camera.x,
 		_pointy - _image->getFrameHeight() / 2 + camera.y,
