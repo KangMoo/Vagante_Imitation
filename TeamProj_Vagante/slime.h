@@ -1,5 +1,6 @@
 #pragma once
 #include "Enemy.h"
+#include "UI.h"
 enum SLIMESTATE {
 	SLIMESTATE_IDLE,
 	SLIMESTATE_MOVING,
@@ -34,7 +35,7 @@ public:
 	void mapCollisionCheck();	//맵상의 벽, 바닥 충돌여부 판단 후 처리
 	void deadcheck();
 	void imgHandleByState();
-	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower;}
+	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE); }
 	void frameUpdate();					// 프레임 업데이트
 	
 	slime();

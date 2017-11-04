@@ -206,7 +206,7 @@ void slime::hitPlayer()
 	if (IntersectRect(&temp, &_player->getRect(), &_rc))
 	{
 		//플레이어 데미지 주기
-		_player->getDamaged(5, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), _statistics.str);
+		_player->getDamaged(5, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), 3);
 		//플레이어 반대방향으로 튕겨나기
 		_xspeed = cosf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 2;
 		_yspeed = -sinf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 2;
