@@ -6,14 +6,14 @@ class manEater : public Enemy
 private:
 
 	image* _attacki, *_attackAfteri, *_deadi;
+	
+	RECT _findRectRange;
 
 	int  _count;
 
 	bool _attack;
 
-	float _findRange,_findRangeMax;
-
-	int _alpha;
+	float _findRange;
 
 public:
 	HRESULT init(POINT point, float minCog, float maxCog);

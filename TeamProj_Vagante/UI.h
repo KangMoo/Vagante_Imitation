@@ -34,6 +34,7 @@ enum ITEMNAME
 	NAME_SWORD,
 	NAME_HEAL,
 	NAME_COIN,
+	NAME_HAND,
 	NAME_END
 };
 
@@ -110,6 +111,7 @@ private: // 맵에 아이템 뿌리는용
 	viItem _viItem;
 
 private:
+	tagItem _hand;
 	tagDelay _delay;
 	tagSave _save;
 	RECT _menuRect;
@@ -140,8 +142,6 @@ private:
 	Player* _player;
 	EnemyManager* _em;
 	Map* _map;
-	tagItemInfo _item[5];
-	tagCoinInfo _coin[100];
 
 public:
 	HRESULT init();
@@ -173,7 +173,7 @@ public:
 	//맵에 아이템 출현~
 	void addItemOnMap(ITEMNAME name, POINT point);
 	void deleteItemOnMap(int arrNum);
-	
+
 	void addCoinOnMap(POINT point);
 
 	//설정자 접근자
@@ -183,6 +183,11 @@ public:
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
+
+	vItem getvItem() { return _vItem; }
+	viItem getvItemIter() { return _viItem; }
+	vBag getvBag() { return _vBag; }
+	viBag getvBagIter() { return _viBag; }
 
 	UI();
 	~UI();

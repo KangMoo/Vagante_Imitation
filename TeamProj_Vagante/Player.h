@@ -101,6 +101,9 @@ private:
 	int _frameYOffset;
 
 
+	bool _invincible;
+	float _invincibleTime;
+
 public:
 	HRESULT init(POINT point);
 	void release();
@@ -125,7 +128,7 @@ public:
 	void attackingNow();	// 공격중
 	void holdLadder();		// 사다리 매달리기
 	void canDown();			// 바닥 내려가기
-
+	void mapcollision();
 	void attackCollision();
 	void checkStatusEffect(); //상태이상 확인하기
 
@@ -158,10 +161,9 @@ public:
 	inline void setXSpeed(float xspeed) { _player.xspeed = xspeed; }
 	inline float getYSpeed() { return _player.yspeed; }
 	inline void setYSpeed(float yspeed) { _player.yspeed = yspeed; }
-
+	inline tagStatusEffect* getStatusEffect() { return &_player.statusEffect[0]; }
 	inline void setEquipWeapon(tagItemInfo weapon) { _player.equipWeapon = weapon; }
 
-	
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
