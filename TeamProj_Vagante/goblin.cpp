@@ -16,7 +16,7 @@ HRESULT goblin::init(POINT point, float minCog, float maxCog)
 	_pointx = point.x;
 	_pointy = point.y;
 
-	_money = RND->getFromIntTo(0,5);
+	_money = RND->getFromIntTo(0, 5);
 	_isFindPlayer = false;
 	_attack = false;
 
@@ -58,7 +58,7 @@ HRESULT goblin::init(POINT point, float minCog, float maxCog)
 	_findRangeMax = maxCog;
 
 	//_findPlayerRect = RectMakeCenter(_pointx + 16, _pointy + 16, (int)_findRange, (int)_findRange);
-	
+
 	//_findRectRange = RectMakeCenter(_pointx + 16, _pointy + 16, _findRange, _findRange); //맨이터에서 가져온것이니 삭제해도 무방합니다.
 
 	_statistics.hp = 16;
@@ -114,17 +114,17 @@ void goblin::update()
 	attRectClear();
 
 	frameUpdate();
-	
+
 	if (KEYMANAGER->isOnceKeyDown('N'))
 	{
 		getDamaged(1);
 		_image = hitImg;
 	}
-	
+
 	if (PtInRect(&_findPlayerRect, _player->getPoint()) && _statistics.hp >= 0);
 	{
 		move();
-		jump();
+		//jump();
 		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 30) attack();
 	}
 
@@ -156,15 +156,12 @@ void goblin::render(POINT camera)
 
 void goblin::draw(POINT camera)
 {
-	Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
-	Rectangle(getMemDC(), _attackRect.left + camera.x, _attackRect.top + camera.y, _attackRect.right + camera.x, _attackRect.bottom + camera.y);
-
+	Rectangle(getMemDC(), _findPlayerRect.left, _findPlayerRect.top, _findPlayerRect.right, _findPlayerRect.bottom);
 	_image->frameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _currentFrameX, _currentFrameY);
-	if (right == false && _state == ENEMYSTATE_ATTACKING)
-	{
-		_image->frameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _currentFrameX, 1);
-	}
-
+	//if (right == false && _state == ENEMYSTATE_ATTACKING)
+	//{
+	//	_image->frameRender(getMemDC(), _rc.left - 32 + camera.x, _rc.top + camera.y, _currentFrameX, 1);
+	//}
 }
 
 void goblin::move()
@@ -177,7 +174,7 @@ void goblin::move()
 	else if (_xspeed < 0) _xspeed += 0.1;
 	if (_yspeed > 0) _yspeed -= 0.1;
 	else if (_yspeed < 0) _yspeed += 0.1;
-	
+
 	//속도 한계치
 	if (_xspeed > 2) _xspeed = 2;
 	else if (_xspeed < -2) _xspeed = -2;
@@ -205,11 +202,11 @@ void goblin::move()
 
 }
 
-void goblin::jump()	//플레이어 발견한 상태여야 하고 플레이어가 자신보다 위에 있어야 함				
+void goblin::jump()
 {
 	_image = jumpImg;
 
-	if (TIMEMANAGER->getWorldTime() - _jumptimer > 4)
+	if (TIMEMANAGER->getWorldTime() - _jumptimer > 1)
 	{
 		_yspeed -= 10;
 		_state = ENEMYSTATE_JUMPING;
@@ -250,13 +247,13 @@ void goblin::attack()
 		if (_right == true && _player->getPoint().x <= _pointx + 32)
 		{
 			//_image = attackImgRight;
-			_attackRect = RectMake(_pointx + 16, _pointy - 8, 32, 16);
+			_attackRect = RectMake(_pointx + 32, _pointy + 8, 32, 16);
 		}
-		
+
 		if (_right == false && _player->getPoint().x >= _pointx - 32)
 		{
 			//_image = attackImgLeft;
-			_attackRect = RectMake(_pointx - 16, _pointy - 8, 32, 16);
+			_attackRect = RectMake(_pointx, _pointy + 8, 32, 16);
 		}
 	}
 
@@ -291,9 +288,9 @@ void goblin::frameUpdate()
 		_currentFrameX = 0;
 	}
 
-	if (_right == true && _state != ENEMYSTATE_ATTACKING) _currentFrameY =  0;
+	if (_right == true && _state != ENEMYSTATE_ATTACKING) _currentFrameY = 0;
 	else if (_right == false && _state != ENEMYSTATE_ATTACKING) _currentFrameY = 1;
-}	
+}
 
 void goblin::playerCog()
 {
@@ -317,23 +314,36 @@ void goblin::mapCollisionCheck()
 	if ((_midL.type == MAPTILE_WALL || _midL.type == MAPTILE_WALL2) && IntersectRect(&temp, &_midL.rc, &_rc))
 	{
 		_pointx += temp.right - temp.left;
+		jump();
 	}
 	if ((_midR.type == MAPTILE_WALL || _midR.type == MAPTILE_WALL2) && IntersectRect(&temp, &_midR.rc, &_rc))
 	{
 		_pointx -= temp.right - temp.left;
+		jump();
 	}
 	if ((_upM.type == MAPTILE_WALL || _upM.type == MAPTILE_WALL2) && IntersectRect(&temp, &_upM.rc, &_rc))
 	{
 		_pointy += temp.bottom - temp.top;
 	}
 
-	if ((_botM.type == MAPTILE_WALL || _botM.type == MAPTILE_WALL2 || _botM.type == MAPTILE_GROUND_CAN_GO_DOWN_1) && IntersectRect(&temp, &_botM.rc, &_rc))
+	if (_player->getPoint().y >= _pointy)
 	{
-		_pointy -= temp.bottom - temp.top;
-		_yspeed = 0;
-		_isOnLand = true;
+		if ((_botM.type == MAPTILE_WALL || _botM.type == MAPTILE_WALL2) && IntersectRect(&temp, &_botM.rc, &_rc))
+		{
+			_pointy -= temp.bottom - temp.top;
+			_yspeed = 0;
+			_isOnLand = true;
+		}
 	}
-
+	else
+	{
+		if ((_botM.type == MAPTILE_WALL || _botM.type == MAPTILE_WALL2 || _botM.type == MAPTILE_GROUND_CAN_GO_DOWN_1) && IntersectRect(&temp, &_botM.rc, &_rc))
+		{
+			_pointy -= temp.bottom - temp.top;
+			_yspeed = 0;
+			_isOnLand = true;
+		}
+	}
 	_rc = RectMakeCenter(_pointx, _pointy, TILESIZE, TILESIZE);
 
 }
