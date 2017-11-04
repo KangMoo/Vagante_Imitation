@@ -73,6 +73,7 @@ void goblin::move()
 			_pointx += _statistics.spd;
 		}
 	}
+	if (_isOnLand)  _state = ENEMYSTATE_IDLE;
 }
 
 void goblin::jump()	//플레이어 발견한 상태여야 하고 플레이어가 자신보다 위에 있어야 함				

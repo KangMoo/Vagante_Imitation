@@ -6,7 +6,7 @@ class goblin : public Enemy
 	bool _right; 
 
 	int _count;
-
+	bool _isOnLand;
 	float _findRange, _findRangeMax;
 
 public:
