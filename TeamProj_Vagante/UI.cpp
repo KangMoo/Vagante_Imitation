@@ -59,6 +59,8 @@ HRESULT UI::init()
 	_hand.maxDmg = 1;
 	_hand.name = NAME_HAND;
 	_hand.type = TYPE_WEAPON;
+	_player->setEquipWeapon(_hand);
+
 
 	//================================================================
 
@@ -1579,7 +1581,11 @@ void UI::keyControl()
 				{
 					if (_viBag->type == TYPE_WEAPON)
 					{
-						if (_viBag->equip) _viBag->equip = false;
+						if (_viBag->equip)
+						{
+							_viBag->equip = false;
+							_player->setEquipWeapon(_hand);
+						}
 						else
 						{
 							for (int i = 0; i < _vBag.size(); i++)
@@ -1587,6 +1593,12 @@ void UI::keyControl()
 								if (_vBag[i].type == TYPE_WEAPON) _vBag[i].equip = false;
 							}
 							_viBag->equip = true;
+							tagItem item;
+							SecureZeroMemory(&item, sizeof(item));
+							item.img0 = _viBag->img0;
+							item.minDmg = _viBag->minDmg;
+							item.maxDmg = _viBag->maxDmg;
+							_player->setEquipWeapon(item);
 						}
 						break;
 					}
