@@ -1,5 +1,8 @@
 #pragma once
 #include "Enemy.h"
+#include "UI.h"
+
+
 enum BATSTATE {
 	BATSTATE_SLEEP,
 	BATSTATE_FLYING,
@@ -13,6 +16,8 @@ private:
 	BATSTATE _batstate;
 	int _hittimer;
 	float _timerForFrame;
+
+	RECT _rcHit; // 충돌범위 따로 둠 by YJW
 public:
 	//생성 위치, 최소인식범위, 최대인식범위
 	HRESULT init(POINT point, float minCog, float maxCog);
@@ -23,7 +28,12 @@ public:
 	void mapCollisionCheck();	//맵상의 벽, 바닥 충돌여부 판단 후 처리
 	void deadcheck();
 	void imgHandleByState();
-	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _batstate = BATSTATE_HIT; _hittimer = TIMEMANAGER->getWorldTime(); }
+	void getDamaged(int damage, float angle, float knockbackpower) { 
+		_statistics.hp -= damage; 
+		_xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; 
+		_batstate = BATSTATE_HIT; _hittimer = TIMEMANAGER->getWorldTime(); 
+		_ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE);
+	}
 	void frameUpdate();					// 프레임 업데이트
 	void render(POINT camera);
 	void draw(POINT camera);

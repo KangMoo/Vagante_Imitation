@@ -50,7 +50,7 @@ void Map::update()
 
 			for (int j = 0; j < RND->getFromIntTo(1, 3); j++)
 			{
-				_ui->addCoinOnMap(PointMake(coinBox[i].rc.bottom - 4, RND->getFromIntTo(coinBox[i].rc.left, coinBox[i].rc.right)));
+				_ui->addItemOnMap(NAME_COIN, PointMake(coinBox[i].rc.bottom - 4, RND->getFromIntTo(coinBox[i].rc.left, coinBox[i].rc.right)));
 			}
 			if (coinBox[i].FrameX >= coinBox[i].Image->getMaxFrameX())
 			{
@@ -176,11 +176,10 @@ void Map::draw(POINT camera)
 	}
 	for (int i = 0; i < COINBOXMAX; i++)
 	{
-		if (!coinBox[i]._eventChk)
-		{
+		
 			Rectangle(getMemDC(), coinBox[i].rc.left + camera.x, coinBox[i].rc.top + camera.y, coinBox[i].rc.right + camera.x, coinBox[i].rc.bottom + camera.y);
 			coinBox[i].Image->frameRender(getMemDC(), coinBox[i].X + camera.x, coinBox[i].Y + camera.y, coinBox[i].FrameX, coinBox[i].FrameY);
-		}
+		
 	}
 	miniMap.Image->render(getMemDC(), miniMap.X, miniMap.Y);
 	Rectangle(getMemDC(), miniMap.playerRc.left+_player->getPoint().x/8, miniMap.playerRc.top + _player->getPoint().y / 8, miniMap.playerRc.right+ _player->getPoint().x / 8, miniMap.playerRc.bottom + _player->getPoint().y / 8);
