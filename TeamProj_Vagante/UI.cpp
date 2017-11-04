@@ -64,20 +64,20 @@ HRESULT UI::init()
 
 	//================================================================
 
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//setItemToBag(NAME_HEAL);
-	//setItemToBag(NAME_SWORD);
-	//
-	//addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36 ), TILESIZE*(4)));
-	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
-	//addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(36 - 5), TILESIZE*(4 + 5)));
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_SWORD);
+	
+	addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36 ), TILESIZE*(4)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(36 - 5), TILESIZE*(4 + 5)));
 	return S_OK;
 }
 void UI::release()

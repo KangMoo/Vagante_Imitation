@@ -124,8 +124,17 @@ void Player::draw(POINT camera)
 	//_player.image->frameRender(getMemDC(), WINSIZEX / 2, WINSIZEY / 2, _player.image->getFrameX(), _player.image->getFrameY());
 
 	if (_player.state == PLAYERSTATE_ATTACKING || _player.state == PLAYERSTATE_ATTACKING_JUMP)
+	{
 		Rectangle(getMemDC(), _equipWeaponRect.left + camera.x, _equipWeaponRect.top + camera.y, _equipWeaponRect.right + camera.x, _equipWeaponRect.bottom + camera.y);
-		
+
+		if (_equipWeapon.name != NAME_HAND)
+			if (!_player.lookingRight)
+				_equipWeapon.img0->frameRender(getMemDC(), _equipWeaponRect.right + camera.x, _equipWeaponRect.top + camera.y, 1, 0);
+			else
+				_equipWeapon.img0->frameRender(getMemDC(), _equipWeaponRect.left + camera.x, _equipWeaponRect.top + camera.y, 0, 0);
+
+
+	}
 
 
 
@@ -135,14 +144,17 @@ void Player::draw(POINT camera)
 	char str2[256];
 	char str3[256];
 	char str4[256];
+	char str5[256];
 	sprintf(str1, "%d %d %d", upL.type, upM.type, upR.type);
 	sprintf(str2, "%d %d %d", midL.type, midM.type, midR.type);
 	sprintf(str3, "%d %d %d", botL.type, botM.type, botR.type);
-	sprintf(str4, "%ld", _map->getCoinBox(1)->rc.top);
+	sprintf(str4, "%ld %ld", _map->getCoinBox(1)._openBox, _map->getCoinBox(1)._eventChk);
+	sprintf(str5, "%ld %ld", _player.rc.top, _player.rc.left);
 	TextOut(getMemDC(), 120, 110, str1, strlen(str1));
 	TextOut(getMemDC(), 120, 130, str2, strlen(str2));
 	TextOut(getMemDC(), 120, 150, str3, strlen(str3));
 	TextOut(getMemDC(), 120, 170, str4, strlen(str4));
+	TextOut(getMemDC(), 120, 190, str5, strlen(str5));
 
 }
 
@@ -802,9 +814,15 @@ void Player::attack()
 		float _offsetX, _offsetY;
 
 		//수치는 임시 나중에 이미지 사이즈로 변경
-		_offsetY = 10;
-		_offsetX = (_player.lookingRight) ? 30 : -30;
-		
+		if (_equipWeapon.name == NAME_HAND)
+		{
+			_offsetY = 5;
+			_offsetX = (_player.lookingRight) ? 5 : -5;
+		}
+		else {
+			_offsetY = _equipWeapon.img0->getHeight();
+			_offsetX = (_player.lookingRight) ? _equipWeapon.img0->getFrameWidth() : -_equipWeapon.img0->getFrameWidth();
+		}
 		_equipWeaponRect.set(_player.pointx, _player.pointy, _player.pointx + _offsetX, _player.pointy + _offsetY);
 		
 		_player.state = PLAYERSTATE_ATTACKING;
@@ -818,9 +836,15 @@ void Player::attackjump()
 		float _offsetX, _offsetY;
 
 		//수치는 임시
-		_offsetY = 10;
-		_offsetX = (_player.lookingRight) ? 30 : -30;
-
+		if (_equipWeapon.name == NAME_HAND)
+		{
+			_offsetY = 5;
+			_offsetX = (_player.lookingRight) ? 5 : -5;
+		}
+		else {
+			_offsetY = _equipWeapon.img0->getHeight();
+			_offsetX = (_player.lookingRight) ? _equipWeapon.img0->getFrameWidth() : -_equipWeapon.img0->getFrameWidth();
+		}
 		_equipWeaponRect.set(_player.pointx, _player.pointy, _player.pointx + _offsetX, _player.pointy + _offsetY);
 		
 		_player.state = PLAYERSTATE_ATTACKING_JUMP; 
@@ -1284,15 +1308,15 @@ void Player::checkStatusEffect() {
 
 void Player::checkItemBox() {
 	for (int i = 0; i < ITEMBOXMAX; i++) {
-		tagObj* box = _map->getitemBox(i);
-		if (isCollision(_player.rc, box->rc))
+		tagObj box = _map->getitemBox(i);
+		if (isCollision(_player.rc, box.rc))
 		{
 			_map->setItemBox(i, true);
 		}
 	}
 	for (int i = 0; i < COINBOXMAX; i++) {
-		tagObj* box = _map->getCoinBox(i);
-		if (isCollision(_player.rc, box->rc))
+		tagObj box = _map->getCoinBox(i);
+		if (isCollision(_player.rc, box.rc))
 		{
 			_map->setCoinBox(i, true);
 		}
