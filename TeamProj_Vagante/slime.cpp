@@ -179,11 +179,6 @@ void slime::draw(POINT camera)
 		_pointx - _image->getFrameWidth() / 2 + camera.x,
 		_pointy - _image->getFrameHeight() / 2 + camera.y,
 		_currentFrameX, _currentFrameY, 0);
-
-	Rectangle(getMemDC(), 40, 40, 100, 100);
-	char str[64];
-	wsprintf(str, "%d", int(_yspeed));
-	TextOut(getMemDC(), 50, 50, str, strlen(str));
 }
 void slime::move()
 {
@@ -207,9 +202,12 @@ void slime::move()
 void slime::hitPlayer()
 {
 	RECT temp;
+	//충돌시
 	if (IntersectRect(&temp, &_player->getRect(), &_rc))
 	{
+		//플레이어 데미지 주기
 		_player->getDamaged(5, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), _statistics.str);
+		//플레이어 반대방향으로 튕겨나기
 		_xspeed = cosf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 2;
 		_yspeed = -sinf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 2;
 	}
@@ -227,6 +225,7 @@ void slime::mapCollisionCheck()
 	botR = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE + 1);
 
 
+	_rc = RectMakeCenter(_pointx, _pointy, 25, 25);
 	RECT temp;
 	if ((midL.type == MAPTILE_WALL || midL.type == MAPTILE_WALL2) && IntersectRect(&temp, &midL.rc, &_rc))
 	{
@@ -247,152 +246,7 @@ void slime::mapCollisionCheck()
 		_isOnLand = true;
 	}
 	_rc = RectMakeCenter(_pointx, _pointy, 25, 25);
-	/*
-	RECT temp;
-	if ((upL.type == MAPTILE_WALL || upL.type == MAPTILE_WALL2) && IntersectRect(&temp, &upL.rc, &_rc))
-	{
-		_pointx += temp.right - temp.left;
-	}
-	else if ((upM.type == MAPTILE_WALL || upM.type == MAPTILE_WALL2) && IntersectRect(&temp, &upM.rc, &_rc))
-	{
-	}
-	else if ((upR.type == MAPTILE_WALL || upR.type == MAPTILE_WALL2) && IntersectRect(&temp, &upR.rc, &_rc))
-	{
-		_pointx -= temp.right - temp.left;
-	}
-	else if ((midL.type == MAPTILE_WALL || midL.type == MAPTILE_WALL2) && IntersectRect(&temp, &midL.rc, &_rc))
-	{
-		_pointx += temp.right - temp.left;
-	}
-	else if ((midM.type == MAPTILE_WALL || midM.type == MAPTILE_WALL2) && IntersectRect(&temp, &midM.rc, &_rc))
-	{
-
-	}
-	else 	if ((midR.type == MAPTILE_WALL || midR.type == MAPTILE_WALL2) && IntersectRect(&temp, &midR.rc, &_rc))
-	{
-		_pointx -= temp.right - temp.left;
-	}
-	else if ((botL.type == MAPTILE_WALL || botL.type == MAPTILE_WALL2) && IntersectRect(&temp, &botL.rc, &_rc))
-	{
-		_pointx += temp.right - temp.left;
-	}
-	else if ((botM.type == MAPTILE_WALL || botM.type == MAPTILE_WALL2) && IntersectRect(&temp, &botM.rc, &_rc))
-	{
-	}
-	else if ((botR.type == MAPTILE_WALL || botR.type == MAPTILE_WALL2) && IntersectRect(&temp, &botR.rc, &_rc))
-	{
-		_pointx -= temp.right - temp.left;
-	}
-	///
-	if ((upL.type == MAPTILE_WALL || upL.type == MAPTILE_WALL2) && IntersectRect(&temp, &upL.rc, &_rc))
-	{
-		_pointy += temp.bottom - temp.top;
-	}
-	else if ((upM.type == MAPTILE_WALL || upM.type == MAPTILE_WALL2) && IntersectRect(&temp, &upM.rc, &_rc))
-	{
-		_pointy += temp.bottom - temp.top;
-	}
-	else if ((upR.type == MAPTILE_WALL || upR.type == MAPTILE_WALL2) && IntersectRect(&temp, &upR.rc, &_rc))
-	{
-		_pointy += temp.bottom - temp.top;
-	}
-	else if ((midL.type == MAPTILE_WALL || midL.type == MAPTILE_WALL2) && IntersectRect(&temp, &midL.rc, &_rc))
-	{
-
-	}
-	else if ((midM.type == MAPTILE_WALL || midM.type == MAPTILE_WALL2) && IntersectRect(&temp, &midM.rc, &_rc))
-	{
-
-	}
-	else if ((midR.type == MAPTILE_WALL || midR.type == MAPTILE_WALL2) && IntersectRect(&temp, &midR.rc, &_rc))
-	{
-
-	}
-	else if ((botL.type == MAPTILE_WALL || botL.type == MAPTILE_WALL2) && IntersectRect(&temp, &botL.rc, &_rc))
-	{
-		_pointy -= temp.bottom - temp.top;
-		_isOnLand = true;
-	}
-	else if ((botM.type == MAPTILE_WALL || botM.type == MAPTILE_WALL2) && IntersectRect(&temp, &botM.rc, &_rc))
-	{
-		_pointy -= temp.bottom - temp.top;
-		_isOnLand = true;
-	}
-	else if ((botR.type == MAPTILE_WALL || botR.type == MAPTILE_WALL2) && IntersectRect(&temp, &botR.rc, &_rc))
-	{
-		_pointy -= temp.bottom - temp.top;
-		_isOnLand = true;
-	}
-
-	if (_xspeed != 0)
-	{
-		if ((midL.type == MAPTILE_WALL || midL.type == MAPTILE_WALL2) && isCollisionReaction(midL.rc, _rc))
-		{
-			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
-			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
-			if (_slimeState == SLIMESTATE_JUMPING || _slimeState == SLIMESTATE_FALLING)
-			{
-				_xspeed = 2;
-			}
-			else
-			{
-				_xspeed = 1;
-			}
-			_yspeed = 0;
-		}
-		if ((midM.type == MAPTILE_WALL || midM.type == MAPTILE_WALL2) && isCollisionReaction(midM.rc, _rc))
-		{
-			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
-			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
-			_yspeed = 0;
-		}
-		if ((midR.type == MAPTILE_WALL || midR.type == MAPTILE_WALL2) && isCollisionReaction(midR.rc, _rc))
-		{
-			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
-			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
-			if (_slimeState == SLIMESTATE_JUMPING || _slimeState == SLIMESTATE_FALLING)
-			{
-				_xspeed = -2;
-			}
-			else
-			{
-				_xspeed = -1;
-			}
-			_yspeed = 0;
-		}
-	}
-	*/
-	//////////////////
-	/*
-	if (_yspeed != 0)
-	{
-		_isOnLand = false;
-
-		if ((upM.type == MAPTILE_WALL || upM.type == MAPTILE_WALL2) && isCollisionReaction(upM.rc, _rc))
-		{
-			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
-			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
-			_yspeed = 0;
-		}
-
-		if ((botM.type == MAPTILE_WALL || botM.type == MAPTILE_WALL2) && isCollisionReaction(botM.rc, _rc))
-		{
-			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
-			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
-			_yspeed = 0;
-			_isOnLand = true;
-		}
-	}
-	if (_xspeed != 0)
-	{
-		if ((midM.type == MAPTILE_WALL || midM.type == MAPTILE_WALL2) && isCollisionReaction(midM.rc, _rc))
-		{
-			_pointy = _rc.top + (_rc.bottom - _rc.top) / 2;
-			_pointx = _rc.left + (_rc.right - _rc.left) / 2;
-			_yspeed = 0;
-		}
-	}
-	*/
+	
 }
 void slime::deadcheck()
 {
