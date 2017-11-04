@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "worm.h"
 #include "Player.h"
+#include "UI.h"
 
 worm::worm()
 {
@@ -227,9 +228,14 @@ void worm::move()
 	{
 		//worm은 플레이어를 발견 하든 안하든 움직여야하므로 계속 moving으로 바꿔준다
 		_state = ENEMYSTATE_MOVING;
+		
+		//바닥에 파묻혀있으면 꺼내줘야한다
+		isDig();
+		
 		//_whereIsWorm은 벽이 어디 붙어있는지 판단하는 변수입니다
 		//0은 바닥(이미지 wormMoveUp), 1은 왼쪽벽(이미지 wormMoveRight), 2는 윗쪽벽(이미지 wormMoveDown), 3은 오른쪽벽(이미지 wormMoveLeft)
 		isThereWall();
+		
 		switch (_whereIsWorm)
 		{
 		case 0:
@@ -684,6 +690,68 @@ void worm::isThereWall()
 					_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).rc.top - IMAGEMANAGER->findImage("wormMoveUp")->getFrameHeight() / 2;
 				}
 			}
+		}
+		break;
+	}
+}
+
+void worm::isDig()
+{
+	//상황에 따라 다르다
+	switch (_whereIsWorm)
+	{
+	case 0:
+		//바닥에 붙어있을때, 공중에 떠있는지와 바닥에 붙어있는지를 확인한다
+		//먼저 바닥인지 확인(_moveUp)
+		if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
+		{
+			//현재 있는 타일이 벽인 경우 바닥에 붙어있는 경우를 책정하므로 현재있는 타일 위로 올려준다
+			//x는 변동없이 y만 올려주면 됨
+			_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).rc.top - _moveUp->getFrameHeight() / 2;
+		}
+		else if (_map->getMapInfo((_pointy + _moveUp->getFrameHeight()/2 + 1)/TILESIZE, (_pointx)/TILESIZE).type != MAPTILE_WALL)
+		{
+			//만약 현재 타일좌표와 자기 아래 타일좌표가 같다면 공중에 떠있으므로 위치를 내려준다
+			_pointy += 5;
+		}
+		break;
+	case 1:
+		//바닥에 붙어있을때부터 체크, 이건 왼쪽벽에 붙어있을때다(_moveRight)
+		if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
+		{
+			//x만 바꿔주면 됨
+			_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).rc.right + _moveRight->getFrameWidth() / 2;
+		}
+		else if (_map->getMapInfo((_pointy)/TILESIZE, (_pointx - _moveRight->getFrameWidth()/2 - 1)/TILESIZE).type != MAPTILE_WALL)
+		{
+			//역시 x만 바꿔주면 됨
+			_pointx -= 5;
+		}
+		break;
+	case 2:
+		//천장(_moveDown)
+		if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
+		{
+			//y만 변동, 바닥에 붙어있을때와는 반대다
+			_pointy = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).rc.bottom + _moveDown->getFrameHeight() / 2;
+		}
+		else if (_map->getMapInfo((_pointy - _moveDown->getFrameHeight()/2 - 1)/TILESIZE, (_pointx)/TILESIZE).type != MAPTILE_WALL)
+		{
+			//y만 변동, 바닥에 붙어있을때와는 반대다
+			_pointy -= 5;
+		}
+		break;
+	case 3:
+		//오른쪽 벽(_moveLeft)
+		if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).type == MAPTILE_WALL)
+		{
+			//x만 변동, 왼벽관 반대
+			_pointx = _map->getMapInfo((_pointy) / TILESIZE, (_pointx) / TILESIZE).rc.left - _moveLeft->getFrameWidth() / 2;
+		}
+		else if (_map->getMapInfo((_pointy) / TILESIZE, (_pointx + _moveLeft->getFrameWidth() / 2 + 1) / TILESIZE).type != MAPTILE_WALL)
+		{
+			//x만 변동, 왼벽관 반대
+			_pointx += 5;
 		}
 		break;
 	}
