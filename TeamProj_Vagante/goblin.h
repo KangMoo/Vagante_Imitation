@@ -42,6 +42,8 @@ public:
 		_ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE); 
 
 		_state = ENEMYSTATE_HIT;
+
+		SOUNDMANAGER->play("5_Enemy_Demage_Sound", 1);
 	}
 
 	goblin();

@@ -23,7 +23,7 @@ public:
 	void mapCollisionCheck();	//맵상의 벽, 바닥 충돌여부 판단 후 처리
 	void deadcheck();
 	void imgHandleByState();
-	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _batstate = BATSTATE_HIT; _hittimer = TIMEMANAGER->getWorldTime(); }
+	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _batstate = BATSTATE_HIT; _hittimer = TIMEMANAGER->getWorldTime(); SOUNDMANAGER->play("5_Enemy_Demage_Sound", 1); }
 	void frameUpdate();					// 프레임 업데이트
 	void render(POINT camera);
 	void draw(POINT camera);
