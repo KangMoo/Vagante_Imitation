@@ -71,7 +71,7 @@ HRESULT EnemyManager::init()
 	temp->setPlayerAddressLink(_player);
 	temp->setUiAddressLink(_ui);
 	temp->init(pt, 50, 50);
-	//_vEnemy.push_back(temp);
+	_vEnemy.push_back(temp);
 
 	return S_OK;
 }
