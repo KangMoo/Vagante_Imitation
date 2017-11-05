@@ -1364,13 +1364,10 @@ void Player::getDamaged(int damage, float angle, float knockbackpower) {
 			_player.state = PLAYERSTATE_JUMPING;
 
 		_invincible = true;
-<<<<<<< HEAD
-		_invincibleTime = 1;
+
+		_invincibleTime = 0.5;
 
 		SOUNDMANAGER->play("3_Player_Damage_Sound", 1);
-=======
-		_invincibleTime = 0.5;
->>>>>>> origin/yjw
 	}
 
 
