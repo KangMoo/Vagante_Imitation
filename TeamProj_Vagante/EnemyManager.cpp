@@ -16,63 +16,256 @@ EnemyManager::~EnemyManager()
 HRESULT EnemyManager::init()
 {
 
-	//enemy 정보 추가
-	/*
-	Enemy* temp = new Enemy;
-	temp->init();
+	//송충이 추가~
+	Enemy* temp = new worm;
+	POINT pt = PointMake(TILESIZE * 26, TILESIZE * 10);
 	temp->setMap(_map);
 	temp->setPlayerAddressLink(_player);
 	temp->setUiAddressLink(_ui);
+	temp->init(pt, 9999, 9999);
 	_vEnemy.push_back(temp);
-	*/
-
-
-	POINT pt = PointMake(TILESIZE * 14, TILESIZE * 18 - 1);
-	Enemy* temp = new worm;
+	temp = new worm;
+	 pt = PointMake(TILESIZE * 34, TILESIZE * 16);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 9999, 9999);
+	_vEnemy.push_back(temp);
+	temp = new worm;
+	 pt = PointMake(TILESIZE * 16, TILESIZE * 14);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 9999, 9999);
+	_vEnemy.push_back(temp);
+	temp = new worm;
+	 pt = PointMake(TILESIZE * 22, TILESIZE * 32);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 9999, 9999);
+	_vEnemy.push_back(temp);
+	temp = new worm;
+	 pt = PointMake(TILESIZE * 27, TILESIZE * 28);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 9999, 9999);
+	_vEnemy.push_back(temp);
+	temp = new worm;
+	 pt = PointMake(TILESIZE * 36, TILESIZE * 28);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 9999, 9999);
+	_vEnemy.push_back(temp);
+	temp = new worm;
+	 pt = PointMake(TILESIZE * 36, TILESIZE * 26);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 9999, 9999);
+	_vEnemy.push_back(temp);
+	temp = new worm;
+	 pt = PointMake(TILESIZE * 40, TILESIZE * 25);
 	temp->setMap(_map);
 	temp->setPlayerAddressLink(_player);
 	temp->setUiAddressLink(_ui);
 	temp->init(pt, 9999, 9999);
 	_vEnemy.push_back(temp);
 
+	
+
+
+	//박쥐추가~
 	temp = new bat;
+	 pt = PointMake(TILESIZE * 16, TILESIZE * 6);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 0, 0);
+	_vEnemy.push_back(temp);
+	temp = new bat;
+	 pt = PointMake(TILESIZE * 35, TILESIZE * 6);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 0, 0);
+	_vEnemy.push_back(temp);
+	temp = new bat;
+	 pt = PointMake(TILESIZE * 18, TILESIZE * 13);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 0, 0);
+	_vEnemy.push_back(temp);
+	temp = new bat;
+	 pt = PointMake(TILESIZE * 27, TILESIZE * 16);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 0, 0);
+	_vEnemy.push_back(temp);
+	temp = new bat;
+	 pt = PointMake(TILESIZE * 40, TILESIZE * 15);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 0, 0);
+	_vEnemy.push_back(temp);
+	temp = new bat;
+	 pt = PointMake(TILESIZE * 15, TILESIZE * 22);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 0, 0);
+	_vEnemy.push_back(temp);
+	temp = new bat;
+	 pt = PointMake(TILESIZE * 36, TILESIZE * 22);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 0, 0);
+	_vEnemy.push_back(temp);
+	temp = new bat;
+	 pt = PointMake(TILESIZE * 40, TILESIZE * 32);
 	temp->setMap(_map);
 	temp->setPlayerAddressLink(_player);
 	temp->setUiAddressLink(_ui);
 	temp->init(pt, 0, 0);
 	_vEnemy.push_back(temp);
 
+	//고블린 추가~
+	temp = new goblin;
+	pt = PointMake(TILESIZE * 23, TILESIZE * 10);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new goblin;
+	pt = PointMake(TILESIZE * 12, TILESIZE * 17);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new goblin;
+	pt = PointMake(TILESIZE * 22, TILESIZE * 23);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new goblin;
+	pt = PointMake(TILESIZE * 26, TILESIZE * 34);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new goblin;
+	pt = PointMake(TILESIZE * 32, TILESIZE * 26);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+
+	//맨이터 추가
+	temp = new manEater;
+	pt = PointMake(TILESIZE * 17, TILESIZE * 5);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new manEater;
+	pt = PointMake(TILESIZE * 23, TILESIZE * 16);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new manEater;
+	pt = PointMake(TILESIZE * 19, TILESIZE * 23);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new manEater;
+	pt = PointMake(TILESIZE * 15, TILESIZE * 28);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new manEater;
+	pt = PointMake(TILESIZE * 36, TILESIZE * 14);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new manEater;
+	pt = PointMake(TILESIZE * 41, TILESIZE * 25);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new manEater;
+	pt = PointMake(TILESIZE * 35, TILESIZE * 28);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	//슬라임
+	temp = new slime;
+	pt = PointMake(TILESIZE * 16, TILESIZE * 32);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new slime;
+	pt = PointMake(TILESIZE * 28, TILESIZE * 18);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new slime;
+	pt = PointMake(TILESIZE * 37, TILESIZE * 33);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new slime;
+	pt = PointMake(TILESIZE * 36, TILESIZE * 25);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	temp = new slime;
+	pt = PointMake(TILESIZE * 38, TILESIZE * 10);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+	
+
 	_boss = new Boss();
-	//상호참조를 위한 address링크
+	////상호참조를 위한 address링크
 	_boss->setPlayerAddressLink(_player);
 	_boss->setUiAddressLink(_ui);
 	_boss->setMapAddressLink(_map);
-	_boss->init(PointMake(TILESIZE * 35, TILESIZE * 6));
-
-	temp = new goblin;
-	pt = PointMake(TILESIZE * 35, TILESIZE * 6);
-	temp->setMap(_map);
-	temp->setPlayerAddressLink(_player);
-	temp->setUiAddressLink(_ui);
-	temp->init(pt, 50, 50);
-	_vEnemy.push_back(temp);
-
-	pt = PointMake(TILESIZE * 20 , TILESIZE * 5 );
-	temp = new manEater;
-	temp->setMap(_map);
-	temp->setPlayerAddressLink(_player);
-	temp->setUiAddressLink(_ui);
-	temp->init(pt, 50, 50);
-	_vEnemy.push_back(temp);
-
-	temp = new slime;
-	pt = PointMake(TILESIZE * 35, TILESIZE * 6);
-	temp->setMap(_map);
-	temp->setPlayerAddressLink(_player);
-	temp->setUiAddressLink(_ui);
-	temp->init(pt, 50, 50);
-	_vEnemy.push_back(temp);
-
+	_boss->init(PointMake(TILESIZE * 35, TILESIZE * 34));
 	return S_OK;
 }
 

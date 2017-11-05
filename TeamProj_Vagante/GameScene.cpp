@@ -36,7 +36,7 @@ HRESULT GameScene::init()
 
 	_ui->init();
 	_map->init();
-	_player->init(PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	_player->init(PointMake(TILESIZE*(50), TILESIZE*(5)));
 	_em->init();
 
 	_UsingStatusWindow = false;
@@ -125,6 +125,9 @@ void GameScene::addImage()
 	SOUNDMANAGER->addSound("4_Player_Death_Music", "Sound/PlayerDeath.ogg", true, true);
 	SOUNDMANAGER->addSound("5_Enemy_Demage_Sound", "Sound/EnemyDamage.wav", false, false);
 	SOUNDMANAGER->addSound("6_Instrument_Sound", "Sound/Instrument.wav", false, false);
+	SOUNDMANAGER->addSound("7_DarkCave_Music", "Sound/DarkCave.ogg", true, true);
+	SOUNDMANAGER->addSound("8_BossFireball", "Sound/BossFireball.wav", false, false);
+	SOUNDMANAGER->addSound("9_BossStamp", "Sound/BossStamp.wav", false, false);
 
 	//============================================================== ManEater ====================================================================
 

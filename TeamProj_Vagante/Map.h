@@ -40,7 +40,6 @@ struct tagObj
 	RECT rc;
 	float X, Y;
 	int FrameX, FrameY;
-
 	// 상자 개봉 상태
 	bool _openBox;  
 

@@ -137,7 +137,6 @@ private:
 	char _tmp[10];
 	bool _move;
 
-
 private:
 	bool _active;
 	Player* _player;

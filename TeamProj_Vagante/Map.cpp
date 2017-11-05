@@ -14,8 +14,6 @@ Map::~Map()
 }
 HRESULT Map::init()
 {
-	SOUNDMANAGER->play("0_boss_Backgound_Music", 1);
-
 	setTile();
 	setObject();
 	// 맵 이미지임
@@ -52,7 +50,7 @@ void Map::update()
 
 			for (int j = 0; j < RND->getFromIntTo(1, 3); j++)
 			{
-				_ui->addItemOnMap(NAME_COIN, PointMake(coinBox[i].rc.bottom - 4, RND->getFromIntTo(coinBox[i].rc.left, coinBox[i].rc.right)));
+				_ui->addItemOnMap(NAME_COIN, PointMake(RND->getFromIntTo(coinBox[i].rc.left, coinBox[i].rc.right), coinBox[i].rc.top - 4));
 			}
 			if (coinBox[i].FrameX >= coinBox[i].Image->getMaxFrameX())
 			{
@@ -67,7 +65,7 @@ void Map::update()
 		itemBox[0].FrameX++;
 		if (itemBox[0].FrameX >= itemBox[0].Image->getMaxFrameX())
 		{
-			_ui->addItemOnMap(NAME_SWORD, PointMake(itemBox[0].rc.left, itemBox[0].rc.bottom + 4));
+			_ui->addItemOnMap(NAME_SWORD, PointMake(itemBox[0].rc.left + (itemBox[0].rc.right - itemBox[0].rc.left)/2, itemBox[0].rc.top - 4));
 			itemBox[0].FrameX = itemBox[0].Image->getMaxFrameX();
 			itemBox[0]._eventChk = true;
 		}
@@ -78,7 +76,7 @@ void Map::update()
 		itemBox[1].FrameX++;
 		if (itemBox[1].FrameX >= itemBox[1].Image->getMaxFrameX())
 		{
-			_ui->addItemOnMap(NAME_HEAL, PointMake(itemBox[1].rc.left, itemBox[1].rc.bottom + 4));
+			_ui->addItemOnMap(NAME_HEAL, PointMake(itemBox[1].rc.left + (itemBox[1].rc.right - itemBox[1].rc.left) / 2, itemBox[1].rc.top - 4));
 			itemBox[1].FrameX = itemBox[1].Image->getMaxFrameX();
 			itemBox[1]._eventChk = true;
 		}
@@ -136,38 +134,41 @@ void Map::draw(POINT camera)
 {
 	//test~
 //	IMAGEMANAGER->render("bg", getMemDC(), camera.x, camera.y);
+
 	_BgImg->render(getMemDC(), camera.x, camera.y);
+
+
 	for (int i = 0; i < 40; i++)
 	{
 		for (int j = 0; j < 58; j++)
 		{
 			if (_mapInfo[i][j].type == MAPTILE_WALL || _mapInfo[i][j].type == MAPTILE_WALL2)
 			{
-				Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
+				/*Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
 					_mapInfo[i][j].rc.top + camera.y,
 					_mapInfo[i][j].rc.right + camera.x,
-					_mapInfo[i][j].rc.bottom + camera.y);
+					_mapInfo[i][j].rc.bottom + camera.y);*/
 			}
 			else if (_mapInfo[i][j].type == MAPTILE_LADDER)
 			{
-				Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
+				/*Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
 					_mapInfo[i][j].rc.top + camera.y,
 					_mapInfo[i][j].rc.right + camera.x,
-					_mapInfo[i][j].rc.bottom + camera.y);
+					_mapInfo[i][j].rc.bottom + camera.y);*/
 			}
 			else if (_mapInfo[i][j].type == MAPTILE_GROUND_CAN_GO_DOWN_1)
 			{
-				Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
+				/*Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
 					_mapInfo[i][j].rc.top + camera.y,
 					_mapInfo[i][j].rc.right + camera.x,
-					_mapInfo[i][j].rc.bottom + camera.y);
+					_mapInfo[i][j].rc.bottom + camera.y);*/
 			}
 			else if (_mapInfo[i][j].type == MAPTILE_SPIKE_TRAP)
 			{
-				Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
+				/*Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
 					_mapInfo[i][j].rc.top + camera.y,
 					_mapInfo[i][j].rc.right + camera.x,
-					_mapInfo[i][j].rc.bottom + camera.y);
+					_mapInfo[i][j].rc.bottom + camera.y);*/
 				_trapImg->render(getMemDC(), _mapInfo[i][j].rc.left +camera.x, _mapInfo[i][j].rc.top + camera.y);
 			}
 		}

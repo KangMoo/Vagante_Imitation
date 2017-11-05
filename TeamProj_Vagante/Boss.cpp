@@ -89,6 +89,7 @@ HRESULT Boss::init(POINT point)
 	_goalTileX = int(_player->getPoint().x) / TILESIZE;
 	_goalTileY = int(_player->getPoint().y) / TILESIZE;
 	astar();
+	
 
 	return S_OK;
 }
@@ -123,7 +124,7 @@ void Boss::update()
 			_openlist.clear();
 			_closelist.clear();
 			_wayToPlayer.clear();
-			astar();
+			if(_state != BOSSSTATE_SLEEP) astar();
 		}
 
 	}
@@ -149,8 +150,8 @@ void Boss::draw(POINT camera)
 	//if((_pointx > camera.x && _pointx < camera.x + WINSIZEX) &&
 	//	(_pointy > camera.y && _pointy < camera.y + WINSIZEY))
 	//	_image->frameRender(getMemDC(), _rc.left - camera.x, _rc.top - camera.y);
-	Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
-	Rectangle(getMemDC(), _rcHit.left + camera.x, _rcHit.top + camera.y, _rcHit.right + camera.x, _rcHit.bottom + camera.y);
+	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
+	//Rectangle(getMemDC(), _rcHit.left + camera.x, _rcHit.top + camera.y, _rcHit.right + camera.x, _rcHit.bottom + camera.y);
 	_fireball->render(camera);
 	_image->frameRender(getMemDC(), _pointx - _image->getFrameWidth() / 2 + camera.x, _pointy - _image->getFrameHeight() / 2 + camera.y, _currentFrameX, _currentFrameY);
 
@@ -506,12 +507,16 @@ void Boss::stateHandle()
 			imageChange();
 			//시간 설정
 			_actTimer = TIMEMANAGER->getWorldTime();
+
+			SOUNDMANAGER->stop("7_DarkCave_Music");
+			SOUNDMANAGER->play("0_boss_Backgound_Music", 0.5);
 		}
 		break;
 	case BOSSSTATE_ACTIVATE:
 		//잠에서 깨어났을 때 (위로 조금 날아오른 뒤 BOSSSTATE_FLYING 으로 상태 변화)
 		if (TIMEMANAGER->getWorldTime() - _actTimer > 2)
 		{
+			astar();
 			_state = BOSSSTATE_FLYING;
 			//상태 변화에 따른 이미지 변화
 			imageChange();
@@ -602,6 +607,7 @@ void Boss::fireFireBall()
 		_fireball->fire(_pointx, _pointy, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), 4);
 		_canfire = false;
 		_fireballCount--;
+		SOUNDMANAGER->play("8_BossFireball",0.5);
 	}
 	if (_currentFrameX == 0) _canfire = true;
 }
@@ -619,9 +625,10 @@ void Boss::stamping()
 	{
 		if (_player->getState() != PLAYERSTATE_JUMPING && _player->getState() != PLAYERSTATE_FALLING)
 		{
-			_player->getDamaged(10,PI/2,-10);
+			_player->getDamaged(10, PI / 2, -10);
 		}
 		_stampHitLand = false;
+		SOUNDMANAGER->play("9_BossStamp", 0.5);
 		_state = BOSSSTATE_FLYING;
 		imageChange();
 		_actTimer = TIMEMANAGER->getWorldTime();
@@ -634,6 +641,8 @@ void Boss::deadCheck()
 		_yspeed -= 5;
 		_state = BOSSSTATE_DEAD;
 		imageChange();
+		SOUNDMANAGER->play("7_DarkCave_Music", 0.5);
+		SOUNDMANAGER->stop("0_boss_Backgound_Music");
 		_actTimer = TIMEMANAGER->getWorldTime();
 	}
 	else if (_statistics.hp <= 0 && _state == BOSSSTATE_DEAD)

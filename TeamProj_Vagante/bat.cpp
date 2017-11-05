@@ -57,6 +57,7 @@ HRESULT bat::init(POINT point, float minCog, float maxCog)
 	_currentFrameX = 0;
 	_currentFrameY = 0;
 	_timerForFrame = TIMEMANAGER->getWorldTime();
+	_batstate = BATSTATE_FLYING;
 	return S_OK;
 }
 
@@ -108,7 +109,7 @@ void bat::actByState()
 	if (_state == ENEMYSTATE_DEAD)
 	{
 		_xspeed = 0;
-		_yspeed = 3;
+		_yspeed = 0.2;
 	}
 	else
 	{
@@ -124,7 +125,7 @@ void bat::actByState()
 			}
 			else
 			{
-				_yspeed += -_statistics.spd;
+				_yspeed += -0.8;
 			}
 			break;
 		case BATSTATE_HIT:
@@ -150,30 +151,63 @@ void bat::hitPlayer()
 }
 void bat::mapCollisionCheck()
 {
-	mapInfo maptile;
+	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
+	
+	//mapInfo maptile;
+	//RECT temp;
+	//RECT smallrect;
+	//
+	//for (int i = -1; i < 2; i++)
+	//{
+	//	for (int j = -1; j < 2; j++)
+	//	{
+	//		maptile = _map->getMapInfo(int(_pointy) / TILESIZE - i, int(_pointx) / TILESIZE - j);
+	//		if (maptile.type == MAPTILE_WALL || maptile.type == MAPTILE_WALL2)
+	//		{
+	//			if (IntersectRect(&temp, &maptile.rc, &smallrect))
+	//			{
+	//				_pointx += cosf(getAngle(maptile.point.x + TILESIZE / 2, maptile.point.y + TILESIZE / 2, _pointx, _pointy)) * 1;//(temp.right - temp.left + 2);
+	//				_pointy -= sinf(getAngle(maptile.point.x + TILESIZE / 2, maptile.point.y + TILESIZE / 2, _pointx, _pointy)) * 1;//(temp.bottom - temp.top + 2);
+	//				if (!_isFindPlayer && _batstate != BATSTATE_SLEEP)
+	//				{
+	//					_batstate = BATSTATE_SLEEP;
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 	RECT temp;
-	RECT smallrect;
-	smallrect = RectMakeCenter(_pointx, _pointy, 4, 4);
-	for (int i = -1; i < 2; i++)
+	mapInfo upL = _map->getMapInfo(int(_pointy) / TILESIZE - 1, int(_pointx) / TILESIZE - 1);
+	mapInfo upM = _map->getMapInfo(int(_pointy) / TILESIZE - 1, int(_pointx) / TILESIZE);
+	mapInfo upR = _map->getMapInfo(int(_pointy) / TILESIZE - 1, int(_pointx) / TILESIZE + 1);
+	mapInfo midL = _map->getMapInfo(int(_pointy) / TILESIZE, int(_pointx) / TILESIZE - 1);
+	mapInfo midM = _map->getMapInfo(int(_pointy) / TILESIZE, int(_pointx) / TILESIZE);
+	mapInfo midR = _map->getMapInfo(int(_pointy) / TILESIZE, int(_pointx) / TILESIZE + 1);
+	mapInfo botL = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE - 1);
+	mapInfo botM = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE);
+	mapInfo botR = _map->getMapInfo(int(_pointy) / TILESIZE + 1, int(_pointx) / TILESIZE + 1);
+	if ((midL.type == MAPTILE_WALL || midL.type == MAPTILE_WALL2) && IntersectRect(&temp, &midL.rc, &_rc))
 	{
-		for (int j = -1; j < 2; j++)
+		_pointx += temp.right - temp.left;
+	}
+	if ((midR.type == MAPTILE_WALL || midR.type == MAPTILE_WALL2) && IntersectRect(&temp, &midR.rc, &_rc))
+	{
+		_pointx -= temp.right - temp.left;
+	}
+	if ((upM.type == MAPTILE_WALL || upM.type == MAPTILE_WALL2) && IntersectRect(&temp, &upM.rc, &_rc))
+	{
+		_pointy += temp.bottom - temp.top;
+		if (!_isFindPlayer && _batstate != BATSTATE_SLEEP)
 		{
-			maptile = _map->getMapInfo(int(_pointy) / TILESIZE - i, int(_pointx) / TILESIZE - j);
-			if (maptile.type == MAPTILE_WALL || maptile.type == MAPTILE_WALL2)
-			{
-				if (IntersectRect(&temp, &maptile.rc, &smallrect))
-				{
-					_pointx += cosf(getAngle(maptile.point.x + TILESIZE / 2, maptile.point.y + TILESIZE / 2, _pointx, _pointy)) * 1;//(temp.right - temp.left + 2);
-					_pointy -= sinf(getAngle(maptile.point.x + TILESIZE / 2, maptile.point.y + TILESIZE / 2, _pointx, _pointy)) * 1;//(temp.bottom - temp.top + 2);
-					if (!_isFindPlayer && _batstate != BATSTATE_SLEEP)
-					{
-						_batstate = BATSTATE_SLEEP;
-					}
-				}
-			}
+			_batstate = BATSTATE_SLEEP;
 		}
 	}
-
+	if ((botM.type == MAPTILE_WALL || botM.type == MAPTILE_WALL2) && IntersectRect(&temp, &botM.rc, &_rc))
+	{
+		_pointy -= temp.bottom - temp.top;
+	}
+	
+	_rc = RectMakeCenter(_pointx, _pointy, _image->getFrameWidth(), _image->getFrameHeight());
 }
 
 void bat::deadcheck()

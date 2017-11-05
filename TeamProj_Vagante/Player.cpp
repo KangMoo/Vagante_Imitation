@@ -88,7 +88,7 @@ void Player::update()
 	//무적 체크
 	
 	
-	//mapcollision();	
+	mapcollision();	
 	//enemyCollision
 
 
@@ -120,15 +120,23 @@ void Player::render(POINT camera)
 void Player::draw(POINT camera)
 {
 	//test
-	Rectangle(getMemDC(), _player.rc.left + camera.x, _player.rc.top + camera.y, _player.rc.right + camera.x, _player.rc.bottom + camera.y);
+	//Rectangle(getMemDC(), _player.rc.left + camera.x, _player.rc.top + camera.y, _player.rc.right + camera.x, _player.rc.bottom + camera.y);
 
-	_player.image->frameRender(getMemDC(), _player.rc.left - 12 + camera.x, _player.rc.top - 24 + camera.y, _player.currentFrameX, _player.curretFrameY);
+	if (_invincible && _player.state != PLAYERSTATE_DEAD)
+	{
+		_player.image->alphaFrameRender(getMemDC(), _player.rc.left - 12 + camera.x, _player.rc.top - 24 + camera.y, _player.currentFrameX, _player.curretFrameY, int(TIMEMANAGER->getWorldTime() * 100)%2 * 200);
+	}
+	else
+	{
+		_player.image->frameRender(getMemDC(), _player.rc.left - 12 + camera.x, _player.rc.top - 24 + camera.y, _player.currentFrameX, _player.curretFrameY);
+	}
+	
 
 	//_player.image->frameRender(getMemDC(), WINSIZEX / 2, WINSIZEY / 2, _player.image->getFrameX(), _player.image->getFrameY());
 
 	if (_player.state == PLAYERSTATE_ATTACKING || _player.state == PLAYERSTATE_ATTACKING_JUMP)
 	{
-		Rectangle(getMemDC(), _equipWeaponRect.left + camera.x, _equipWeaponRect.top + camera.y, _equipWeaponRect.right + camera.x, _equipWeaponRect.bottom + camera.y);
+		//Rectangle(getMemDC(), _equipWeaponRect.left + camera.x, _equipWeaponRect.top + camera.y, _equipWeaponRect.right + camera.x, _equipWeaponRect.bottom + camera.y);
 
 		if (_equipWeapon.name != NAME_HAND)
 			if (!_player.lookingRight)
@@ -140,7 +148,7 @@ void Player::draw(POINT camera)
 	}
 
 
-
+/*
 	Rectangle(getMemDC(), 100, 100, 200, 200);
 	char str1[256];
 	char str2[256];
@@ -156,7 +164,7 @@ void Player::draw(POINT camera)
 	TextOut(getMemDC(), 120, 130, str2, strlen(str2));
 	TextOut(getMemDC(), 120, 150, str3, strlen(str3));
 	TextOut(getMemDC(), 120, 170, str4, strlen(str4));
-	TextOut(getMemDC(), 120, 190, str5, strlen(str5));
+	TextOut(getMemDC(), 120, 190, str5, strlen(str5));*/
 }
 
 
@@ -357,6 +365,10 @@ void Player::move()
 			_player.xspeed -= 0.2;
 		else if (_player.xspeed < 0)
 			_player.xspeed += 0.2;
+		if (_player.yspeed != 0)
+		{
+			_player.yspeed -= _player.gravity;
+		}
 	break;
 
 	case PLAYERSTATE_HIT:
@@ -839,7 +851,7 @@ void Player::jump()
 		_player.state = PLAYERSTATE_JUMPING;
 		_player.gravity = 0.4;
 		setStateImg();
-		SOUNDMANAGER->play("2_Player_Jump_Sound", 1);
+		SOUNDMANAGER->play("2_Player_Jump_Sound", 0.5);
 	}
 }
 void Player::attack()
@@ -865,7 +877,7 @@ void Player::attack()
 
 		_player.state = PLAYERSTATE_ATTACKING;
 		setStateImg();
-		SOUNDMANAGER->play("1_Player_Attack_Sound", 1);
+		SOUNDMANAGER->play("1_Player_Attack_Sound", 0.5);
 	}
 }
 
@@ -892,7 +904,7 @@ void Player::attackjump()
 
 		_player.state = PLAYERSTATE_ATTACKING_JUMP; 
 		setStateImg();
-		SOUNDMANAGER->play("1_Player_Attack_Sound", 1);
+		SOUNDMANAGER->play("1_Player_Attack_Sound", 0.5);
 	}
 }
 
@@ -1328,7 +1340,7 @@ void Player::getDamaged(int damage) {
 		_invincible = true;
 		_invincibleTime = 1;
 
-		SOUNDMANAGER->play("3_Player_Damage_Sound", 1);
+		SOUNDMANAGER->play("3_Player_Damage_Sound", 0.5);
 	}
 
 	if (_player.stat.hp <= 0 && _player.state != PLAYERSTATE_DEAD) {
@@ -1338,7 +1350,9 @@ void Player::getDamaged(int damage) {
 		_player.xspeed = 0;
 		_player.yspeed -= 3;
 
+
 		SOUNDMANAGER->stop("0_boss_Backgound_Music");
+		SOUNDMANAGER->stop("7_DarkCave_Music");
 		SOUNDMANAGER->play("4_Player_Death_Music", 1);
 	}
 
@@ -1367,7 +1381,7 @@ void Player::getDamaged(int damage, float angle, float knockbackpower) {
 
 		_invincibleTime = 0.5;
 
-		SOUNDMANAGER->play("3_Player_Damage_Sound", 1);
+		SOUNDMANAGER->play("3_Player_Damage_Sound", 0.5);
 	}
 
 
@@ -1378,7 +1392,9 @@ void Player::getDamaged(int damage, float angle, float knockbackpower) {
 		_player.xspeed = 0;
 		_player.yspeed -= 3;
 
+		
 		SOUNDMANAGER->stop("0_boss_Backgound_Music");
+		SOUNDMANAGER->stop("7_DarkCave_Music");
 		SOUNDMANAGER->play("4_Player_Death_Music", 1);
 	}
 
@@ -1439,9 +1455,10 @@ void Player::checkHitEnemy() {
 		_vEnemyRange = _em->getEnemyVector();
 
 		for (int i = 0; i < _vEnemyRange.size() + 1; i++) {
+			
 			MYRECT enemyRect;
 			RECT temp;
-			if (i < _vEnemyRange.size()) {
+			if (i < _vEnemyRange.size() && _vEnemyRange[i]->getStat().hp > 0) {
 				temp = _vEnemyRange[i]->getRect();
 				enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
 
@@ -1450,16 +1467,15 @@ void Player::checkHitEnemy() {
 					_attackDelay = 0;
 				}
 			}
-
-
-
-
 			else {
-				temp = _em->getBoss()->getRect();
-				enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
-				if (isCollision(enemyRect, _equipWeaponRect) && _player.currentFrameX == 2) {
-					_em->getBoss()->getDamaged(10, getAngle(_player.pointx, _player.pointy, _em->getBoss()->getPoint().x, _em->getBoss()->getPoint().y), 3);
-					_attackDelay = 0;
+				if (_em->getBoss()->getStat().hp > 0)
+				{
+					temp = _em->getBoss()->getRect();
+					enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
+					if (isCollision(enemyRect, _equipWeaponRect) && _player.currentFrameX == 2) {
+						_em->getBoss()->getDamaged(10, getAngle(_player.pointx, _player.pointy, _em->getBoss()->getPoint().x, _em->getBoss()->getPoint().y), 3);
+						_attackDelay = 0;
+					}
 				}
 			}
 		}
@@ -1517,58 +1533,42 @@ void Player::firstSettingStat() {
 
 void Player::mapcollision()
 {
-
-	if ((upL.type == MAPTILE_WALL || upL.type == MAPTILE_WALL2) && isCollisionReaction(upL.rc, _player.rc))
+	_player.rc = RectMakeCenter(_player.pointx, _player.pointy, 24, 24);
+	RECT temp;
+	if ((midL.type == MAPTILE_WALL || midL.type == MAPTILE_WALL2) && IntersectRect(&temp, &midL.rc, &_player.rc))
 	{
-		_player.pointy = _player.rc.top + (_player.rc.bottom - _player.rc.top) / 2;
-		_player.pointx = _player.rc.left + (_player.rc.right - _player.rc.left) / 2;
-		
+		_player.pointx += temp.right - temp.left;
+		if ((upL.type != MAPTILE_WALL && upL.type != MAPTILE_WALL2)
+			&& (_player.rc.top > midL.rc.top - 10 && _player.rc.top < midL.rc.top) && !_invincible)
+		{
+			_player.pointy = midL.rc.top + (_player.rc.bottom - _player.rc.top) * 0.5 + 2;
+			_player.state = PLAYERSTATE_HOLDING_WALL;
+			_player.xspeed = 0;
+			_player.yspeed = 0;
+			setStateImg();
+		}
 	}
-	else if ((upM.type == MAPTILE_WALL || upM.type == MAPTILE_WALL2) && isCollisionReaction(upM.rc, _player.rc))
+	if ((midR.type == MAPTILE_WALL || midR.type == MAPTILE_WALL2) && IntersectRect(&temp, &midR.rc, &_player.rc))
 	{
-		_player.pointy = _player.rc.top + (_player.rc.bottom - _player.rc.top) / 2;
-		_player.pointx = _player.rc.left + (_player.rc.right - _player.rc.left) / 2;
-		
+		_player.pointx -= temp.right - temp.left;
+		if ((upR.type != MAPTILE_WALL && upR.type != MAPTILE_WALL2) &&
+			(_player.rc.top > midR.rc.top - 10 && _player.rc.top < midR.rc.top) && !_invincible)
+		{
+			_player.pointy = midR.rc.top + (_player.rc.bottom - _player.rc.top) * 0.5 + 2;
+			_player.state = PLAYERSTATE_HOLDING_WALL;
+			_player.xspeed = 0;
+			_player.yspeed = 0;
+			setStateImg();
+		}
 	}
-	else if ((upR.type == MAPTILE_WALL || upR.type == MAPTILE_WALL2) && isCollisionReaction(upR.rc, _player.rc))
+	if ((upM.type == MAPTILE_WALL || upM.type == MAPTILE_WALL2) && IntersectRect(&temp, &upM.rc, &_player.rc))
 	{
-		_player.pointy = _player.rc.top + (_player.rc.bottom - _player.rc.top) / 2;
-		_player.pointx = _player.rc.left + (_player.rc.right - _player.rc.left) / 2;
-		
+		_player.pointy += temp.bottom - temp.top;
 	}
-	else if ((midL.type == MAPTILE_WALL || midL.type == MAPTILE_WALL2) && isCollisionReaction(midL.rc, _player.rc))
+	if ((botM.type == MAPTILE_WALL || botM.type == MAPTILE_WALL2) && IntersectRect(&temp, &botM.rc, &_player.rc))
 	{
-		_player.pointy = _player.rc.top + (_player.rc.bottom - _player.rc.top) / 2;
-		_player.pointx = _player.rc.left + (_player.rc.right - _player.rc.left) / 2;
-		
+		_player.pointy -= temp.bottom - temp.top;
+		_player.yspeed = 0;
 	}
-	else if ((midM.type == MAPTILE_WALL || midM.type == MAPTILE_WALL2) && isCollisionReaction(midM.rc, _player.rc))
-	{
-		_player.pointy = _player.rc.top + (_player.rc.bottom - _player.rc.top) / 2;
-		_player.pointx = _player.rc.left + (_player.rc.right - _player.rc.left) / 2;	
-	}
-	else if ((midR.type == MAPTILE_WALL || midR.type == MAPTILE_WALL2) && isCollisionReaction(midR.rc, _player.rc))
-	{
-		_player.pointy = _player.rc.top + (_player.rc.bottom - _player.rc.top) / 2;
-		_player.pointx = _player.rc.left + (_player.rc.right - _player.rc.left) / 2;
-		
-	}
-	else if ((botL.type == MAPTILE_WALL || botL.type == MAPTILE_WALL2) && isCollisionReaction(botL.rc, _player.rc))
-	{
-		_player.pointy = _player.rc.top + (_player.rc.bottom - _player.rc.top) / 2;
-		_player.pointx = _player.rc.left + (_player.rc.right - _player.rc.left) / 2;
-		
-	}
-	else if ((botM.type == MAPTILE_WALL || botM.type == MAPTILE_WALL2) && isCollisionReaction(botM.rc, _player.rc))
-	{
-		_player.pointy = _player.rc.top + (_player.rc.bottom - _player.rc.top) / 2;
-		_player.pointx = _player.rc.left + (_player.rc.right - _player.rc.left) / 2;
-		
-	}
-	else if ((botR.type == MAPTILE_WALL || botR.type == MAPTILE_WALL2) && isCollisionReaction(botR.rc, _player.rc))
-	{
-		_player.pointy = _player.rc.top + (_player.rc.bottom - _player.rc.top) / 2;
-		_player.pointx = _player.rc.left + (_player.rc.right - _player.rc.left) / 2;
-	}
-
+	_player.rc = RectMakeCenter(_player.pointx, _player.pointy, 24, 24);
 }

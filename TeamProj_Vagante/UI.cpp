@@ -17,6 +17,9 @@ HRESULT UI::init()
 {
 	//_player->init(PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
 
+
+	
+	
 	_active = false;
 	
 	tagItemInfo _item[5];
@@ -84,6 +87,8 @@ HRESULT UI::init()
 	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 4), TILESIZE*(4 + 5)));
 	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 3), TILESIZE*(4 + 5)));
 	addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(36 - 5), TILESIZE*(4 + 5)));
+
+	SOUNDMANAGER->play("7_DarkCave_Music",0.5);
 	return S_OK;
 }
 void UI::release()
@@ -203,7 +208,6 @@ void UI::update()
 	rectMove();
 	collision();
 	if (_active) keyControl();
-
 }
 
 void UI::render(){}
@@ -1655,7 +1659,7 @@ void UI::keyControl()
 							item.maxDmg = _viBag->maxDmg;
 							_player->setEquipWeapon(item);
 
-							SOUNDMANAGER->play("6_Instrument_Sound", 1);
+							SOUNDMANAGER->play("6_Instrument_Sound", 0.5);
 						}
 						break;
 					}

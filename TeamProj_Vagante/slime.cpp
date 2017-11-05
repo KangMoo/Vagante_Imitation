@@ -63,24 +63,43 @@ HRESULT slime::init(POINT point, float minCog, float maxCog)
 
 void slime::update()
 {
-	//인식범위 내에 플레이어가 있으면 활성화, 아닐 시 비활성화
-	if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 400) _isFindPlayer = true;
-	else _isFindPlayer = false;
-	actByState();
 
-
-	mapCollisionCheck();
-	move();
-	mapCollisionCheck();
-	hitPlayer();
-	deadcheck();
-	imgHandleByState();
-	if (TIMEMANAGER->getWorldTime() - _timerForFrame > 0.2)
+	if (_slimeState != SLIMESTATE_DEAD)
 	{
-		_timerForFrame = TIMEMANAGER->getWorldTime();
-		frameUpdate();
+		//인식범위 내에 플레이어가 있으면 활성화, 아닐 시 비활성화
+		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 400) _isFindPlayer = true;
+		else _isFindPlayer = false;
+		actByState();
+
+
+		mapCollisionCheck();
+		move();
+		mapCollisionCheck();
+		hitPlayer();
+		deadcheck();
+		imgHandleByState();
+		if (TIMEMANAGER->getWorldTime() - _timerForFrame > 0.2)
+		{
+			_timerForFrame = TIMEMANAGER->getWorldTime();
+			frameUpdate();
+		}
+		_rc = RectMakeCenter(_pointx, _pointy, 25, 25);
 	}
-	_rc = RectMakeCenter(_pointx, _pointy, 25, 25);
+	else
+	{
+		mapCollisionCheck();
+		move();
+		mapCollisionCheck();
+		deadcheck();
+		imgHandleByState();
+		if (TIMEMANAGER->getWorldTime() - _timerForFrame > 0.2)
+		{
+			_timerForFrame = TIMEMANAGER->getWorldTime();
+			frameUpdate();
+		}
+		_rc = RectMakeCenter(_pointx, _pointy, 25, 25);
+	}
+	
 }
 
 void slime::actByState()
@@ -173,7 +192,7 @@ void slime::render(POINT camera)
 }
 void slime::draw(POINT camera)
 {
-	Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
+	//Rectangle(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _rc.right + camera.x, _rc.bottom + camera.y);
 	_image->alphaFrameRender(getMemDC(),
 		_pointx - _image->getFrameWidth() / 2 + camera.x,
 		_pointy - _image->getFrameHeight() / 2 + camera.y,
@@ -249,6 +268,10 @@ void slime::mapCollisionCheck()
 }
 void slime::deadcheck()
 {
+	if (_statistics.hp <= 0)
+	{
+		_slimeState = SLIMESTATE_DEAD;
+	}
 	if (_state == ENEMYSTATE_DEAD)
 	{
 		_deadAlpha += 5;

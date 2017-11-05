@@ -93,7 +93,6 @@ private:
 	float _minCog, _maxCog;												//몬스터 최초 인식범위, 한계 인식범위
 	float _timerForFrameUpdate;
 	float _timerForAstar;
-
 	//For A* 알고리즘!!
 	int _curTileX, _curTileY;		//현재 위치
 	int _goalTileX, _goalTileY;		//목표 위치

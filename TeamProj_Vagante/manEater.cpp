@@ -115,7 +115,7 @@ void manEater::render(POINT camera)
 
 void manEater::draw(POINT camera)
 {
-	Rectangle(getMemDC(), _findRectRange.left + camera.x, _findRectRange.top + camera.y, _findRectRange.right + camera.x, _findRectRange.bottom + camera.y); //플레이어 위치 탐색 확인용
+	//Rectangle(getMemDC(), _findRectRange.left + camera.x, _findRectRange.top + camera.y, _findRectRange.right + camera.x, _findRectRange.bottom + camera.y); //플레이어 위치 탐색 확인용
 	//_image->frameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _currentFrameX, 0);
 	_image->alphaFrameRender(getMemDC(), _rc.left + camera.x, _rc.top + camera.y, _currentFrameX, 0,_deadAlpha);
 
