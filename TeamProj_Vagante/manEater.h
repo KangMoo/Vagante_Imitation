@@ -27,7 +27,9 @@ public:
 
 	void getDamaged(int damage, float angle, float knockbackpower)
 	{
-		_statistics.hp -= damage; _state = ENEMYSTATE_HIT; 	_ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE);
+		_statistics.hp -= damage; 
+		_state = ENEMYSTATE_HIT; 	
+		_ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE);
 	}
 
 

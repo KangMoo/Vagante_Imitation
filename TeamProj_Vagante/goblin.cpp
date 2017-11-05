@@ -56,6 +56,7 @@ HRESULT goblin::init(POINT point, float minCog, float maxCog)
 	_deadAlpha = 0;		//죽으면 알파를 씌워야 한다.
 
 	_isOnLand = false;	//땅인지 체크
+	_isLive = true;
 
 	_jumptimer = TIMEMANAGER->getWorldTime();	//점프타이머 초기화
 	_gravity = 0;		//중력 초기화
@@ -69,7 +70,6 @@ void goblin::release()
 
 void goblin::update()
 {
-
 	if (getDistance(_pointx, _pointy, 
 		_player->getPoint().x, _player->getPoint().y) < 300) _isFindPlayer = true; //플레이어와 거리가 300이하면 플레이어한테 간다
 	else _isFindPlayer = false; //300 이상이면 추격 포기
@@ -84,10 +84,8 @@ void goblin::update()
 	if (_xspeed > 2) _xspeed = 2;
 	else if (_xspeed < -2) _xspeed = -2;
 
-
 	mapCollisionCheck(); //맵 체크 
 	attRectClear();	//공격렉트는 매 순간 초기화를 해준다.
-
 	frameUpdate(); //프레임 업데이트를 해준다. 변경하면 좀 그렇다.
 	
 	//if (KEYMANAGER->isOnceKeyDown('N')) //엔키를 많이 누르면 애가 죽는다. 
@@ -96,22 +94,37 @@ void goblin::update()
 	//	_image = hitImg;
 	//}
 	
-	if (PtInRect(&_findPlayerRect, _player->getPoint()) && _state != ENEMYSTATE_DEAD); //플레이어가 야를 찾았고 체력이 0 이상일때
+	//if (PtInRect(&_findPlayerRect, _player->getPoint()) && _isLive == true); //플레이어가 야를 찾았고 체력이 0 이상일때
+	//{
+	//	if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 30) attack(); //플레이어가 적보다 거리가 30만큼이면 찌른다
+	//	else move(); //아니면 움직인다. // 플레이어와 적의 거리가 10이 될때까지
+	//	//jump();
+	//}
+
+	if (_isFindPlayer == true && _isLive == true) //플레이어가 야를 찾았고 체력이 0 이상일때
 	{
 		if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 30) attack(); //플레이어가 적보다 거리가 30만큼이면 찌른다
-		else move(); //아니면 움직인다. // 플레이어와 적의 거리가 10이 될때까지
-		//jump();
+		else move();
 	}
+
+	//if (_statistics.hp > 0) //플레이어가 야를 찾았고 체력이 0 이상일때
+	//{
+	//	if (getDistance(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y) < 30) attack(); //플레이어가 적보다 거리가 30만큼이면 찌른다
+	//	else move();
+	//}
 
 	if (_statistics.hp <= 0)//사망체크
 	{
+		_isLive = false;
 		_image = deadImg; //죽은 이미지
 		_state = ENEMYSTATE_DEAD; //상태를 죽은거로 바꾼다
 	}
 
 	if (_state == ENEMYSTATE_DEAD)//죽었으면
 	{
-		_deadAlpha += 5; //알파값을 증가시킨다
+		_isLive = false;
+
+		_deadAlpha += 1; //알파값을 증가시킨다
 		if (_deadAlpha > 255)
 		{
 			_dead = true; // 알파가 255 이상이면 죽었다고 체크하고 뺀다.

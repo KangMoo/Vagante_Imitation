@@ -11,7 +11,7 @@ class goblin : public Enemy
 
 	bool _right;
 
-	bool _attack, _jump;
+	bool _attack, _jump ,_isLive;
 
 	float _findRange, _findRangeMax;
 	float _saveY, _jumptimer;
@@ -35,7 +35,14 @@ public:
 	void playerCog();
 
 	void mapCollisionCheck();
-	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; _yspeed -= sinf(angle)*knockbackpower; _ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE); }
+	void getDamaged(int damage, float angle, float knockbackpower) 
+	{ 
+		_statistics.hp -= damage; _xspeed += cosf(angle)*knockbackpower; 
+		_yspeed -= sinf(angle)*knockbackpower; 
+		_ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE); 
+
+		_state = ENEMYSTATE_HIT;
+	}
 
 	goblin();
 	~goblin();
