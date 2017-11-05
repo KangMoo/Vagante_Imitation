@@ -86,10 +86,9 @@ public:
 	void render();
 	void render(POINT camera);
 	void draw(POINT camera);
-	
+	void drawMinimap();
 	void setTile();
 	void setObject();
-	
 	
 	tagObj getCoinBox(int i) { return coinBox[i]; }// 코인박스의 정보
 	tagObj getitemBox(int i) { return itemBox[i]; }// 아이템박스의 정보

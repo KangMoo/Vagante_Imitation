@@ -467,6 +467,8 @@ void UI::draw(POINT camera)
 		char str[10];
 		letterMacro2(_viHit->font, _viHit->x + camera.x , _viHit->y + camera.y, itoa(_viHit->damage, str, 10), _viHit->alphaSource);
 	}
+	//미니맵 그리기
+	_map->drawMinimap();
 }
 
 void UI::collision()

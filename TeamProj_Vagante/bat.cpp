@@ -70,7 +70,7 @@ void bat::update() {
 	move();
 	mapCollisionCheck();
 
-	hitPlayer();
+	if(_statistics.hp>0) hitPlayer();
 	deadcheck();
 	imgHandleByState();
 	if (TIMEMANAGER->getWorldTime() - _timerForFrame > 0.1)

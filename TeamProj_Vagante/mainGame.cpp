@@ -46,7 +46,6 @@ void mainGame::render(void)
 
 	SCENEMANAGER->render();
 	
-	TIMEMANAGER->render(getMemDC());
 	
 	//========================================================================
 	//백버퍼에 있는걸 HDC로 그려주는 역할

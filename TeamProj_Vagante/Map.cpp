@@ -186,9 +186,17 @@ void Map::draw(POINT camera)
 		coinBox[i].Image->frameRender(getMemDC(), coinBox[i].X + camera.x, coinBox[i].Y + camera.y, coinBox[i].FrameX, coinBox[i].FrameY);
 		
 	}
+
+
 	miniMap.Image->render(getMemDC(), miniMap.X, miniMap.Y);
 	Rectangle(getMemDC(), miniMap.playerRc.left+_player->getPoint().x/8, miniMap.playerRc.top + _player->getPoint().y / 8, miniMap.playerRc.right+ _player->getPoint().x / 8, miniMap.playerRc.bottom + _player->getPoint().y / 8);
 	//~test
+}
+void Map::drawMinimap()
+{
+	miniMap.Image->render(getMemDC(), miniMap.X, miniMap.Y);
+	Rectangle(getMemDC(), miniMap.playerRc.left + _player->getPoint().x / 8, miniMap.playerRc.top + _player->getPoint().y / 8, miniMap.playerRc.right + _player->getPoint().x / 8, miniMap.playerRc.bottom + _player->getPoint().y / 8);
+
 }
 
 void Map::setTile()

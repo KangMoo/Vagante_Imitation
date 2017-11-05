@@ -81,7 +81,6 @@ void GameScene::render()
 	_em->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_player->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_ui->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
-	TIMEMANAGER->render(getMemDC());
 }
 
 void GameScene::addImage()
@@ -115,7 +114,7 @@ void GameScene::addImage()
 	IMAGEMANAGER->addFrameImage("slime_Dash", "Img\\enemy\\slime_dash.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("slime_Jump", "Img\\enemy\\slime_jump.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("slime_Falling", "Img\\enemy\\slime_fall.bmp", 32, 64, 1, 2, true, RGB(255, 0, 255));
-	
+	IMAGEMANAGER->addImage("minimap", "Img\\map\\miniMap.bmp", 232, 160, true, RGB(255, 0, 255));
 	//============================================================== Music ====================================================================
 
 	SOUNDMANAGER->addSound("0_boss_Backgound_Music", "Sound/BossSound.ogg", true, true);
