@@ -1399,7 +1399,7 @@ void Player::checkDropItem() {
 	
 	for (int i = 0; i < _vItem.size(); i++) {
 		tagItem item = _vItem[i];
-		if (isCollision(_player.rc, item.rc))
+		if (isCollision(_player.rc, item.rc) && item.name != NAME_COIN)
 		{
 			_ui->setItemToBag(_vItem[i].name);
 			_ui->deleteItemOnMap(i);
