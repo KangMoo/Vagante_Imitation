@@ -35,12 +35,12 @@ HRESULT EnemyManager::init()
 	temp->init(pt, 9999, 9999);
 	_vEnemy.push_back(temp);
 
-	Enemy* temp2 = new bat;
-	temp2->setMap(_map);
-	temp2->setPlayerAddressLink(_player);
-	temp2->setUiAddressLink(_ui);
-	temp2->init(pt, 0, 0);
-	_vEnemy.push_back(temp2);
+	temp = new bat;
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 0, 0);
+	_vEnemy.push_back(temp);
 
 	_boss = new Boss();
 	//상호참조를 위한 address링크
@@ -49,7 +49,7 @@ HRESULT EnemyManager::init()
 	_boss->setMapAddressLink(_map);
 	_boss->init(PointMake(TILESIZE * 35, TILESIZE * 6));
 
-	temp = new slime;
+	temp = new goblin;
 	pt = PointMake(TILESIZE * 35, TILESIZE * 6);
 	temp->setMap(_map);
 	temp->setPlayerAddressLink(_player);
@@ -57,13 +57,21 @@ HRESULT EnemyManager::init()
 	temp->init(pt, 50, 50);
 	_vEnemy.push_back(temp);
 
-	pt = PointMake(TILESIZE * 20 - TILESIZE, TILESIZE * 6 - TILESIZE);
-	Enemy* temp3 = new manEater;
-	temp3->setMap(_map);
-	temp3->setPlayerAddressLink(_player);
-	temp3->setUiAddressLink(_ui);
-	temp3->init(pt, 50, 50);
-	_vEnemy.push_back(temp3);
+	pt = PointMake(TILESIZE * 20 , TILESIZE * 5 );
+	temp = new manEater;
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
+
+	temp = new slime;
+	pt = PointMake(TILESIZE * 35, TILESIZE * 6);
+	temp->setMap(_map);
+	temp->setPlayerAddressLink(_player);
+	temp->setUiAddressLink(_ui);
+	temp->init(pt, 50, 50);
+	_vEnemy.push_back(temp);
 
 	return S_OK;
 }
@@ -118,15 +126,13 @@ void EnemyManager::deadEnemyCheck()
 	{
 		if (_vEnemy[i]->getHP() <= 0 && !_vEnemy[i]->getdead())
 		{
-			if(_vEnemy[i]->getState() != ENEMYSTATE_DEAD)
+			if (_vEnemy[i]->getState() != ENEMYSTATE_DEAD)
 			{
-				for (int j = 0;j < _vEnemy[i]->getMoney(); j++)
+				for (int j = 0; j < _vEnemy[i]->getMoney(); j++)
 				{
-					_ui->addItemOnMap( NAME_COIN, PointMake(RND->getFromIntTo(_vEnemy[i]->getRect().left, _vEnemy[i]->getRect().right), RND->getFromIntTo(_vEnemy[i]->getRect().top, _vEnemy[i]->getRect().bottom)));
+					_ui->addItemOnMap(NAME_COIN, PointMake(RND->getFromIntTo(_vEnemy[i]->getRect().left, _vEnemy[i]->getRect().right), RND->getFromIntTo(_vEnemy[i]->getRect().top, _vEnemy[i]->getRect().bottom)));
 				}
 			}
-			//SAFE_DELETE(_vEnemy[i]);
-			//_vEnemy.erase(_vEnemy.begin() + i);
 			_vEnemy[i]->setState(ENEMYSTATE_DEAD);
 		}
 		else if (_vEnemy[i]->getdead())

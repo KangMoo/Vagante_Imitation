@@ -1,6 +1,6 @@
 #pragma once
 #include "Enemy.h"
-
+#include "UI.h"
 class manEater : public Enemy
 {
 private:
@@ -24,6 +24,12 @@ public:
 
 	void attack();			// 공격
 	void frameUpdate();	// 프레임 업데이트
+
+	void getDamaged(int damage, float angle, float knockbackpower)
+	{
+		_statistics.hp -= damage; _state = ENEMYSTATE_HIT; 	_ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE);
+	}
+
 
 	manEater();
 	~manEater();

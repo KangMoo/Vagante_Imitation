@@ -15,7 +15,7 @@ HRESULT manEater::init(POINT point, float minCog, float maxCog)
 	_pointx = point.x;
 	_pointy = point.y;
 
-	_money = 2;
+	_money = RND->getFromIntTo(0,5);
 	_isFindPlayer = false;
 	_attack = false;
 	_count = 0;
@@ -75,10 +75,10 @@ void manEater::release()
 void manEater::update()
 {
 
-	if (KEYMANAGER->isOnceKeyDown('M')) //줘맞는거 확인용
-	{
-		getDamaged(1);
-	}
+	//if (KEYMANAGER->isOnceKeyDown('M')) //줘맞는거 확인용
+	//{
+	//	getDamaged(1);
+	//}
 
 
 	if (PtInRect(&_findRectRange,_player->getPoint())) //탐색
@@ -130,8 +130,6 @@ void manEater::draw(POINT camera)
 
 void manEater::attack()
 {
-	
-
 	//이제 이미지가 돈다 만세!
 	if (_currentFrameX > _image->getMaxFrameX() && _state == ENEMYSTATE_IDLE) // 공격하려고 올라온다
 	{
@@ -159,7 +157,11 @@ void manEater::attack()
 
 	if (IntersectRect(&temp, &_player->getRect(), &_attackRect)) //플레이어를 공격했다.
 	{
-		_player->getDamaged(_statistics.mel);
+		_player->getDamaged(5, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), _statistics.mel);
+		//플레이어 반대방향으로 튕겨나기
+		_xspeed = cosf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 2;
+		_yspeed = -sinf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 2;
+
 		tagStatusEffect tStatEff;
 		tStatEff.type = STATUSEFFECT_NULL;
 		tStatEff.damage = 0;

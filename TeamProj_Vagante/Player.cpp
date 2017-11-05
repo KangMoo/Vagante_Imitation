@@ -1464,7 +1464,7 @@ void Player::firstSettingStat() {
 	_player.stat.hp = 100;
 	_player.stat.str = 100;
 	_player.stat.dex = 100;
-	_player.stat.vit = 100;
+	_player.stat.vit = 5;
 	_player.stat.inl = 100;
 	_player.stat.lck = 100;
 	_player.stat.def = 100;

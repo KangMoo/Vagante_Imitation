@@ -78,6 +78,11 @@ HRESULT UI::init()
 	
 	addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36 ), TILESIZE*(4)));
 	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
 	addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(36 - 5), TILESIZE*(4 + 5)));
 	return S_OK;
 }
@@ -218,7 +223,7 @@ void UI::draw(POINT camera)
 		IMAGEMANAGER->findImage("selectOff")->render(getMemDC(), _menuRect.left + 2, _menuRect.top + 70);
 	else
 		IMAGEMANAGER->findImage("selectOn")->render(getMemDC(), _menuRect.left + 2, _menuRect.top + 70);
-	switch (_menuNum)
+	/*switch (_menuNum)
 	{
 	case 0:
 		IMAGEMANAGER->findImage("bag")->render(getMemDC(), _menuRect.left, _menuRect.top + 88);
@@ -226,9 +231,9 @@ void UI::draw(POINT camera)
 		{
 			_viBag->img->render(getMemDC(), _menuRect.left + 5 + (_viBag->position % 6) * 36,
 				_menuRect.top + 90 + (_viBag->position / 6) * 36);
-			if(_viBag->equip == true)
+			if (_viBag->equip == true)
 				IMAGEMANAGER->findImage("equip_icon")->frameRender(getMemDC(), _menuRect.left + 32 + (_viBag->position % 6) * 36,
-					_menuRect.top + 115 + (_viBag->position / 6) * 36,1,0);
+					_menuRect.top + 115 + (_viBag->position / 6) * 36, 1, 0);
 		}
 
 		if (!_move)IMAGEMANAGER->findImage("cursor_idle")->frameRender(getMemDC(),
@@ -424,7 +429,7 @@ void UI::draw(POINT camera)
 		letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 230, "Prev Tap", _inputAlphaSource);
 
 		break;
-	}
+	}*/
 	IMAGEMANAGER->findImage("player_icon")->render(getMemDC(), _menuRect.left + 4, _menuRect.top + 38);
 
 	IMAGEMANAGER->findImage("money_background")->render(getMemDC(), WINSIZEX - 138, 10);
