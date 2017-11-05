@@ -6,6 +6,7 @@
 #include "worm.h"
 #include "bat.h"
 #include "slime.h"
+#include "goblin.h"
 #include "vaganteStructEnum.h"
 
 class Player;

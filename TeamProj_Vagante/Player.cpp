@@ -151,7 +151,7 @@ void Player::draw(POINT camera)
 	sprintf(str2, "%d %d %d", midL.type, midM.type, midR.type);
 	sprintf(str3, "%d %d %d", botL.type, botM.type, botR.type);
 	sprintf(str4, "%ld %ld", _map->getCoinBox(1)._openBox, _map->getCoinBox(1)._eventChk);
-	sprintf(str5, "%d", _player.statusEffect[0].leftTime);
+	sprintf(str5, "%d", _em->getEnemyVector().size());
 	TextOut(getMemDC(), 120, 110, str1, strlen(str1));
 	TextOut(getMemDC(), 120, 130, str2, strlen(str2));
 	TextOut(getMemDC(), 120, 150, str3, strlen(str3));
