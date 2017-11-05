@@ -75,17 +75,10 @@ HRESULT UI::init()
 	setItemToBag(NAME_SWORD);
 	setItemToBag(NAME_HEAL);
 	setItemToBag(NAME_SWORD);
-<<<<<<< HEAD
-	//
-	//addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36 ), TILESIZE*(4)));
-	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
-	//addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(36 - 5), TILESIZE*(4 + 5)));
-=======
 	
 	addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36 ), TILESIZE*(4)));
 	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
 	addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(36 - 5), TILESIZE*(4 + 5)));
->>>>>>> origin/player
 	return S_OK;
 }
 void UI::release()
@@ -166,6 +159,9 @@ void UI::update()
 		mapInfo bot = _map->getMapInfo(
 			((int)_viItem->point.y / TILESIZE)+1,
 			(int)_viItem->point.x / TILESIZE);
+		mapInfo cen = _map->getMapInfo(
+			((int)_viItem->point.y / TILESIZE),
+			(int)_viItem->point.x / TILESIZE);
 		_viItem->point.y += 3;
 		if (isCollision(bot.rc, _viItem->rc))
 		{
@@ -175,6 +171,7 @@ void UI::update()
 			}
 		}
 		
+
 		_viItem->rc = RectMakeCenter(_viItem->point.x, _viItem->point.y,
 			_viItem->img0->getWidth(), _viItem->img0->getHeight());
 
@@ -449,28 +446,31 @@ void UI::draw(POINT camera)
 
 void UI::collision()
 {
-	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); )
+	for ( _viItem = _vItem.begin(); _viItem != _vItem.end();++_viItem )
 	{
 		if (isCollision(_player->getRect(), _viItem->rc))
 		{
 			if (_viItem->name == NAME_COIN)
 			{
-				if (_viItem->point.x > _player->getPoint().x) _viItem->point.x -= 3;
-				if (_viItem->point.x < _player->getPoint().x) _viItem->point.x += 3;
-				if (_viItem->point.y > _player->getPoint().y) _viItem->point.y -= 3;
-				if (_viItem->point.y < _player->getPoint().y) _viItem->point.y += 3;
-				if (isCollision(RectMakeCenter(_player->getPoint().x, _player->getPoint().y, 5, 5), _viItem->rc))
-				{
-					_vItem.erase(_viItem);
-					setCoin(1);
-					break;
-				}
-				else ++_viItem;
+				if (_viItem->point.x > _player->getPoint().x) _viItem->point.x -= 1;
+				if (_viItem->point.x < _player->getPoint().x) _viItem->point.x += 1;
+				if (_viItem->point.y > _player->getPoint().y) _viItem->point.y -= 4;
+				_viItem->rc = RectMakeCenter(_viItem->point.x, _viItem->point.y, _viItem->img0->getFrameWidth(), _viItem->img0->getFrameHeight());
 			}
-			else ++_viItem;
+		}
+	}
+	for (_viItem = _vItem.begin(); _viItem != _vItem.end(); )
+	{
+		if (isCollision(RectMakeCenter(_player->getPoint().x,_player->getPoint().y,2,2), _viItem->rc) && _viItem->name == NAME_COIN)
+		{
+
+			_vItem.erase(_viItem);
+			setCoin(1);
+			break;
 		}
 		else ++_viItem;
 	}
+
 }
 
 void UI::showStatus()
@@ -1671,10 +1671,6 @@ void UI::keyControl()
 	//{
 	//	hitOutput(WINSIZEX / 2, WINSIZEY / 2, 8, LETTER_RED);
 	//}
-	if (KEYMANAGER->isOnceKeyDown('I'))
-	{
-		(*_player->getStatusEffect()).type == STATUSEFFECT_FIRE;
-	}
 }
 
 void UI::setInputGuide()
