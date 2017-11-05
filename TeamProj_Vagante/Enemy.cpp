@@ -83,7 +83,7 @@ void Enemy::update()
 		}
 	}
 	//죽지 않았을때만 적 확인등을 한다
-	if (_isFindPlayer && _state != ENEMYSTATE_DEAD)
+	if (false)
 	{
 		//각자 움직이는 메커니즘이 다르므로 알아서 처리
 		//일단 적 발견은 계속 true로
