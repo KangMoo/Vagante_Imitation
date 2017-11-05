@@ -1393,8 +1393,8 @@ void UI::setItemToBag(ITEMNAME name)
 	case NAME_SWORD:
 		item.img = IMAGEMANAGER->findImage("sword");
 		item.img0 = IMAGEMANAGER->findImage("sword0");
-		item.minDmg = 2;
-		item.maxDmg = 5;
+		item.minDmg = 8;
+		item.maxDmg = 15;
 		item.type = TYPE_WEAPON;
 		break;
 	case NAME_HEAL:
@@ -1663,7 +1663,7 @@ void UI::keyControl()
 						}
 						break;
 					}
-					if (_viBag->type == TYPE_POTION && _currentHp < _maxHp)
+					if (_viBag->type == TYPE_POTION)
 					{
 						tagStatusEffect tse;
 						tse.damage = 5;

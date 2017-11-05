@@ -16,7 +16,7 @@ private:
 	bool _UsingStatusWindow;
 	POINT _camera;
 
-	bool flagsound = false;
+	//bool flagsound = false;
 
 public:
 	HRESULT init();

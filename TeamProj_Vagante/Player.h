@@ -12,7 +12,7 @@ class Enemy;
 #define JUMPPOWERMAX 10
 #define FALLPOWERMAX 8
 #define RUNPOWERSTART 1
-#define RUNPOWERMAX 3
+#define RUNPOWERMAX 2.6
 #define DASHPOWER 8
 #define DASHTIME 2.5
 #define LADDERUPSPEED 2
@@ -109,6 +109,8 @@ private:
 	int _frameY;
 	int _frameYOffset;
 	int _animDelay;
+
+	int _statusEffectTimer;
 
 
 	int _test;
