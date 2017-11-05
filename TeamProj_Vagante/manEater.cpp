@@ -15,7 +15,7 @@ HRESULT manEater::init(POINT point, float minCog, float maxCog)
 	_pointx = point.x;
 	_pointy = point.y;
 
-	_money = RND->getFromIntTo(0,5);
+	_money = RND->getFromIntTo(5, 1);
 	_isFindPlayer = false;
 	_attack = false;
 	_count = 0;
