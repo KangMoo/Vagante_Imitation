@@ -16,8 +16,8 @@ HRESULT goblin::init(POINT point, float minCog, float maxCog)
 	_pointx = point.x;		  //포인트 초기화
 	_pointy = point.y;		  //포인트 초기화
 	_rc = RectMake(_pointx, _pointy, TILESIZE, TILESIZE); //피격렉트 초기화
+	_money = RND->getFromIntTo(5, 1);
 
-	_money = RND->getFromIntTo(5, 1);//적이 사망시 뿌릴 금액 초기화
 	_isFindPlayer = false;			 //초기상태 : 플레이어를 찾지 못함
 	_attack = false;			     //초기상태 : 공격하지 않음
 
@@ -124,7 +124,7 @@ void goblin::update()
 	{
 		_isLive = false;
 
-		_deadAlpha += 1; //알파값을 증가시킨다
+		_deadAlpha += 5; //알파값을 증가시킨다
 		if (_deadAlpha > 255)
 		{
 			_dead = true; // 알파가 255 이상이면 죽었다고 체크하고 뺀다.
