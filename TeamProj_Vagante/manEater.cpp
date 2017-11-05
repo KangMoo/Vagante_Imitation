@@ -15,7 +15,7 @@ HRESULT manEater::init(POINT point, float minCog, float maxCog)
 	_pointx = point.x;
 	_pointy = point.y;
 
-	_money = RND(0,5);
+	_money = RND->getFromIntTo(0,5);
 	_isFindPlayer = false;
 	_attack = false;
 	_count = 0;
@@ -75,10 +75,10 @@ void manEater::release()
 void manEater::update()
 {
 
-	if (KEYMANAGER->isOnceKeyDown('M')) //Áà¸Â´Â°Å È®ÀÎ¿ë
-	{
-		getDamaged(1);
-	}
+	//if (KEYMANAGER->isOnceKeyDown('M')) //Áà¸Â´Â°Å È®ÀÎ¿ë
+	//{
+	//	getDamaged(1);
+	//}
 
 
 	if (PtInRect(&_findRectRange,_player->getPoint())) //Å½»ö

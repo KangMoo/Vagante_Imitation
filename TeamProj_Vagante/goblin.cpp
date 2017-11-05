@@ -69,6 +69,7 @@ void goblin::release()
 
 void goblin::update()
 {
+
 	if (getDistance(_pointx, _pointy, 
 		_player->getPoint().x, _player->getPoint().y) < 300) _isFindPlayer = true; //플레이어와 거리가 300이하면 플레이어한테 간다
 	else _isFindPlayer = false; //300 이상이면 추격 포기
@@ -89,11 +90,11 @@ void goblin::update()
 
 	frameUpdate(); //프레임 업데이트를 해준다. 변경하면 좀 그렇다.
 	
-	if (KEYMANAGER->isOnceKeyDown('N')) //엔키를 많이 누르면 애가 죽는다. 
-	{
-		getDamaged(1);
-		_image = hitImg;
-	}
+	//if (KEYMANAGER->isOnceKeyDown('N')) //엔키를 많이 누르면 애가 죽는다. 
+	//{
+	//	getDamaged(1);
+	//	_image = hitImg;
+	//}
 	
 	if (PtInRect(&_findPlayerRect, _player->getPoint()) && _state != ENEMYSTATE_DEAD); //플레이어가 야를 찾았고 체력이 0 이상일때
 	{
@@ -117,10 +118,11 @@ void goblin::update()
 		}
 	}
 
-	//if (_state == ENEMYSTATE_HIT)
-	//{
-	//	_image = hitImg;
-	//}
+	if (_state == ENEMYSTATE_HIT)
+	{
+		_image = hitImg;
+		_state = ENEMYSTATE_IDLE;
+	}
 }
 
 void goblin::render(POINT camera)
@@ -167,7 +169,7 @@ void goblin::jump()
 
 	if (TIMEMANAGER->getWorldTime() - _jumptimer > 1) //점프쿨타임
 	{
-		_yspeed -= 2; //점프력
+		_yspeed -= 8; //점프력
 		_state = ENEMYSTATE_JUMPING;//이 상태는 점핑이다
 		_jumptimer = TIMEMANAGER->getWorldTime();//점프타이머 초기회
 	}
@@ -175,7 +177,7 @@ void goblin::jump()
 	if (_state == ENEMYSTATE_JUMPING || _state == ENEMYSTATE_FALLING)
 	{
 		if (_yspeed > 0) _state = ENEMYSTATE_FALLING; //Yspeed가 0보다 적다면 떨어지는 상태
-
+	
 		if (_pointx > _player->getPoint().x) //플레이어 기준 플레이어보다 오른쪽에 있을때 왼쪽을 바라보게 함
 		{
 			_right = false; //유 어 롸이트?
@@ -185,7 +187,7 @@ void goblin::jump()
 		else //플레이어 기준 플레이어보다 왼쪽에 있을때 오른쪽을 바라보게 함
 		{
 			_right = true;
-			_xspeed += _statistics.spd;
+		//	_xspeed += _statistics.spd;
 			_currentFrameY = 1;
 		}
 	}
@@ -219,7 +221,7 @@ void goblin::attack()
 	RECT temp;
 	if (IntersectRect(&temp, &_player->getRect(), &_attackRect)) //플레이어를 공격했다.
 	{
-		_player->getDamaged(5, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), _statistics.mel);
+		_player->getDamaged(_statistics.mel, getAngle(_pointx, _pointy, _player->getPoint().x, _player->getPoint().y), 3);
 		//플레이어 반대방향으로 튕겨나기
 		_xspeed = cosf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 2;
 		_yspeed = -sinf(getAngle(_player->getPoint().x, _player->getPoint().y, _pointx, _pointy)) * 2;
@@ -273,17 +275,19 @@ void goblin::mapCollisionCheck()
 	if ((_midL.type == MAPTILE_WALL || _midL.type == MAPTILE_WALL2) && IntersectRect(&temp, &_midL.rc, &_rc))
 	{
 		_pointx += temp.right - temp.left;
+		jump();
 	}
 	if ((_midR.type == MAPTILE_WALL || _midR.type == MAPTILE_WALL2) && IntersectRect(&temp, &_midR.rc, &_rc))
 	{
 		_pointx -= temp.right - temp.left;
+		jump();
 	}
 	if ((_upM.type == MAPTILE_WALL || _upM.type == MAPTILE_WALL2) && IntersectRect(&temp, &_upM.rc, &_rc))
 	{
 		_pointy += temp.bottom - temp.top;
 	}
 
-	if (_player->getPoint().x <= _pointx)
+	if (_player->getPoint().y >= _pointy)
 	{
 		if ((_botM.type == MAPTILE_WALL || _botM.type == MAPTILE_WALL2) && IntersectRect(&temp, &_botM.rc, &_rc))
 		{

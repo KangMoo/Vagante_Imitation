@@ -1348,6 +1348,7 @@ void UI::hitOutput(float x, float y, int damage, LETTERFONT font)
 	hit.font = font;
 
 	_vHit.push_back(hit);
+
 }
 
 void UI::setItemToBag(ITEMNAME name)

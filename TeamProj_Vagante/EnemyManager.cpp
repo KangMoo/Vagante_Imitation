@@ -55,9 +55,9 @@ HRESULT EnemyManager::init()
 	temp->setPlayerAddressLink(_player);
 	temp->setUiAddressLink(_ui);
 	temp->init(pt, 50, 50);
-	_vEnemy.push_back(temp);
+	//_vEnemy.push_back(temp);
 
-	pt = PointMake(TILESIZE * 20 , TILESIZE * 6 );
+	pt = PointMake(TILESIZE * 20 , TILESIZE * 5 );
 	temp = new manEater;
 	temp->setMap(_map);
 	temp->setPlayerAddressLink(_player);
@@ -93,7 +93,7 @@ void EnemyManager::update()
 	//보스 체크
 
 	//업데이트
-	//_boss->update();
+	_boss->update();
 
 	//enemy가 죽었는지 체크
 	deadEnemyCheck();
@@ -111,7 +111,7 @@ void EnemyManager::render(POINT camera)
 	{
 		(*_viEnemy)->render(camera);
 	}
-	//_boss->render(camera);
+	_boss->render(camera);
 
 	draw(camera);
 
