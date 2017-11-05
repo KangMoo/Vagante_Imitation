@@ -78,11 +78,11 @@ HRESULT UI::init()
 	
 	addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36 ), TILESIZE*(4)));
 	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
-	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
-	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
-	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
-	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
-	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 6), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 7), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 8), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 4), TILESIZE*(4 + 5)));
+	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 3), TILESIZE*(4 + 5)));
 	addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(36 - 5), TILESIZE*(4 + 5)));
 	return S_OK;
 }
@@ -175,7 +175,14 @@ void UI::update()
 				_viItem->point.y = bot.rc.top - _viItem->img0->getHeight() / 2;
 			}
 		}
-		
+		if (isCollision(cen.rc, _viItem->rc))
+		{
+			if (cen.type == MAPTILE_WALL || cen.type == MAPTILE_WALL2 || cen.type == MAPTILE_GROUND_CAN_GO_DOWN_1)
+			{
+				_viItem->point.y = cen.rc.top - _viItem->img0->getHeight() / 2;
+			}
+		}
+
 
 		_viItem->rc = RectMakeCenter(_viItem->point.x, _viItem->point.y,
 			_viItem->img0->getWidth(), _viItem->img0->getHeight());
@@ -223,7 +230,7 @@ void UI::draw(POINT camera)
 		IMAGEMANAGER->findImage("selectOff")->render(getMemDC(), _menuRect.left + 2, _menuRect.top + 70);
 	else
 		IMAGEMANAGER->findImage("selectOn")->render(getMemDC(), _menuRect.left + 2, _menuRect.top + 70);
-	/*switch (_menuNum)
+	switch (_menuNum)
 	{
 	case 0:
 		IMAGEMANAGER->findImage("bag")->render(getMemDC(), _menuRect.left, _menuRect.top + 88);
@@ -429,7 +436,7 @@ void UI::draw(POINT camera)
 		letterMacro(LETTER_WHITE, _menuRect.right + 50, _menuRect.top + 230, "Prev Tap", _inputAlphaSource);
 
 		break;
-	}*/
+	}
 	IMAGEMANAGER->findImage("player_icon")->render(getMemDC(), _menuRect.left + 4, _menuRect.top + 38);
 
 	IMAGEMANAGER->findImage("money_background")->render(getMemDC(), WINSIZEX - 138, 10);
@@ -1959,6 +1966,7 @@ void UI::addItemOnMap(ITEMNAME name, POINT point)
 		break;
 	case NAME_COIN:
 		item.img0 = IMAGEMANAGER->findImage("coin");
+		item.rc = item.rc = RectMakeCenter(item.point.x, item.point.y, 6, 6);
 	}
 	item.alphaSource = 255;
 	item.equip = false;
