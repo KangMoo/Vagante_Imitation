@@ -1429,6 +1429,10 @@ void Player::checkHitEnemy() {
 					_attackDelay = 0;
 				}
 			}
+
+
+
+
 			else {
 				temp = _em->getBoss()->getRect();
 				enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);

@@ -5,8 +5,6 @@ class manEater : public Enemy
 {
 private:
 
-	UI* _ui;
-
 	image* _attacki, *_attackAfteri, *_deadi;
 	
 	RECT _findRectRange;

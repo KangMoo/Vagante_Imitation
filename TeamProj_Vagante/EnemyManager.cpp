@@ -49,13 +49,13 @@ HRESULT EnemyManager::init()
 	_boss->setMapAddressLink(_map);
 	_boss->init(PointMake(TILESIZE * 35, TILESIZE * 6));
 
-	temp = new slime;
+	temp = new goblin;
 	pt = PointMake(TILESIZE * 35, TILESIZE * 6);
 	temp->setMap(_map);
 	temp->setPlayerAddressLink(_player);
 	temp->setUiAddressLink(_ui);
 	temp->init(pt, 50, 50);
-	//_vEnemy.push_back(temp);
+	_vEnemy.push_back(temp);
 
 	pt = PointMake(TILESIZE * 20 , TILESIZE * 5 );
 	temp = new manEater;
