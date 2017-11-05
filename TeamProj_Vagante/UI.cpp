@@ -1924,6 +1924,7 @@ void UI::addImg()
 	IMAGEMANAGER->addFrameImage("equip_icon", "Img/ui/equip_icon.bmp", 48, 16, 3, 1, true, RGB(255, 0, 255)); 
 	IMAGEMANAGER->addImage("hpBarTop", "Img/ui/hpBarTop.bmp", 184, 14, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("effect", "Img/ui/status_effect.bmp", 128, 256, 4, 8, true, RGB(255, 0, 255));
+
 	//========================= F O N T ========================================
 	IMAGEMANAGER->addFrameImage("coin_number", "Img/ui/font/number.bmp", 416, 96, 13, 3, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("letter", "Img/ui/font/letter_font.bmp", 270, 180, 27, 15, true, RGB(255, 0, 255));
