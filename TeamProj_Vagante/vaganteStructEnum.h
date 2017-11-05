@@ -33,7 +33,7 @@ struct tagStatusEffect {
 	//상태이상 종류
 	STATUSEFFECT type;
 	//남은 지속 시간
-	int leftTime;
+	float leftTime;
 	//상태이상 데미지 (회복일 경우 치유량)
 	int damage;
 };

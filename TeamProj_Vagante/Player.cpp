@@ -312,6 +312,9 @@ void Player::move()
 
 	//state 별로 계산해야할 것
 	switch (_player.state) {
+	case PLAYERSTATE_IDLE: 
+
+	break;
 
 	case PLAYERSTATE_JUMPING:
 		// 중력
@@ -625,6 +628,11 @@ void Player::keyintput()
 		case PLAYERSTATE_ATTACKING:
 			attackingNow();
 
+//			if (KEYMANAGER->isStayKeyDown('Z')) {
+//				_player.state = PLAYERSTATE_ATTACKING_JUMP;
+//				_player.yspeed = JUMPPOWERSTART;
+//			}
+
 			if (_player.currentFrameX >= _player.image->getMaxFrameX()) {
 				_player.state = PLAYERSTATE_IDLE;
 				setStateImg();
@@ -666,11 +674,11 @@ void Player::keyintput()
 			if (KEYMANAGER->isOnceKeyDown('Z')) {
 				_player.yspeed = JUMPPOWERSTART * 0.8;
 				if (_player.lookingRight) {
-					_player.pointx -= 10;
+					_player.pointx -= 5;
 					_player.xspeed = RUNPOWERSTART;
 				}
 				else {
-					_player.pointx += 10;
+					_player.pointx += 5;
 					_player.xspeed = -RUNPOWERSTART;
 				}
 				_player.state = PLAYERSTATE_JUMPING;
@@ -1336,10 +1344,9 @@ void Player::getDamaged(int damage, float angle, float knockbackpower) {
 		_ui->hitOutput(_player.pointx, _player.pointy, damage, LETTER_RED);
 
 		float xKnock = cosf(angle)*knockbackpower;
-		float yKnock = (sinf(angle)*knockbackpower);
+		float yKnock = -(sinf(angle)*knockbackpower);
 
-		yKnock = (yKnock > 0) ? yKnock : -yKnock;
-
+		
 		_player.xspeed = xKnock;
 		_player.yspeed = yKnock;
 
@@ -1349,7 +1356,7 @@ void Player::getDamaged(int damage, float angle, float knockbackpower) {
 			_player.state = PLAYERSTATE_JUMPING;
 
 		_invincible = true;
-		_invincibleTime = 1;
+		_invincibleTime = 0.5;
 	}
 
 
