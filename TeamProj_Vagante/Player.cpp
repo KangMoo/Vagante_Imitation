@@ -367,7 +367,11 @@ void Player::move()
 			_player.xspeed += 0.2;
 		if (_player.yspeed != 0)
 		{
+			// 중력
 			_player.yspeed -= _player.gravity;
+			// 중력 (최대 속도 제한 있음)
+			if (_player.yspeed < -FALLPOWERMAX)
+				_player.yspeed = -FALLPOWERMAX;
 		}
 	break;
 
@@ -393,9 +397,11 @@ void Player::move()
 		
 	}
 
-	//이동
-	_player.pointx += _player.xspeed;
-	_player.pointy -= _player.yspeed;
+	//이동 (spd의 퍼센트만큼 이속 점프속이 빨라진다)
+	_player.pointx += (_player.xspeed  * (_player.stat.spd * 0.01 + 1));
+	_player.pointy -= (_player.yspeed  * (_player.stat.spd * 0.01 + 1));
+
+	
 
 }
 
@@ -640,10 +646,8 @@ void Player::keyintput()
 		case PLAYERSTATE_ATTACKING:
 			attackingNow();
 
-//			if (KEYMANAGER->isStayKeyDown('Z')) {
-//				_player.state = PLAYERSTATE_ATTACKING_JUMP;
-//				_player.yspeed = JUMPPOWERSTART;
-//			}
+			//공격 중에 점프 가능 (함수 안에서 예외처리함)
+			jump();
 
 			if (_player.currentFrameX >= _player.image->getMaxFrameX()) {
 				_player.state = PLAYERSTATE_IDLE;
@@ -665,6 +669,12 @@ void Player::keyintput()
 				_player.xspeed -= 0.5;
 				if (_player.xspeed < -RUNPOWERMAX)
 					_player.xspeed = -RUNPOWERMAX;
+			}
+
+
+			// 꾹 누르면 더 높이 올라감
+			if (KEYMANAGER->isStayKeyDown('Z') && _player.yspeed > 0) {
+				_player.yspeed += 0.3;
 			}
 
 			if (_player.currentFrameX >= _player.image->getMaxFrameX()) {
@@ -848,9 +858,17 @@ void Player::jump()
 {
 	if (KEYMANAGER->isOnceKeyDown('Z')) {
 		_player.yspeed = JUMPPOWERSTART;
-		_player.state = PLAYERSTATE_JUMPING;
 		_player.gravity = 0.4;
-		setStateImg();
+
+		if (_player.state != PLAYERSTATE_ATTACKING) {
+			_player.yspeed = JUMPPOWERSTART;
+			_player.state = PLAYERSTATE_JUMPING;
+			setStateImg();
+		}
+		else {
+			_player.yspeed = JUMPPOWERSTART;
+			_player.state = PLAYERSTATE_ATTACKING_JUMP;
+		}
 		SOUNDMANAGER->play("2_Player_Jump_Sound", 0.5);
 	}
 }
@@ -913,7 +931,7 @@ void Player::attackingNow() {
 	float _offsetX = 0, _offsetY = 0;
 
 	if (_player.currentFrameX == 0) { _offsetY = 0; _offsetX = (_player.lookingRight) ? 5 : -5;}
-	if (_player.currentFrameX == 1) { _offsetY = 0; _offsetX = (_player.lookingRight) ? 25 : -25;}
+	if (_player.currentFrameX == 1) { _offsetY = 0; _offsetX = (_player.lookingRight) ? 5  + _equipWeaponRect.getWidth() * 0.5 : -5 - _equipWeaponRect.getWidth() * 0.5;}
 	if (_player.currentFrameX == 2) { _offsetY = 2; _offsetX = (_player.lookingRight) ? 7 : -7;}
 	if (_player.currentFrameX == 3) { _attackDelay = 1;}
 	
@@ -1139,11 +1157,11 @@ void Player::setmaptileInfo()
 				setStateImg();
 			}
 
-			// 공격중이라면 착지후 그대로 계속 공격한다
-			if (_player.state == PLAYERSTATE_ATTACKING_JUMP) {
+			// 공격중이라면 착지후 그대로 계속 공격한다			(착지중이라는 조건 추가, 즉 y스피드가 음수일때)
+			if (_player.state == PLAYERSTATE_ATTACKING_JUMP && _player.yspeed < 0) {
 				_player.pointy = botM.rc.top - ((_player.rc.bottom - _player.rc.top) * 0.5);
 				_player.xspeed = 0;
-				_player.yspeed = 0;
+				//_player.yspeed = 0; (공격중 점프를 위해 삭제)
 				_player.state = PLAYERSTATE_ATTACKING;			
 			}
 
@@ -1368,7 +1386,6 @@ void Player::getDamaged(int damage, float angle, float knockbackpower) {
 		float xKnock = cosf(angle)*knockbackpower;
 		float yKnock = -(sinf(angle)*knockbackpower);
 
-		
 		_player.xspeed = xKnock;
 		_player.yspeed = yKnock;
 
@@ -1403,13 +1420,55 @@ void Player::getDamaged(int damage, float angle, float knockbackpower) {
 
 //상태이상(준비중)
 void Player::checkStatusEffect() {
-	for (int i = 0; i < 5; i++) {
-		_player.statusEffect[i].leftTime -= TIMEMANAGER->getElapsedTime();
 
-		if (_player.statusEffect[i].leftTime < 0)
-		{
-			_player.statusEffect[i].type = STATUSEFFECT_NULL;
-			break;
+	if (_player.state != PLAYERSTATE_DEAD) {
+		_statusEffectTimer++;
+
+		if (_statusEffectTimer > 1000) {
+			_statusEffectTimer = 0;
+		}
+
+		//일정 주기마다 효과 일어남 (상태이상마다 시간 다르게 해야하나..?)
+		if ((int)_statusEffectTimer % 300 == 0) {
+			for (int i = 0; i < 5; i++) {
+				_player.statusEffect[i].leftTime -= TIMEMANAGER->getElapsedTime() * 5;
+				switch (_player.statusEffect[i].type)
+				{
+				case STATUSEFFECT_NULL:
+					break;
+					//독 :: 넉백 없이 데미지만
+				case STATUSEFFECT_POISON:
+					getDamaged(_player.statusEffect[i].damage);
+					break;
+
+					//화상 : 넉백 일어나면서 데미지
+					//(이대로 쓰려면 데미지를 늘리고 지속시간을 줄여야할듯)
+				case STATUSEFFECT_FIRE:
+					if (_player.lookingRight)
+						getDamaged(_player.statusEffect[i].damage, PI, 1);
+					else
+						getDamaged(_player.statusEffect[i].damage, 0, 1);
+					break;
+					//스턴...?
+				case STATUSEFFECT_STUN:
+					break;
+					//힐 : 최대체력 이하일 경우 회복
+				case STATUSEFFECT_HEAL:
+					int maxHP = 50 + _player.stat.vit * 10;
+					if (_player.stat.hp >= maxHP)
+						_player.stat.hp = maxHP;
+					else
+						_player.stat.hp += _player.statusEffect[i].damage;
+
+					_ui->hitOutput(_player.pointx, _player.pointy, _player.statusEffect[i].damage, LETTER_GREEN);
+
+					break;
+				}
+				if (_player.statusEffect[i].leftTime < 0)
+				{
+					_player.statusEffect[i].type = STATUSEFFECT_NULL;
+				}
+			}
 		}
 	}
 }
@@ -1456,6 +1515,8 @@ void Player::checkHitEnemy() {
 
 		for (int i = 0; i < _vEnemyRange.size() + 1; i++) {
 			
+			int damage = RND->getFromIntTo(_equipWeapon.minDmg, _equipWeapon.maxDmg);
+			
 			MYRECT enemyRect;
 			RECT temp;
 			if (i < _vEnemyRange.size() && _vEnemyRange[i]->getStat().hp > 0) {
@@ -1463,7 +1524,7 @@ void Player::checkHitEnemy() {
 				enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
 
 				if (isCollision(enemyRect, _equipWeaponRect) && _player.currentFrameX == 2) {
-					_vEnemyRange[i]->getDamaged(10, getAngle(_player.pointx, _player.pointy, _vEnemyRange[i]->getPoint().x, _vEnemyRange[i]->getPoint().y), 3);
+					_vEnemyRange[i]->getDamaged(damage, getAngle(_player.pointx, _player.pointy, _vEnemyRange[i]->getPoint().x, _vEnemyRange[i]->getPoint().y), 3);
 					_attackDelay = 0;
 				}
 			}
@@ -1473,7 +1534,7 @@ void Player::checkHitEnemy() {
 					temp = _em->getBoss()->getRect();
 					enemyRect.set(temp.left, temp.top, temp.right, temp.bottom);
 					if (isCollision(enemyRect, _equipWeaponRect) && _player.currentFrameX == 2) {
-						_em->getBoss()->getDamaged(10, getAngle(_player.pointx, _player.pointy, _em->getBoss()->getPoint().x, _em->getBoss()->getPoint().y), 3);
+						_em->getBoss()->getDamaged(damage, getAngle(_player.pointx, _player.pointy, _em->getBoss()->getPoint().x, _em->getBoss()->getPoint().y), 3);
 						_attackDelay = 0;
 					}
 				}
@@ -1499,21 +1560,21 @@ void Player::firstSettingStat() {
 	for (int i = 0; i < 5; i++)_player.statusEffect[i].type = STATUSEFFECT_NULL;
 
 	_player.stat.hp = 100;
-	_player.stat.str = 100;
-	_player.stat.dex = 100;
+	_player.stat.str = 10;
+	_player.stat.dex = 10;
 	_player.stat.vit = 5;
-	_player.stat.inl = 100;
-	_player.stat.lck = 100;
-	_player.stat.def = 100;
-	_player.stat.fir = 100;
-	_player.stat.ice = 100;
-	_player.stat.lgt = 100;
-	_player.stat.psn = 100;
-	_player.stat.mel = 100;
-	_player.stat.rng = 100;
-	_player.stat.crit = 100;
-	_player.stat.aspd = 100;
-	_player.stat.spd = 100;
+	_player.stat.inl = 10;
+	_player.stat.lck = 10;
+	_player.stat.def = 10;
+	_player.stat.fir = 10;
+	_player.stat.ice = 10;
+	_player.stat.lgt = 10;
+	_player.stat.psn = 10;
+	_player.stat.mel = 10;
+	_player.stat.rng = 10;
+	_player.stat.crit = 10;
+	_player.stat.aspd = 10;
+	_player.stat.spd = 10;
 	_canCtrl = true;
 
 
