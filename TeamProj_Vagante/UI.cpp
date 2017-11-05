@@ -77,12 +77,12 @@ HRESULT UI::init()
 	setItemToBag(NAME_SWORD);
 	
 	addItemOnMap(NAME_SWORD, PointMake(TILESIZE*(36 ), TILESIZE*(4)));
-	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
-	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 6), TILESIZE*(4 + 5)));
-	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 7), TILESIZE*(4 + 5)));
-	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 8), TILESIZE*(4 + 5)));
-	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 4), TILESIZE*(4 + 5)));
-	addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 3), TILESIZE*(4 + 5)));
+	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 5), TILESIZE*(4 + 5)));
+	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 6), TILESIZE*(4 + 5)));
+	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 7), TILESIZE*(4 + 5)));
+	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 8), TILESIZE*(4 + 5)));
+	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 4), TILESIZE*(4 + 5)));
+	//addItemOnMap(NAME_COIN, PointMake(TILESIZE*(36 + 3), TILESIZE*(4 + 5)));
 	addItemOnMap(NAME_HEAL, PointMake(TILESIZE*(36 - 5), TILESIZE*(4 + 5)));
 	return S_OK;
 }
@@ -188,6 +188,15 @@ void UI::update()
 			_viItem->img0->getWidth(), _viItem->img0->getHeight());
 
 
+	}
+	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); )
+	{
+		if (((int)_viItem->point.y / TILESIZE) >= 39)
+		{
+			_vItem.erase(_viItem);
+			break;
+		}
+		else ++_viItem;
 	}
 
 	//======================== F U N C T I O N ========================
@@ -1640,7 +1649,7 @@ void UI::keyControl()
 							}
 							_viBag->equip = true;
 							tagItem item;
-							SecureZeroMemory(&item, sizeof(item));
+							ZeroMemory(&item, sizeof(item));
 							item.img0 = _viBag->img0;
 							item.minDmg = _viBag->minDmg;
 							item.maxDmg = _viBag->maxDmg;
@@ -1648,11 +1657,14 @@ void UI::keyControl()
 						}
 						break;
 					}
-					if (_viBag->type == TYPE_POTION)
+					if (_viBag->type == TYPE_POTION && _currentHp < _maxHp)
 					{
+						tagStatusEffect tse;
+						tse.damage = 5;
+						tse.leftTime = 5;
+						tse.type = STATUSEFFECT_HEAL;
 						_vBag.erase(_viBag);
-						_player->setHP(_player->getHP() + 10);
-						hitOutput(_player->getPoint().x, _player->getPoint().y, 10, LETTER_GREEN);
+						_player->addStatusEffect(tse);
 
 						break;
 					}

@@ -281,7 +281,7 @@ void worm::attack()
 		tagStatusEffect tse; 
 		tse.type = STATUSEFFECT_POISON;
 		tse.damage = 1;
-		tse.leftTime = 20;
+		tse.leftTime = 5;
 		_player->addStatusEffect(tse);
 	}
 }
