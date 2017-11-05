@@ -140,9 +140,9 @@ public:
 
 
 									//공격 받았을 시 (데미지만)
-	void getDamaged(int damage) { _statistics.hp -= damage; }
+	void getDamaged(int damage) { _statistics.hp -= damage; SOUNDMANAGER->play("5_Enemy_Demage_Sound", 1);}
 	//공격 받았을 시 (데미지&넉백)
-	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE); }
+	void getDamaged(int damage, float angle, float knockbackpower) { _statistics.hp -= damage; _ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE);  SOUNDMANAGER->play("5_Enemy_Demage_Sound", 1); }
 	//상태이상
 	void addStatusEffect(tagStatusEffect statuseffect);
 

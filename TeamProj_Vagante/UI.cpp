@@ -1654,6 +1654,8 @@ void UI::keyControl()
 							item.minDmg = _viBag->minDmg;
 							item.maxDmg = _viBag->maxDmg;
 							_player->setEquipWeapon(item);
+
+							SOUNDMANAGER->play("6_Instrument_Sound", 1);
 						}
 						break;
 					}

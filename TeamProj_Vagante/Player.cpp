@@ -831,6 +831,7 @@ void Player::jump()
 		_player.state = PLAYERSTATE_JUMPING;
 		_player.gravity = 0.4;
 		setStateImg();
+		SOUNDMANAGER->play("2_Player_Jump_Sound", 1);
 	}
 }
 void Player::attack()
@@ -856,6 +857,7 @@ void Player::attack()
 
 		_player.state = PLAYERSTATE_ATTACKING;
 		setStateImg();
+		SOUNDMANAGER->play("1_Player_Attack_Sound", 1);
 	}
 }
 
@@ -882,6 +884,7 @@ void Player::attackjump()
 
 		_player.state = PLAYERSTATE_ATTACKING_JUMP; 
 		setStateImg();
+		SOUNDMANAGER->play("1_Player_Attack_Sound", 1);
 	}
 }
 
@@ -1316,6 +1319,8 @@ void Player::getDamaged(int damage) {
 		
 		_invincible = true;
 		_invincibleTime = 1;
+
+		SOUNDMANAGER->play("3_Player_Damage_Sound", 1);
 	}
 
 	if (_player.stat.hp <= 0 && _player.state != PLAYERSTATE_DEAD) {
@@ -1324,6 +1329,9 @@ void Player::getDamaged(int damage) {
 		setStateImg();
 		_player.xspeed = 0;
 		_player.yspeed -= 3;
+
+		SOUNDMANAGER->stop("0_boss_Backgound_Music");
+		SOUNDMANAGER->play("4_Player_Death_Music", 1);
 	}
 
 }
@@ -1350,6 +1358,8 @@ void Player::getDamaged(int damage, float angle, float knockbackpower) {
 
 		_invincible = true;
 		_invincibleTime = 1;
+
+		SOUNDMANAGER->play("3_Player_Damage_Sound", 1);
 	}
 
 
@@ -1359,6 +1369,9 @@ void Player::getDamaged(int damage, float angle, float knockbackpower) {
 		setStateImg();
 		_player.xspeed = 0;
 		_player.yspeed -= 3;
+
+		SOUNDMANAGER->stop("0_boss_Backgound_Music");
+		SOUNDMANAGER->play("4_Player_Death_Music", 1);
 	}
 
 }

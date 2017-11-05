@@ -30,6 +30,8 @@ public:
 		_statistics.hp -= damage; 
 		_state = ENEMYSTATE_HIT; 	
 		_ui->hitOutput(_pointx, _pointy, damage, LETTER_WHITE);
+
+		SOUNDMANAGER->play("5_Enemy_Demage_Sound", 1);
 	}
 
 

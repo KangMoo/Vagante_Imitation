@@ -14,6 +14,8 @@ Map::~Map()
 }
 HRESULT Map::init()
 {
+	SOUNDMANAGER->play("0_boss_Backgound_Music", 1);
+
 	setTile();
 	setObject();
 	// 맵 이미지임

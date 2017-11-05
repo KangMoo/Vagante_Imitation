@@ -74,7 +74,6 @@ void GameScene::update()
 	{
 		_camera.y = IMAGEMANAGER->findImage("bg")->getHeight() - WINSIZEY / 2;
 	}
-
 }
 void GameScene::render()
 {
@@ -116,6 +115,16 @@ void GameScene::addImage()
 	IMAGEMANAGER->addFrameImage("slime_Dash", "Img\\enemy\\slime_dash.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("slime_Jump", "Img\\enemy\\slime_jump.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("slime_Falling", "Img\\enemy\\slime_fall.bmp", 32, 64, 1, 2, true, RGB(255, 0, 255));
+	
+	//============================================================== Music ====================================================================
+
+	SOUNDMANAGER->addSound("0_boss_Backgound_Music", "Sound/BossSound.ogg", true, true);
+	SOUNDMANAGER->addSound("1_Player_Attack_Sound", "Sound/PlayerAttack.wav", false, false);
+	SOUNDMANAGER->addSound("2_Player_Jump_Sound", "Sound/PlayerJump.wav", false, false);
+	SOUNDMANAGER->addSound("3_Player_Demage_Sound", "Sound/PlayerDamage.wav", false, false);
+	SOUNDMANAGER->addSound("4_Player_Death_Music", "Sound/PlayerDeath.ogg", true, true);
+	SOUNDMANAGER->addSound("5_Enemy_Demage_Sound", "Sound/EnemyDamage.wav", false, false);
+	SOUNDMANAGER->addSound("6_Instrument_Sound", "Sound/Instrument.wav", false, false);
 
 	//============================================================== ManEater ====================================================================
 
