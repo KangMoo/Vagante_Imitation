@@ -57,6 +57,8 @@ void GameScene::update()
 	_map->update();
 	keyInput();
 
+	SOUNDMANAGER->update();
+
 	//카메라 위치 재조정
 	if (_camera.x < WINSIZEX / 2)
 	{

@@ -30,7 +30,7 @@ HRESULT bat::init(POINT point, float minCog, float maxCog)
 	_money = RND->getFromIntTo(5, 1);
 
 	//박쥐 스탯 임의로 때려박기
-	_statistics.hp = 20;
+	_statistics.hp = 7;
 	_statistics.str = 5;
 	_statistics.dex = 2;
 	_statistics.vit = 2;

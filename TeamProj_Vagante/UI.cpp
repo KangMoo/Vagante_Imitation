@@ -149,7 +149,7 @@ void UI::update()
 	for ( _viHit = _vHit.begin(); _viHit != _vHit.end(); ++_viHit)
 	{
 		_viHit->y--;
-		_viHit->alphaSource += 10;
+		_viHit->alphaSource += 7;
 	}
 
 	for (_viHit = _vHit.begin(); _viHit != _vHit.end(); )
@@ -1651,11 +1651,11 @@ void UI::keyControl()
 						{
 							for (int i = 0; i < _vBag.size(); i++)
 							{
-								if (_vBag[i].type == TYPE_WEAPON) _vBag[i].equip = false;
+								if (_vBag[i].type == TYPE_WEAPON && _vBag[i].equip) _vBag[i].equip = false;
 							}
 							_viBag->equip = true;
 							tagItem item;
-							ZeroMemory(&item, sizeof(item));
+							ZeroMemory(&item, sizeof(tagItem));
 							item.img0 = _viBag->img0;
 							item.minDmg = _viBag->minDmg;
 							item.maxDmg = _viBag->maxDmg;
@@ -1669,7 +1669,7 @@ void UI::keyControl()
 					{
 						tagStatusEffect tse;
 						tse.damage = 5;
-						tse.leftTime = 5;
+						tse.leftTime = 20;
 						tse.type = STATUSEFFECT_HEAL;
 						_vBag.erase(_viBag);
 						_player->addStatusEffect(tse);

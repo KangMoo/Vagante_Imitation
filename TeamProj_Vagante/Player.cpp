@@ -82,7 +82,6 @@ void Player::update()
 	checkStatusEffect();
 	checkHitEnemy();
 	checkItemBox();
-	checkDropItem();
 
 
 	//무적 체크
@@ -479,6 +478,7 @@ void Player::keyintput()
 
 			if (KEYMANAGER->isStayKeyDown(VK_DOWN)) {
 				_player.state = PLAYERSTATE_LOOKING_DOWN;
+				checkDropItem();
 				setStateImg();
 			}
 
@@ -1424,14 +1424,18 @@ void Player::checkStatusEffect() {
 	if (_player.state != PLAYERSTATE_DEAD) {
 		_statusEffectTimer++;
 
-		if (_statusEffectTimer > 1000) {
+		if (_statusEffectTimer > 1200) {
 			_statusEffectTimer = 0;
+		}
+
+		for (int i = 0; i < 5; i++)
+		{
+			_player.statusEffect[i].leftTime -= TIMEMANAGER->getElapsedTime();
 		}
 
 		//일정 주기마다 효과 일어남 (상태이상마다 시간 다르게 해야하나..?)
 		if ((int)_statusEffectTimer % 300 == 0) {
 			for (int i = 0; i < 5; i++) {
-				_player.statusEffect[i].leftTime -= TIMEMANAGER->getElapsedTime() * 5;
 				switch (_player.statusEffect[i].type)
 				{
 				case STATUSEFFECT_NULL:
