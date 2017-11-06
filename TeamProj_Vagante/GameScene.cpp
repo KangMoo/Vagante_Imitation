@@ -81,8 +81,29 @@ void GameScene::render()
 	_em->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_player->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_ui->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+	drawForDemo();
 }
-
+void GameScene::drawForDemo()
+{
+	if (KEYMANAGER->isStayKeyDown('Q'))
+	{
+		_map->drawForDemo(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+	}
+	else if (KEYMANAGER->isStayKeyDown('W'))
+	{
+		_player->drawForDemo(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+		_player->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+	}
+	else if (KEYMANAGER->isStayKeyDown('E'))
+	{
+		_em->drawForDemo(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+		_em->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+	}
+	else if (KEYMANAGER->isStayKeyDown('R'))
+	{
+		_em->getBoss()->drawForDemo(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+	}
+}
 void GameScene::addImage()
 {
 	//이미지 추가는 여기서!!

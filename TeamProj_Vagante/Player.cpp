@@ -77,7 +77,7 @@ void Player::update()
 
 	//공격 임시
 
-	
+
 	checkInvincible();
 	checkStatusEffect();
 	checkHitEnemy();
@@ -86,9 +86,9 @@ void Player::update()
 
 
 	//무적 체크
-	
-	
-	mapcollision();	
+
+
+	mapcollision();
 	//enemyCollision
 
 
@@ -101,7 +101,7 @@ void Player::update()
 
 	//프레임 업데이트
 	frameUpdate();
-	}
+}
 
 
 void Player::render()
@@ -124,13 +124,13 @@ void Player::draw(POINT camera)
 
 	if (_invincible && _player.state != PLAYERSTATE_DEAD)
 	{
-		_player.image->alphaFrameRender(getMemDC(), _player.rc.left - 12 + camera.x, _player.rc.top - 24 + camera.y, _player.currentFrameX, _player.curretFrameY, int(TIMEMANAGER->getWorldTime() * 100)%2 * 200);
+		_player.image->alphaFrameRender(getMemDC(), _player.rc.left - 12 + camera.x, _player.rc.top - 24 + camera.y, _player.currentFrameX, _player.curretFrameY, int(TIMEMANAGER->getWorldTime() * 100) % 2 * 200);
 	}
 	else
 	{
 		_player.image->frameRender(getMemDC(), _player.rc.left - 12 + camera.x, _player.rc.top - 24 + camera.y, _player.currentFrameX, _player.curretFrameY);
 	}
-	
+
 
 	//_player.image->frameRender(getMemDC(), WINSIZEX / 2, WINSIZEY / 2, _player.image->getFrameX(), _player.image->getFrameY());
 
@@ -148,23 +148,36 @@ void Player::draw(POINT camera)
 	}
 
 
-/*
-	Rectangle(getMemDC(), 100, 100, 200, 200);
-	char str1[256];
-	char str2[256];
-	char str3[256];
-	char str4[256];
-	char str5[256];
-	sprintf(str1, "%d %d %d", upL.type, upM.type, upR.type);
-	sprintf(str2, "%d %d %d", midL.type, midM.type, midR.type);
-	sprintf(str3, "%d %d %d", botL.type, botM.type, botR.type);
-	sprintf(str4, "%ld %ld", _map->getCoinBox(1)._openBox, _map->getCoinBox(1)._eventChk);
-	sprintf(str5, "%d", _em->getEnemyVector().size());
-	TextOut(getMemDC(), 120, 110, str1, strlen(str1));
-	TextOut(getMemDC(), 120, 130, str2, strlen(str2));
-	TextOut(getMemDC(), 120, 150, str3, strlen(str3));
-	TextOut(getMemDC(), 120, 170, str4, strlen(str4));
-	TextOut(getMemDC(), 120, 190, str5, strlen(str5));*/
+	/*
+		Rectangle(getMemDC(), 100, 100, 200, 200);
+		char str1[256];
+		char str2[256];
+		char str3[256];
+		char str4[256];
+		char str5[256];
+		sprintf(str1, "%d %d %d", upL.type, upM.type, upR.type);
+		sprintf(str2, "%d %d %d", midL.type, midM.type, midR.type);
+		sprintf(str3, "%d %d %d", botL.type, botM.type, botR.type);
+		sprintf(str4, "%ld %ld", _map->getCoinBox(1)._openBox, _map->getCoinBox(1)._eventChk);
+		sprintf(str5, "%d", _em->getEnemyVector().size());
+		TextOut(getMemDC(), 120, 110, str1, strlen(str1));
+		TextOut(getMemDC(), 120, 130, str2, strlen(str2));
+		TextOut(getMemDC(), 120, 150, str3, strlen(str3));
+		TextOut(getMemDC(), 120, 170, str4, strlen(str4));
+		TextOut(getMemDC(), 120, 190, str5, strlen(str5));*/
+}
+
+void Player::drawForDemo(POINT camera)
+{
+	Rectangle(getMemDC(), upL.rc.left + camera.x, upL.rc.top + camera.y, upL.rc.right + camera.x, upL.rc.bottom + camera.y);
+	Rectangle(getMemDC(), upM.rc.left + camera.x, upM.rc.top + camera.y, upM.rc.right + camera.x, upM.rc.bottom + camera.y);
+	Rectangle(getMemDC(), upR.rc.left + camera.x, upR.rc.top + camera.y, upR.rc.right + camera.x, upR.rc.bottom + camera.y);
+	Rectangle(getMemDC(), midL.rc.left + camera.x, midL.rc.top + camera.y, midL.rc.right + camera.x, midL.rc.bottom + camera.y);
+	Rectangle(getMemDC(), midM.rc.left + camera.x, midM.rc.top + camera.y, midM.rc.right + camera.x, midM.rc.bottom + camera.y);
+	Rectangle(getMemDC(), midR.rc.left + camera.x, midR.rc.top + camera.y, midR.rc.right + camera.x, midR.rc.bottom + camera.y);
+	Rectangle(getMemDC(), botL.rc.left + camera.x, botL.rc.top + camera.y, botL.rc.right + camera.x, botL.rc.bottom + camera.y);
+	Rectangle(getMemDC(), botM.rc.left + camera.x, botM.rc.top + camera.y, botM.rc.right + camera.x, botM.rc.bottom + camera.y);
+	Rectangle(getMemDC(), botR.rc.left + camera.x, botR.rc.top + camera.y, botR.rc.right + camera.x, botR.rc.bottom + camera.y);
 }
 
 
@@ -275,7 +288,7 @@ void Player::frameUpdate() {
 			if (_player.currentFrameX == 2) _player.currentFrameX++;
 			if (_player.currentFrameX == 1) _player.currentFrameX++;
 			if (_player.currentFrameX == 0 && _animDelay > 2) _player.currentFrameX++;
-				
+
 
 
 
@@ -311,8 +324,8 @@ void Player::frameUpdate() {
 	}
 
 
-//	_player.image->setX(_player.rc.left);
-//	_player.image->setY(_player.rc.top);
+	//	_player.image->setX(_player.rc.left);
+	//	_player.image->setY(_player.rc.top);
 }
 
 void Player::move()
@@ -320,9 +333,9 @@ void Player::move()
 
 	//state 별로 계산해야할 것
 	switch (_player.state) {
-	case PLAYERSTATE_IDLE: 
+	case PLAYERSTATE_IDLE:
 
-	break;
+		break;
 
 	case PLAYERSTATE_JUMPING:
 		// 중력
@@ -342,7 +355,7 @@ void Player::move()
 			_player.state = PLAYERSTATE_FALLING;
 			setStateImg();
 		}
-	break;
+		break;
 
 	case PLAYERSTATE_FALLING:
 	case PLAYERSTATE_ATTACKING_JUMP:
@@ -357,10 +370,10 @@ void Player::move()
 			_player.xspeed -= 0.2;
 		else if (_player.xspeed < 0)
 			_player.xspeed += 0.2;
-	break;
+		break;
 
 
-	case PLAYERSTATE_ATTACKING:	
+	case PLAYERSTATE_ATTACKING:
 		if (_player.xspeed > 0)
 			_player.xspeed -= 0.2;
 		else if (_player.xspeed < 0)
@@ -373,19 +386,19 @@ void Player::move()
 			if (_player.yspeed < -FALLPOWERMAX)
 				_player.yspeed = -FALLPOWERMAX;
 		}
-	break;
+		break;
 
 	case PLAYERSTATE_HIT:
 		_player.yspeed -= _player.gravity;
 		_player.xspeed -= 0.1;
 
-	break;
+		break;
 
 	case PLAYERSTATE_HOLDING_WALL:
 
 		_player.xspeed = 0;
 
-	break;
+		break;
 
 	case PLAYERSTATE_DEAD:
 		// 중력
@@ -393,15 +406,15 @@ void Player::move()
 		// 중력 (최대 속도 제한 있음)
 		if (_player.yspeed < -FALLPOWERMAX)
 			_player.yspeed = -FALLPOWERMAX;
-	break;
-		
+		break;
+
 	}
 
 	//이동 (spd의 퍼센트만큼 이속 점프속이 빨라진다)
 	_player.pointx += (_player.xspeed  * (_player.stat.spd * 0.01 + 1));
 	_player.pointy -= (_player.yspeed  * (_player.stat.spd * 0.01 + 1));
 
-	
+
 
 }
 
@@ -920,7 +933,7 @@ void Player::attackjump()
 		else
 			_equipWeaponRect.set(_player.pointx + _offsetX, _player.pointy, _player.pointx, _player.pointy + _offsetY);
 
-		_player.state = PLAYERSTATE_ATTACKING_JUMP; 
+		_player.state = PLAYERSTATE_ATTACKING_JUMP;
 		setStateImg();
 		SOUNDMANAGER->play("1_Player_Attack_Sound", 0.5);
 	}
@@ -930,11 +943,11 @@ void Player::attackingNow() {
 
 	float _offsetX = 0, _offsetY = 0;
 
-	if (_player.currentFrameX == 0) { _offsetY = 0; _offsetX = (_player.lookingRight) ? 5 : -5;}
-	if (_player.currentFrameX == 1) { _offsetY = 0; _offsetX = (_player.lookingRight) ? 5  + _equipWeaponRect.getWidth() * 0.5 : -5 - _equipWeaponRect.getWidth() * 0.5;}
-	if (_player.currentFrameX == 2) { _offsetY = 2; _offsetX = (_player.lookingRight) ? 7 : -7;}
-	if (_player.currentFrameX == 3) { _attackDelay = 1;}
-	
+	if (_player.currentFrameX == 0) { _offsetY = 0; _offsetX = (_player.lookingRight) ? 5 : -5; }
+	if (_player.currentFrameX == 1) { _offsetY = 0; _offsetX = (_player.lookingRight) ? 5 + _equipWeaponRect.getWidth() * 0.5 : -5 - _equipWeaponRect.getWidth() * 0.5; }
+	if (_player.currentFrameX == 2) { _offsetY = 2; _offsetX = (_player.lookingRight) ? 7 : -7; }
+	if (_player.currentFrameX == 3) { _attackDelay = 1; }
+
 	_equipWeaponRect.setCenterPos(_player.pointx + _offsetX, _player.pointy + _offsetY);
 }
 
@@ -981,9 +994,9 @@ void Player::addStatusEffect(tagStatusEffect statuseffect)
 			break;
 		}
 		if (_player.statusEffect[i].type == NULL)
-		{			
+		{
 			_player.statusEffect[i] = statuseffect;
-			break;			
+			break;
 		}
 	}
 }
@@ -1162,7 +1175,7 @@ void Player::setmaptileInfo()
 				_player.pointy = botM.rc.top - ((_player.rc.bottom - _player.rc.top) * 0.5);
 				_player.xspeed = 0;
 				//_player.yspeed = 0; (공격중 점프를 위해 삭제)
-				_player.state = PLAYERSTATE_ATTACKING;			
+				_player.state = PLAYERSTATE_ATTACKING;
 			}
 
 			if (_player.state == PLAYERSTATE_DEAD) {
@@ -1270,7 +1283,7 @@ void Player::setmaptileInfo()
 		if (_player.rc.left < midL.rc.right) {
 			_player.pointx = midL.rc.right + ((_player.rc.right - _player.rc.left) * 0.5);
 			_player.xspeed = 0;
-			
+
 			if ((upL.type != MAPTILE_WALL && upL.type != MAPTILE_WALL2)
 				&& (_player.rc.top > midL.rc.top - 10 && _player.rc.top < midL.rc.top) && !_invincible)
 			{
@@ -1350,11 +1363,11 @@ void Player::enemyCollision() {
 
 //공격 받았을 시 (데미지만)
 void Player::getDamaged(int damage) {
-	
+
 	if (!_invincible) {
 		_player.stat.hp -= damage;
 		_ui->hitOutput(_player.pointx, _player.pointy, damage, LETTER_RED);
-		
+
 		_invincible = true;
 		_invincibleTime = 1;
 
@@ -1409,7 +1422,7 @@ void Player::getDamaged(int damage, float angle, float knockbackpower) {
 		_player.xspeed = 0;
 		_player.yspeed -= 3;
 
-		
+
 		SOUNDMANAGER->stop("0_boss_Backgound_Music");
 		SOUNDMANAGER->stop("7_DarkCave_Music");
 		SOUNDMANAGER->play("4_Player_Death_Music", 1);
@@ -1492,18 +1505,18 @@ void Player::checkItemBox() {
 
 void Player::checkDropItem() {
 	_vItem = _ui->getvItem();
-	
+
 	for (int i = 0; i < _vItem.size(); i++) {
 		tagItem item = _vItem[i];
 		if (isCollision(_player.rc, item.rc) && item.name != NAME_COIN)
 		{
 			_ui->setItemToBag(_vItem[i].name);
 			_ui->deleteItemOnMap(i);
-			
+
 			break;
 		}
 	}
-	
+
 }
 
 void Player::checkHitEnemy() {
@@ -1514,9 +1527,9 @@ void Player::checkHitEnemy() {
 		_vEnemyRange = _em->getEnemyVector();
 
 		for (int i = 0; i < _vEnemyRange.size() + 1; i++) {
-			
+
 			int damage = RND->getFromIntTo(_equipWeapon.minDmg, _equipWeapon.maxDmg);
-			
+
 			MYRECT enemyRect;
 			RECT temp;
 			if (i < _vEnemyRange.size() && _vEnemyRange[i]->getStat().hp > 0) {

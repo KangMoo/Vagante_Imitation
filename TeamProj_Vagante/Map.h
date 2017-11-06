@@ -89,7 +89,7 @@ public:
 	void drawMinimap();
 	void setTile();
 	void setObject();
-	
+	void drawForDemo(POINT camera);
 	tagObj getCoinBox(int i) { return coinBox[i]; }// 코인박스의 정보
 	tagObj getitemBox(int i) { return itemBox[i]; }// 아이템박스의 정보
 	void setCoinBox(int i, bool isOpen) { coinBox[i]._openBox = isOpen; }// 코인박스의 상태변화

@@ -336,3 +336,42 @@ void Map::setObject()
 
 }
 
+void Map::drawForDemo(POINT camera)
+{
+	for (int i = 0; i < 40; i++)
+	{
+		for (int j = 0; j < 58; j++)
+		{
+			if (_mapInfo[i][j].type == MAPTILE_WALL || _mapInfo[i][j].type == MAPTILE_WALL2)
+			{
+				Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
+				_mapInfo[i][j].rc.top + camera.y,
+				_mapInfo[i][j].rc.right + camera.x,
+				_mapInfo[i][j].rc.bottom + camera.y);
+			}
+			else if (_mapInfo[i][j].type == MAPTILE_LADDER)
+			{
+				Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
+				_mapInfo[i][j].rc.top + camera.y,
+				_mapInfo[i][j].rc.right + camera.x,
+				_mapInfo[i][j].rc.bottom + camera.y);
+			}
+			else if (_mapInfo[i][j].type == MAPTILE_GROUND_CAN_GO_DOWN_1)
+			{
+				Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
+				_mapInfo[i][j].rc.top + camera.y,
+				_mapInfo[i][j].rc.right + camera.x,
+				_mapInfo[i][j].rc.bottom + camera.y);
+			}
+			else if (_mapInfo[i][j].type == MAPTILE_SPIKE_TRAP)
+			{
+				Rectangle(getMemDC(), _mapInfo[i][j].rc.left + camera.x,
+				_mapInfo[i][j].rc.top + camera.y,
+				_mapInfo[i][j].rc.right + camera.x,
+				_mapInfo[i][j].rc.bottom + camera.y);
+				_trapImg->render(getMemDC(), _mapInfo[i][j].rc.left + camera.x, _mapInfo[i][j].rc.top + camera.y);
+			}
+		}
+	}
+}
+

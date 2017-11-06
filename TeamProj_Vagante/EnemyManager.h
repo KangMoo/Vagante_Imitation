@@ -31,7 +31,8 @@ public:
 	void render();
 	void render(POINT camera);
 	void draw(POINT camera);
-
+	void drawForDemo(POINT camera);
+	void addEnemyForDemo();
 	void deadEnemyCheck();
 
 	vector<Enemy*> getEnemyVector() { return _vEnemy; }

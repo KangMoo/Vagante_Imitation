@@ -156,6 +156,16 @@ void Boss::draw(POINT camera)
 	_image->frameRender(getMemDC(), _pointx - _image->getFrameWidth() / 2 + camera.x, _pointy - _image->getFrameHeight() / 2 + camera.y, _currentFrameX, _currentFrameY);
 
 }
+void Boss::drawForDemo(POINT camera)
+{
+	for (int i = 0; i < _wayToPlayer.size(); i++)
+	{
+		RectangleMakeCenter(getMemDC(),
+			_wayToPlayer[i].px * TILESIZE + TILESIZE / 2 + camera.x,
+			_wayToPlayer[i].py * TILESIZE + TILESIZE / 2 + camera.y,
+			10, 10);
+	}
+}
 void Boss::speedAdjust()
 {
 

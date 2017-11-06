@@ -193,7 +193,7 @@ void worm::update()
 	rectResize();
 }
 void worm::render(POINT camera) {
-	draw(camera);
+	if(_statistics.hp>0) draw(camera);
 }
 void worm::draw(POINT camera) {
 	//Rectangle(getMemDC(), _pointx - _minCog / 2 + camera.x, _pointy - _minCog / 2 + camera.y, _pointx + _minCog / 2 + camera.x, _pointy + _minCog / 2 + camera.y);

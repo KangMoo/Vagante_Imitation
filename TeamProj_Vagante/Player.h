@@ -125,7 +125,7 @@ public:
 	void render();
 	void render(POINT camera);
 	void draw(POINT camera);
-
+	void drawForDemo(POINT camera);
 	//초기 설정
 	void firstSettingStat();
 

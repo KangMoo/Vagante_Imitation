@@ -23,6 +23,7 @@ public:
 	void release();
 	void update();
 	void render();
+	void drawForDemo();
 	void keyInput();
 	void addImage();
 
